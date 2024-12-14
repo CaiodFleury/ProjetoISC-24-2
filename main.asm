@@ -1,16 +1,17 @@
 .data
 selectframeads:	.word 0xFF200604
 
-char_pos:	.half 0, 0
+char_pos:		.half 0, 0
+old_char_pos:		.half 0, 0
 
-.include "levels/fundolaranja.data"
-.include "sprites/fundopersonagem.data"
-.include "sprites/personagem.data"
+.include "fundolaranja.data"
+.include "personagem.data"
+.include "fundopersonagem.data"
 
-#Codigo vai comecar na main.
-#Funcoes no final
-#Padrao for/while/if : Loop_num
-#Padrao funcoes FazerAlgo
+#Codigo vai come?ar na main.
+#Fun??es no final
+#Padr?o for/while/if : Loop_num
+#Padr?o fun??es FazerAlgo
 
 .text
 main:	
@@ -31,17 +32,14 @@ main:
 	la a0 fundolaranja
 	call LoadScreen 
 	
-	li a2 , 50
-	li a1 , 48
-	la a0 , personagem
-	call LoadScreen 
+	call GAME_LOOP		
 
 	li a0, 3
 	call TrocarTela	
 	
 	call FimPrograma
 	
-#FUNCOES--->	
+#FUNÇÕES--->	
 #recebe a0;
 
 # a0 = 0/1 define a tela
@@ -67,7 +65,7 @@ TrocarTela:
 			ret
 
 #recebe a0, a1, a2;
-# a0= enderecoo imagem
+# a0= endereço imagem
 # a1 = x da imagem
 # a2 = y da imagem
 
@@ -113,24 +111,61 @@ LoadScreen:
 	EndWhile_LS:
 	ret
 
+GAME_LOOP:
+	call KeyDown
+	xori s0, s0,1
+	
+	la t0, char_pos
+	
+	la a0, personagem
+	lh a1, 0(t0)
+	lh a2, 2(t0)
+	mv a3, s0
+	call LoadScreen
+	
+	lw t0, selectframeads
+	sw s0,0(t0)
+	
+	la t0, old_char_pos
+	
+	la a0, fundopersonagem
+	lh a1, 0(t0)
+	lh a2, 2(t0)
+	mv a3, s0
+	xori a3, a3,1
+	call LoadScreen
+	
+	j GAME_LOOP
+
+
 KeyDown:
-	li t1,0xFF200000		# carrega o endereco de controle do KDMMIO
+	li t1,0xFF200000		# carrega o endere?o de controle do KDMMIO
 	lw t0,0(t1)			# Le bit de Controle Teclado
 	andi t0,t0,0x0001		# mascara o bit menos significativo
-   	beq t0,zero,FIM   	   	# Se nao ha tecla pressionada entaoo vai para FIM
+   	beq t0,zero,FIM   	   	# Se n?o h? tecla pressionada ent?o vai para FIM
   	lw t2,4(t1)  			# le o valor da tecla tecla
 
-	FIM:	ret				# retorna
-	
 	li t0, 'd'
 	beq t2, t0, MoveRight
 	
 	li t0, 'a'
 	beq t2, t0, MoveLeft
 	
+	li t0, 'w'
+	beq t2, t0, MoveUp
+	
+	li t0, 's'
+	beq t2, t0, MoveDown
+
+	FIM:	ret				# retorna
+	
+	
 	# t1 = x, t2 = y
 	MoveRight:
 		la t0, char_pos
+		la t1, old_char_pos
+		lw t2, 0(t0)
+		sw t2, 0(t1)
 		lh t1, 0(t0)
 		addi t1, t1, 16 # 16 bits pra direita
 		sh t1, 0(t0)
@@ -138,9 +173,32 @@ KeyDown:
 		
 	MoveLeft:
 		la t0, char_pos
+		la t1, old_char_pos
+		lw t2, 0(t0)
+		sw t2, 0(t1)
 		lh t1, 0(t0)
 		addi t1, t1, -16 # 16 bits pra esquerda
 		sh t1, 0(t0)
+		ret
+		
+	MoveUp:
+		la t0, char_pos
+		la t1, old_char_pos
+		lw t2, 0(t0)
+		sw t2, 0(t1)
+		lh t1, 2(t0)
+		addi t1, t1, -16 # 16 bits pra esquerda
+		sh t1, 2(t0)
+		ret
+		
+	MoveDown:
+		la t0, char_pos
+		la t1, old_char_pos
+		lw t2, 0(t0)
+		sw t2, 0(t1)
+		lh t1, 2(t0)
+		addi t1, t1, 16 # 16 bits pra esquerda
+		sh t1, 2(t0)
 		ret
 	
 #void func;
