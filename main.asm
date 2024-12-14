@@ -1,15 +1,16 @@
 .data
 selectframeads:	.word 0xFF200604
 
-char_pos:		.half 0, 0
+char_pos:	.half 0, 0
 
 .include "levels/fundolaranja.data"
+.include "sprites/fundopersonagem.data"
 .include "sprites/personagem.data"
 
-#Codigo vai come�ar na main.
-#Fun��es no final
-#Padr�o for/while/if : Loop_num
-#Padr�o fun��es FazerAlgo
+#Codigo vai comecar na main.
+#Funcoes no final
+#Padrao for/while/if : Loop_num
+#Padrao funcoes FazerAlgo
 
 .text
 main:	
@@ -40,7 +41,7 @@ main:
 	
 	call FimPrograma
 	
-#FUNÇÕES--->	
+#FUNCOES--->	
 #recebe a0;
 
 # a0 = 0/1 define a tela
@@ -66,7 +67,7 @@ TrocarTela:
 			ret
 
 #recebe a0, a1, a2;
-# a0= endereço imagem
+# a0= enderecoo imagem
 # a1 = x da imagem
 # a2 = y da imagem
 
@@ -113,10 +114,10 @@ LoadScreen:
 	ret
 
 KeyDown:
-	li t1,0xFF200000		# carrega o endereēo de controle do KDMMIO
+	li t1,0xFF200000		# carrega o endereco de controle do KDMMIO
 	lw t0,0(t1)			# Le bit de Controle Teclado
 	andi t0,t0,0x0001		# mascara o bit menos significativo
-   	beq t0,zero,FIM   	   	# Se nćo hį tecla pressionada entćo vai para FIM
+   	beq t0,zero,FIM   	   	# Se nao ha tecla pressionada entaoo vai para FIM
   	lw t2,4(t1)  			# le o valor da tecla tecla
 
 	FIM:	ret				# retorna
