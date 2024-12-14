@@ -1,12 +1,15 @@
 .data
 selectframeads:	.word 0xFF200604
-#.include "funcoes.asm"
-.include "fundolaranja.data"
-.include "personagem.data"
-#Codigo vai começar na main.
-#Funções no final
-#Padrão for/while/if : Loop_num
-#Padrão funções FazerAlgo
+
+char_pos:		.half 0, 0
+
+.include "levels/fundolaranja.data"
+.include "sprites/personagem.data"
+
+#Codigo vai comeï¿½ar na main.
+#Funï¿½ï¿½es no final
+#Padrï¿½o for/while/if : Loop_num
+#Padrï¿½o funï¿½ï¿½es FazerAlgo
 
 .text
 main:	
@@ -37,8 +40,11 @@ main:
 	
 	call FimPrograma
 	
-#FUNÇÕES--->	
-#recebe a0; a0 = 0/1 define a tela a0 = 3 troca 
+#FUNÃ‡Ã•ES--->	
+#recebe a0;
+
+# a0 = 0/1 define a tela
+# a0 = 3 troca 
 TrocarTela:
 	lw t3, selectframeads
  	If_TT1: 
@@ -58,7 +64,12 @@ TrocarTela:
 			li t1, 1
 			sw t1, 0(t3)
 			ret
-#recebe a0,a1,a2; a0= endereço imagem, a1 = x da imagem, a2 = y da imagem
+
+#recebe a0, a1, a2;
+# a0= endereÃ§o imagem
+# a1 = x da imagem
+# a2 = y da imagem
+
 LoadScreen:
 	lw t0, selectframeads
 	lb t0,0(t0)
@@ -99,7 +110,37 @@ LoadScreen:
 		addi t4, t4,1
 		j While_LS
 	EndWhile_LS:
-	ret	
+	ret
+
+KeyDown:
+	li t1,0xFF200000		# carrega o endereÄ“o de controle do KDMMIO
+	lw t0,0(t1)			# Le bit de Controle Teclado
+	andi t0,t0,0x0001		# mascara o bit menos significativo
+   	beq t0,zero,FIM   	   	# Se nÄ‡o hÄ¯ tecla pressionada entÄ‡o vai para FIM
+  	lw t2,4(t1)  			# le o valor da tecla tecla
+
+	FIM:	ret				# retorna
+	
+	li t0, 'd'
+	beq t2, t0, MoveRight
+	
+	li t0, 'a'
+	beq t2, t0, MoveLeft
+	
+	# t1 = x, t2 = y
+	MoveRight:
+		la t0, char_pos
+		lh t1, 0(t0)
+		addi t1, t1, 16 # 16 bits pra direita
+		sh t1, 0(t0)
+		ret
+		
+	MoveLeft:
+		la t0, char_pos
+		lh t1, 0(t0)
+		addi t1, t1, -16 # 16 bits pra esquerda
+		sh t1, 0(t0)
+		ret
 	
 #void func;
 FimPrograma:
