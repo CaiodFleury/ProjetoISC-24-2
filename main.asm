@@ -2,17 +2,13 @@
 selectframeads:	.word 0xFF200604
 char_pos:	.half 80, 176
 old_char_pos:	.half 80, 176
-
+array_layers:	.byte 460800
 char_pos_bounds:.half 80, 240, 232, 64
-
+. 
 .include "levels/map_placeholder.s"
 .include "sprites/fundopersonagem.data"
 .include "sprites/personagem.data"	
 
-#Codigo vai comecar na main.
-#Funcoes no final
-#Padrao for/while/if : Loop_num
-#Padrao funcoes FazerAlgo
 #Codigo vai comecar na main.
 #Funcoes no final
 #Padrao for/while/if : Loop_num
@@ -200,7 +196,7 @@ TrocarTela:					#recebe a0
 			ret
 
 LoadScreen:						#Recebe a0, a1, a2;
-	lw t0, selectframeads				# a0= endereço imagem
+	lw t0, selectframeads				# a0= endereco imagem
 	lb t0,0(t0)					# a1 = x da imagem
  	If_LS: 						# a2 = y da imagem
  		li t1,1					
@@ -240,7 +236,139 @@ LoadScreen:						#Recebe a0, a1, a2;
 		j While_LS
 	EndWhile_LS:
 	ret
+	
+LoadRender:
+	lw t0 , array_layers
+	li t1 , 460800
+	li t2 , 0
+	li t3 , 0xC7C7C7C7
+	While_LR:	
+		beq t1, t2, EndWhile_LR
+		sw t3, 0(t0)
+		addi t0,t0,4
+		addi t2,t2,4
+		j While_LR
+	EndWhile_LR:	
+	ret
+	
 
-FimPrograma:		#Não recebe nada
+UnloadImage:						# a0= endereco imagem
+	li t0, 76800					# a1 = x da imagem
+	mul t0, t0, a3					# a2 = y da imagem
+	lw t1 , array_layers				# a3 = layer(0,5)
+	add t0 , t0, t1					
+ 	lw t2, 0(a0)
+	lw t3, 4(a0)
+	li t4, 0
+	li t5, 0
+	li t6 , 0xC7C7C7C7
+	While_UI:	
+		beq t3, t5, EndWhile_UI
+		add t1, t1,a1
+		While_UI1:
+			beq t1, t3, EndWhile_UI1
+			sw t6, 0(t0)
+			addi t3,t3,4
+			addi t0,t0,4
+			j While_UI1
+		EndWhile_UI1:
+		li t5, 320
+		sub t5, t5, a1
+		sub t5, t5,t1
+		add t0, t0, t5
+		li t3, 0
+		addi t4, t4,1
+		j While_UI
+	EndWhile_UI:					
+ 	ret						
+
+LoadImage:						# a0= endereco imagem
+	li t0, 76800					# a1 = x da imagem
+	mul t0, t0, a3					# a2 = y da imagem
+	lw t1 , array_layers				# a3 = layer(0,5)
+	add t0 , t0, t1					
+ 	lw t2, 0(a0)
+	lw t3, 4(a0)
+	li t4, 0
+	li t5, 0
+	While_LI:	
+		beq t2, t4, EndWhile_LI
+		add t0, t0,a1
+		While_LI1:
+			beq t1, t3, EndWhile_LI1
+			lw t5, 0(a0)
+			sw t5, 0(t0)
+			addi t3,t3,4
+			addi a0,a0,4
+			addi t0,t0,4
+			j While_LI1
+		EndWhile_LI1:
+		li t5, 320
+		sub t5, t5, a1
+		sub t5, t5,t1
+		add t0, t0, t5
+		li t3, 0
+		addi t4, t4,1
+		j While_LI
+	EndWhile_LI:
+	ret	
+#a0,a1,a2,a3
+#a0 = x1, a1 = y1, a2 = x2 , a3 = y2, x1 < x2, y1 < y2
+Renderizador:
+	lw t0, selectframeads				
+	lb t0,0(t0)					
+ 	If_R: 						
+ 		li t1,1					
+ 		bne t0,t1, Else_LS
+ 		li t0 0xFF000000
+		j Fim_If_LS
+	Else_R:
+		li t0 0xFF100000
+	Fim_If_R:					#t0 eh o endereco da tela
+	lw t6, array_layers
+	li t5 , 320					#t1/t2/t3/t4 sao os contadores	
+	mul t5 , t5, a1					#t6 eh o endereco na memoria
+	add t0, t5 , t0					#ESTOU USANDO a7 e a6 COMO TEMP
+	add t6, t5,t6
+	sub t1,a3,a1
+	sub t2,a2,a0
+	li t3, 0
+	li t4, 0
+	li a6, 0xC7
+	While_R:	
+		beq t2, t4, EndWhile_R
+		add t0, t0,a0
+		add t6, t6,a0
+		While_R1:
+			beq t1, t3, EndWhile_R1
+			add a7, t6, zero
+			li t5,38400
+			add a7, a7,t5
+			While_R2:
+				lb t5,0(a7)
+				bne t5, a6,EndWhile_R2
+				blt a7,zero,EndWhile_R2
+				li t5 , 76800
+				sub a7, a7,t5
+				j While_R2
+			EndWhile_R2:
+			sb t5, 0(t0)
+			addi t3,t3,1
+			addi t0,t0,1
+			addi t6,t6,1
+			j While_R1
+		EndWhile_R1:
+		li t5, 320
+		sub t5, t5, a0
+		sub t5, t5,t1
+		add t0, t0, t5
+		add t6,t6,t5
+		li t3, 0
+		addi t4, t4,1
+		j While_R
+	EndWhile_R:
+	ret
+	
+FimPrograma:		#Nao recebe nada
 	li a7,10      	#Chama o procedimento de finalizar o programa
-	ecall		#Não retorna nada
+	ecall		#Nao retorna nada
