@@ -244,17 +244,3 @@ LoadScreen:						#Recebe a0, a1, a2;
 FimPrograma:		#Não recebe nada
 	li a7,10      	#Chama o procedimento de finalizar o programa
 	ecall		#Não retorna nada
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
