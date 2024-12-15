@@ -1,25 +1,47 @@
 .data
 selectframeads:	.word 0xFF200604
-char_pos:		.half 0, 0
-old_char_pos:		.half 0, 0
+char_pos:	.half 80, 176
+old_char_pos:	.half 80, 176
 
-.include "levels/fundolaranja.data"
+char_pos_bounds:.half 80, 240, 232, 64
+
+.include "levels/map_placeholder.s"
 .include "sprites/fundopersonagem.data"
-.include "sprites/personagem.data"
+.include "sprites/personagem.data"	
 
+#Codigo vai comecar na main.
+#Funcoes no final
+#Padrao for/while/if : Loop_num
+#Padrao funcoes FazerAlgo
 #Codigo vai comecar na main.
 #Funcoes no final
 #Padrao for/while/if : Loop_num
 #Padrao funcoes FazerAlgo
 
 .text
-main:	
+main:
+	# s7 = x_bounds_1
+	# s8 = x_bounds_2
+	# s9 = y_bounds 1
+	# s10 = y_bounds 2
+	
+	# O carregamento Ã© feito aqui para poupar processamento posterior
+	##########################
+	la t0, char_pos_bounds
+	
+	lh s7, 0(t0) # x1
+	lh s8, 2(t0) # x2
+	lh s9, 4(t0) # y1
+	lh s10, 6(t0)# y2
+	
+	##########################
+	
 	li a0, 0
 	call TrocarTela	
 
 	li a2 , 0
 	li a1 , 0
-	la a0 fundolaranja
+	la a0 map_placeholder
 	call LoadScreen 
 
 
@@ -28,7 +50,7 @@ main:
 
 	li a2 , 0
 	li a1 , 0
-	la a0 fundolaranja
+	la a0 map_placeholder
 	call LoadScreen 
 	
 	call GAME_LOOP		
@@ -66,17 +88,26 @@ KeyDown:
    	beq t0,zero,FIM   	   	# Se nao ha tecla pressionada entao vai para FIM
   	lw t2,4(t1)  			# le o valor da tecla tecla
 
+			
 	li t0, 'd'
+	li t1, 'D'
 	beq t2, t0, MoveRight
+	beq t2, t1, MoveRight
 	
 	li t0, 'a'
+	li t1, 'A'
 	beq t2, t0, MoveLeft
-	
+	beq t2, t1, MoveLeft
+		
 	li t0, 'w'
+	li t1, 'W'
 	beq t2, t0, MoveUp
+	beq t2, t1, MoveUp
 	
 	li t0, 's'
+	li t1, 'S'
 	beq t2, t0, MoveDown
+	beq t2, t1, MoveDown
 
 	FIM:	ret				# retorna
 	
@@ -88,7 +119,15 @@ KeyDown:
 		lw t2, 0(t0)
 		sw t2, 0(t1)
 		lh t1, 0(t0)
-		addi t1, t1, 16 # 16 bits pra direita
+		
+		# bge t0,t1,Label # t0>=t1 ? PC=Label : PC=PC+4 t0 e t1 sem sinal
+
+		# blt t0,t1,Label # t0<t1 ? PC=Label : PC=PC+4 
+		
+		addi t5, t1, 32
+		bge t5, s8, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
+		
+		addi t1, t1, 32 # 32 bits pra direita
 		sh t1, 0(t0)
 		ret
 		
@@ -98,17 +137,29 @@ KeyDown:
 		lw t2, 0(t0)
 		sw t2, 0(t1)
 		lh t1, 0(t0)
-		addi t1, t1, -16 # 16 bits pra esquerda
+		
+		addi t5, t1, -32
+		blt t5, s7, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
+		
+		addi t1, t1, -32 # 32 bits pra esquerda
 		sh t1, 0(t0)
 		ret
 		
+	# s7 = x_bounds_1
+	# s8 = x_bounds_2
+	# s9 = y_bounds 1
+	# s10 = y_bounds 2
 	MoveUp:
 		la t0, char_pos
 		la t1, old_char_pos
 		lw t2, 0(t0)
 		sw t2, 0(t1)
 		lh t1, 2(t0)
-		addi t1, t1, -16 # 16 bits pra esquerda
+		
+		addi t5, t1, -56
+		blt t5, s10, FIM
+		
+		addi t1, t1, -56 # 56 bits pra esquerda
 		sh t1, 2(t0)
 		ret
 		
@@ -118,11 +169,15 @@ KeyDown:
 		lw t2, 0(t0)
 		sw t2, 0(t1)
 		lh t1, 2(t0)
-		addi t1, t1, 16 # 16 bits pra esquerda
+		
+		addi t5, t1, 56
+		bge t5, s9, FIM
+		
+		addi t1, t1, 56 # 56 bits pra esquerda
 		sh t1, 2(t0)
 		ret
 
-#FUNÇÕES--->	
+#FUNÃ‡Ã•ES--->	
 
 TrocarTela:					#recebe a0	 
 	lw t3, selectframeads 			# a0 = 0/1 define a tela, a0 = 2 troca
@@ -131,8 +186,8 @@ TrocarTela:					#recebe a0
  		bge a0,t0, Else_TT1		#If a0 < 2 troca tela para a0
 		sw a0, 0(t3)
 		ret
-	Else_TT1:				#Se não, se a tela atual é 1 troca para 0
-		lb t1,0(t3)			#se a tela é 0 troca para 1
+	Else_TT1:				#Se nÃ£o, se a tela atual Ã© 1 troca para 0
+		lb t1,0(t3)			#se a tela Ã© 0 troca para 1
 		li t0, 1
 		If_TT2:
 			bne t1,t0, Else_TT2
@@ -145,7 +200,7 @@ TrocarTela:					#recebe a0
 			ret
 
 LoadScreen:						#Recebe a0, a1, a2;
-	lw t0, selectframeads				# a0= endereço imagem
+	lw t0, selectframeads				# a0= endereÃ§o imagem
 	lb t0,0(t0)					# a1 = x da imagem
  	If_LS: 						# a2 = y da imagem
  		li t1,1					
@@ -186,9 +241,9 @@ LoadScreen:						#Recebe a0, a1, a2;
 	EndWhile_LS:
 	ret
 
-FimPrograma:		#Não recebe nada
+FimPrograma:		#NÃ£o recebe nada
 	li a7,10      	#Chama o procedimento de finalizar o programa
-	ecall		#Não retorna nada
+	ecall		#NÃ£o retorna nada
 	
 	
 	
