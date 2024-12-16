@@ -13,14 +13,7 @@ array_layers:	.byte 0xC7:460800
 #Padrao funcoes FazerAlgo
 
 .text
-main:	
-	li a0,0
-	li a1,0
-	li a2,320
-	li a3,240
-	call Renderizador
-		
-	
+main:			
 	# s7 = x_bounds_1
 	# s8 = x_bounds_2
 	# s9 = y_bounds 1
@@ -39,22 +32,26 @@ main:
 	
 	li a0, 0
 	call TrocarTela	
-
-	li a2 , 0
+	
 	li a1 , 0
+	li a2 , 0
+	li a3 , 0
 	la a0 map_placeholder
-	call LoadScreen 
-
-
+	call LoadImage 
+	
+	ebreak
+	
+	li a0 , 0
+	li a1 , 0
+	li a2 , 320
+	li a3 , 240
+	call Renderizador
+	
 	li a0, 3
 	call TrocarTela	
-
-	li a2 , 0
-	li a1 , 0
-	la a0 map_placeholder
-	call LoadScreen 
 	
-	call GAME_LOOP		
+	#call GAME_LOOP
+	call FimPrograma		
 	
 GAME_LOOP:
 	call KeyDown
@@ -305,34 +302,30 @@ LoadImage:						# a0= endereco imagem
 	ret	
 
 Renderizador:
-	lw t0, selectframeads				#a0 = x0
-	lb t0,0(t0)					#a1 = y0
- 	If_R: 						#a2 = x1
- 		li t1,1					#a3 = y1
- 		bne t0,t1, Else_R			#x1 < x2, y1 < y2
- 		li t0 0xFF000000
-		j Fim_If_LS				#t0 eh o endereco da tela
-	Else_R:						#t1/t2/t3/t4 sao os contadores	
-		li t0 0xFF100000			#t5 eh usado como valor temporario a todo momento
-	Fim_If_R:					#t6 eh o endereco na memoria
-	la t6, array_layers				#ESTOU USANDO a7 e a6 COMO TEMP
-	li t5 , 320					
-	mul t5 , t5, a1					
-	add t0, t5 , t0					
-	add t6, t5,t6
-	sub t1,a3,a1
+	lw t0, selectframeads	
+	lb t0, 0(t0)			
+	xori t0,t0,1					#a0 = x0
+	li t1, 0xFF0					#a1 = y0
+	add t0 ,t0,t1					#a2 = x1
+	slli t0 ,t0, 20					#a3 = y1				
+	la t6, array_layers				#x1 < x2, y1 < y2
+	li t5 , 320					#t0 eh o endereco da tela
+	mul t5 , t5, a1					#t1/t2/t3/t4 sao os contadores
+	add t0, t5 , t0					#t5 eh usado como valor temporario a todo momento
+	add t6, t5,t6					#t6 eh o endereco na memoria
+	sub t1,a3,a1					#ESTOU USANDO a7 e a6 COMO TEMP
 	sub t2,a2,a0
 	li t3, 0
 	li t4, 0
-	li a6, 0xC7
+	li a6, 0xffffffC7
 	While_R:	
-		beq t2, t4, EndWhile_R
+		beq t1, t4, EndWhile_R
 		add t0, t0,a0
 		add t6, t6,a0
 		While_R1:
-			beq t1, t3, EndWhile_R1
+			beq t2, t3, EndWhile_R1
 			add a7, t6, zero
-			li t5,38400
+			li t5,384000
 			add a7, a7,t5
 			While_R2:
 				lb t5,0(a7)
@@ -349,8 +342,7 @@ Renderizador:
 			j While_R1
 		EndWhile_R1:
 		li t5, 320
-		sub t5, t5, a0
-		sub t5, t5,t1
+		sub t5, t5, a2
 		add t0, t0, t5
 		add t6,t6,t5
 		li t3, 0
