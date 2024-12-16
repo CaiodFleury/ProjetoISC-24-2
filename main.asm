@@ -2,20 +2,25 @@
 selectframeads:	.word 0xFF200604
 char_pos:	.half 80, 176
 old_char_pos:	.half 80, 176
-array_layers:	.byte 460800
 char_pos_bounds:.half 80, 240, 232, 64
-. 
+array_layers:	.byte 0xC7:460800
 .include "levels/map_placeholder.s"
 .include "sprites/fundopersonagem.data"
 .include "sprites/personagem.data"	
-
 #Codigo vai comecar na main.
 #Funcoes no final
 #Padrao for/while/if : Loop_num
 #Padrao funcoes FazerAlgo
 
 .text
-main:
+main:	
+	li a0,0
+	li a1,0
+	li a2,320
+	li a3,240
+	call Renderizador
+		
+	
 	# s7 = x_bounds_1
 	# s8 = x_bounds_2
 	# s9 = y_bounds 1
@@ -173,7 +178,7 @@ KeyDown:
 		sh t1, 2(t0)
 		ret
 
-#FUNÇÕES--->	
+#FUNCOES--->	
 
 TrocarTela:					#recebe a0	 
 	lw t3, selectframeads 			# a0 = 0/1 define a tela, a0 = 2 troca
@@ -182,7 +187,7 @@ TrocarTela:					#recebe a0
  		bge a0,t0, Else_TT1		#If a0 < 2 troca tela para a0
 		sw a0, 0(t3)
 		ret
-	Else_TT1:				#Se não, se a tela atual é 1 troca para 0
+	Else_TT1:				#Se nao, se a tela atual é 1 troca para 0
 		lb t1,0(t3)			#se a tela é 0 troca para 1
 		li t0, 1
 		If_TT2:
@@ -193,7 +198,7 @@ TrocarTela:					#recebe a0
 		Else_TT2:
 			li t1, 1
 			sw t1, 0(t3)
-			ret
+	ret
 
 LoadScreen:						#Recebe a0, a1, a2;
 	lw t0, selectframeads				# a0= endereco imagem
@@ -237,46 +242,31 @@ LoadScreen:						#Recebe a0, a1, a2;
 	EndWhile_LS:
 	ret
 	
-LoadRender:
-	lw t0 , array_layers
-	li t1 , 460800
-	li t2 , 0
-	li t3 , 0xC7C7C7C7
-	While_LR:	
-		beq t1, t2, EndWhile_LR
-		sw t3, 0(t0)
-		addi t0,t0,4
-		addi t2,t2,4
-		j While_LR
-	EndWhile_LR:	
-	ret
-	
-
 UnloadImage:						# a0= endereco imagem
 	li t0, 76800					# a1 = x da imagem
 	mul t0, t0, a3					# a2 = y da imagem
-	lw t1 , array_layers				# a3 = layer(0,5)
+	la t1 , array_layers				# a3 = layer(0,5)
 	add t0 , t0, t1					
  	lw t2, 0(a0)
 	lw t3, 4(a0)
 	li t4, 0
 	li t5, 0
-	li t6 , 0xC7C7C7C7
+	li t6 ,0xC7C7C7C7
 	While_UI:	
-		beq t3, t5, EndWhile_UI
+		beq t3, t4, EndWhile_UI
 		add t1, t1,a1
 		While_UI1:
-			beq t1, t3, EndWhile_UI1
+			beq t2, t5, EndWhile_UI1
 			sw t6, 0(t0)
-			addi t3,t3,4
+			addi t5,t5,4
 			addi t0,t0,4
 			j While_UI1
 		EndWhile_UI1:
 		li t5, 320
 		sub t5, t5, a1
-		sub t5, t5,t1
+		sub t5, t5,t2
 		add t0, t0, t5
-		li t3, 0
+		li t5, 0
 		addi t4, t4,1
 		j While_UI
 	EndWhile_UI:					
@@ -285,50 +275,50 @@ UnloadImage:						# a0= endereco imagem
 LoadImage:						# a0= endereco imagem
 	li t0, 76800					# a1 = x da imagem
 	mul t0, t0, a3					# a2 = y da imagem
-	lw t1 , array_layers				# a3 = layer(0,5)
+	la t1 , array_layers				# a3 = layer(0,5)
 	add t0 , t0, t1					
  	lw t2, 0(a0)
 	lw t3, 4(a0)
 	li t4, 0
 	li t5, 0
+	addi a0,a0,8
 	While_LI:	
-		beq t2, t4, EndWhile_LI
+		beq t3, t4, EndWhile_LI
 		add t0, t0,a1
 		While_LI1:
-			beq t1, t3, EndWhile_LI1
-			lw t5, 0(a0)
-			sw t5, 0(t0)
-			addi t3,t3,4
+			beq t2, t5, EndWhile_LI1
+			lw t6, 0(a0)
+			sw t6, 0(t0)
+			addi t5,t5,4
 			addi a0,a0,4
 			addi t0,t0,4
 			j While_LI1
 		EndWhile_LI1:
 		li t5, 320
 		sub t5, t5, a1
-		sub t5, t5,t1
+		sub t5, t5, t2
 		add t0, t0, t5
-		li t3, 0
+		li t5, 0
 		addi t4, t4,1
 		j While_LI
 	EndWhile_LI:
 	ret	
-#a0,a1,a2,a3
-#a0 = x1, a1 = y1, a2 = x2 , a3 = y2, x1 < x2, y1 < y2
+
 Renderizador:
-	lw t0, selectframeads				
-	lb t0,0(t0)					
- 	If_R: 						
- 		li t1,1					
- 		bne t0,t1, Else_LS
+	lw t0, selectframeads				#a0 = x0
+	lb t0,0(t0)					#a1 = y0
+ 	If_R: 						#a2 = x1
+ 		li t1,1					#a3 = y1
+ 		bne t0,t1, Else_R			#x1 < x2, y1 < y2
  		li t0 0xFF000000
-		j Fim_If_LS
-	Else_R:
-		li t0 0xFF100000
-	Fim_If_R:					#t0 eh o endereco da tela
-	lw t6, array_layers
-	li t5 , 320					#t1/t2/t3/t4 sao os contadores	
-	mul t5 , t5, a1					#t6 eh o endereco na memoria
-	add t0, t5 , t0					#ESTOU USANDO a7 e a6 COMO TEMP
+		j Fim_If_LS				#t0 eh o endereco da tela
+	Else_R:						#t1/t2/t3/t4 sao os contadores	
+		li t0 0xFF100000			#t5 eh usado como valor temporario a todo momento
+	Fim_If_R:					#t6 eh o endereco na memoria
+	la t6, array_layers				#ESTOU USANDO a7 e a6 COMO TEMP
+	li t5 , 320					
+	mul t5 , t5, a1					
+	add t0, t5 , t0					
 	add t6, t5,t6
 	sub t1,a3,a1
 	sub t2,a2,a0
