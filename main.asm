@@ -13,7 +13,10 @@ array_layers:	.byte 0xC7:460800
 #Padrao funcoes FazerAlgo
 
 .text
-main:			
+main:		
+	
+	li a0, 0
+	call TrocarTela			
 	# s7 = x_bounds_1
 	# s8 = x_bounds_2
 	# s9 = y_bounds 1
@@ -30,16 +33,21 @@ main:
 	
 	##########################
 	
-	li a0, 0
-	call TrocarTela	
 	
-	li a1 , 0
-	li a2 , 0
-	li a3 , 0
-	la a0 map_placeholder
-	call LoadImage 
 	
-	ebreak
+	
+	
+	li a1 , 60
+	li a2 , 60
+	li a3 , 3
+	la a0 personagem
+	call LoadImage
+	
+	li a1 , 60
+	li a2 , 60
+	li a3 , 3
+	la a0 personagem
+	call UnloadImage
 	
 	li a0 , 0
 	li a1 , 0
@@ -47,8 +55,6 @@ main:
 	li a3 , 240
 	call Renderizador
 	
-	li a0, 3
-	call TrocarTela	
 	
 	#call GAME_LOOP
 	call FimPrograma		
@@ -243,7 +249,10 @@ UnloadImage:						# a0= endereco imagem
 	li t0, 76800					# a1 = x da imagem
 	mul t0, t0, a3					# a2 = y da imagem
 	la t1 , array_layers				# a3 = layer(0,5)
-	add t0 , t0, t1					
+	add t0 , t0, t1
+	li t1 , 320
+	mul t1,a2,t1
+	add t0,t0,t1					
  	lw t2, 0(a0)
 	lw t3, 4(a0)
 	li t4, 0
@@ -251,7 +260,7 @@ UnloadImage:						# a0= endereco imagem
 	li t6 ,0xC7C7C7C7
 	While_UI:	
 		beq t3, t4, EndWhile_UI
-		add t1, t1,a1
+		add t0, t0,a1
 		While_UI1:
 			beq t2, t5, EndWhile_UI1
 			sw t6, 0(t0)
@@ -273,7 +282,10 @@ LoadImage:						# a0= endereco imagem
 	li t0, 76800					# a1 = x da imagem
 	mul t0, t0, a3					# a2 = y da imagem
 	la t1 , array_layers				# a3 = layer(0,5)
-	add t0 , t0, t1					
+	add t0 , t0, t1	
+	li t1 , 320
+	mul t1,a2,t1
+	add t0,t0,t1				
  	lw t2, 0(a0)
 	lw t3, 4(a0)
 	li t4, 0
@@ -330,10 +342,13 @@ Renderizador:
 			While_R2:
 				lb t5,0(a7)
 				bne t5, a6,EndWhile_R2
-				blt a7,zero,EndWhile_R2
-				li t5 , 76800
+				li t5 , 268577812
+				blt a7,t5,EndWhile_R3
+				li t5, 76800
 				sub a7, a7,t5
 				j While_R2
+			EndWhile_R3:
+			li t5, 0xc7
 			EndWhile_R2:
 			sb t5, 0(t0)
 			addi t3,t3,1
@@ -349,6 +364,10 @@ Renderizador:
 		addi t4, t4,1
 		j While_R
 	EndWhile_R:
+	lw t0, selectframeads	
+	lb t1, 0(t0)			
+	xori t1,t1,1
+	sb t1,0(t0) 
 	ret
 	
 FimPrograma:		#Nao recebe nada
