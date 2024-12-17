@@ -3,12 +3,10 @@ selectframeads:	.word 0xFF200604
 char_pos:	.half 80, 176
 old_char_pos:	.half 80, 176
 char_pos_bounds:.half 80, 240, 232, 64
-<<<<<<< Updated upstream
 #array_layers:	.byte 0xC7:460800
-=======
-Music_config: 	.word 32,0,1,30 #notas total, nota atual, instrumento, volume
-Notas: 67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,594#array_layers:	.byte 0xC7:460800
->>>>>>> Stashed changes
+Music_config: 	.word 32,0,121,30 #notas total, nota atual, instrumento, volume
+Notas: 67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,594
+#array_layers:	.byte 0xC7:460800
 .include "levels/array_layers.data"
 .include "levels/map_placeholder.s"
 .include "levels/Predio.data"
@@ -128,11 +126,8 @@ GAME_LOOP:
 		add a2 ,a2 ,a0
 		call Renderizador
 	PularRenderizar:
-<<<<<<< Updated upstream
-=======
 	
 		call TocarMusica #CHAMA A MUSICA. COLOQUEI AKI PQ FOI O LUGAR Q O DESEMPENHO FICOU MELHOR
->>>>>>> Stashed changes
 		
 	j GAME_LOOP
 
@@ -230,8 +225,6 @@ KeyDown:
 
 #FUNCOES--->	
 
-<<<<<<< Updated upstream
-=======
 TocarMusica:#s11 é o contador
 	li a7,30		# coloca o horario atual em a0
 	ecall
@@ -269,8 +262,6 @@ TocarMusica:#s11 é o contador
 	Fim_If_TM:
 	ret
 
-
->>>>>>> Stashed changes
 TrocarTela:					#recebe a0	 
 	lw t3, selectframeads 			# a0 = 0/1 define a tela, a0 = 2 troca
  	If_TT1: 					 	
