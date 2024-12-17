@@ -3,7 +3,8 @@ selectframeads:	.word 0xFF200604
 char_pos:	.half 80, 176
 old_char_pos:	.half 80, 176
 char_pos_bounds:.half 80, 240, 232, 64
-#array_layers:	.byte 0xC7:460800
+NUM: .word 32
+NOTAS: 67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,594#array_layers:	.byte 0xC7:460800
 .include "levels/array_layers.data"
 .include "levels/map_placeholder.s"
 .include "levels/Predio.data"
@@ -64,12 +65,23 @@ main:
 	li a4 , 1
 	call Renderizador
 	
+	
 	#call FimPrograma		
 	
 #O game loop vai ser responsavel por administrar:
 #efeitos visuais e coisas que mudam na tela
 #receber teclas
 #Modificacoes chamarao a renderizacao	
+SET_SONG:	
+	#MUSICA
+	la s11,NUM		# define o endereço do número de notas
+	lw s6,0(s11)		# le o numero de notas
+	la s11,NOTAS		# define o endereço das notas
+	li s5,0			# zera o contador de notas
+	li a2,0			# define o instrumento
+	li a3,127		# define o volume
+	#MUSICA
+
 GAME_LOOP: 	
 
 	li t6 0
@@ -82,6 +94,7 @@ GAME_LOOP:
 	PularKeyDown:
 	
 	# << local para colocar mudancas no cenario
+	
 	
 	beq  t6,zero,PularRenderizar
 	Renderizar:
@@ -121,6 +134,8 @@ GAME_LOOP:
 		add a2 ,a2 ,a0
 		call Renderizador
 	PularRenderizar:
+	
+		call SONG #CHAMA A MUSICA. COLOQUEI AKI PQ FOI O LUGAR Q O DESEMPENHO FICOU MELHOR
 		
 	j GAME_LOOP
 
@@ -164,7 +179,7 @@ KeyDown:
 		# blt t0,t1,Label # t0<t1 ? PC=Label : PC=PC+4 
 		
 		addi t5, t1, 32
-		bge t5, s8, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
+		bge t5, s8, FIM # se o próximo passo vai sair do limite, vai ir para RETURN
 		
 		addi t1, t1, 32 # 32 bits pra direita
 		sh t1, 0(t0)
@@ -178,7 +193,7 @@ KeyDown:
 		lh t1, 0(t0)
 		
 		addi t5, t1, -32
-		blt t5, s7, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
+		blt t5, s7, FIM # se o próximo passo vai sair do limite, vai ir para RETURN
 		
 		addi t1, t1, -32 # 32 bits pra esquerda
 		sh t1, 0(t0)
@@ -218,6 +233,21 @@ KeyDown:
 
 #FUNCOES--->	
 
+SONG:
+ 
+	beq s5,s6, SET_SONG	# contador chegou no final? então  vá para SET_SONG para zerar o contador e as notas (loop infinito)
+	lw a0,0(s11)		# le o valor da nota
+	lw a1,4(s11)		# le a duracao da nota
+	li a7,31		# define a chamada de syscall
+	ecall			# toca a nota
+	mv a0,a1		# passa a duração da nota para a pausa
+	li a7,32		# define a chamada de syscal 
+	ecall			# realiza uma pausa de a0 ms
+	addi s11,s11,8		# incrementa para o endereço da próxima nota
+	addi s5,s5,1		# incrementa o contador de notas
+	ret
+
+
 TrocarTela:					#recebe a0	 
 	lw t3, selectframeads 			# a0 = 0/1 define a tela, a0 = 2 troca
  	If_TT1: 					 	
@@ -225,8 +255,8 @@ TrocarTela:					#recebe a0
  		bge a0,t0, Else_TT1		#If a0 < 2 troca tela para a0
 		sw a0, 0(t3)
 		ret
-	Else_TT1:				#Se nao, se a tela atual Ã© 1 troca para 0
-		lb t1,0(t3)			#se a tela Ã© 0 troca para 1
+	Else_TT1:				#Se nao, se a tela atual é 1 troca para 0
+		lb t1,0(t3)			#se a tela é 0 troca para 1
 		li t0, 1
 		If_TT2:
 			bne t1,t0, Else_TT2
