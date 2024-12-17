@@ -3,7 +3,8 @@ selectframeads:	.word 0xFF200604
 char_pos:	.half 80, 176
 old_char_pos:	.half 80, 176
 char_pos_bounds:.half 80, 240, 232, 64
-array_layers:	.byte 0xC7:460800
+#array_layers:	.byte 0xC7:460800
+.include "levels/array_layers.data"
 .include "levels/map_placeholder.s"
 .include "sprites/fundopersonagem.data"
 .include "sprites/personagem.data"	
@@ -22,7 +23,7 @@ main:
 	# s9 = y_bounds 1
 	# s10 = y_bounds 2
 	
-	# O carregamento é feito aqui para poupar processamento posterior
+	# O carregamento eh feito aqui para poupar processamento posterior
 	##########################
 	la t0, char_pos_bounds
 	
@@ -34,65 +35,97 @@ main:
 	##########################
 	
 	
-	
-	
-	
-	li a1 , 60
-	li a2 , 60
-	li a3 , 3
-	la a0 personagem
+	li a1 , 0
+	li a2 , 0
+	li a3 , 4
+	la a0 map_placeholder
 	call LoadImage
-	
-	li a1 , 60
-	li a2 , 60
-	li a3 , 3
-	la a0 personagem
-	call UnloadImage
 	
 	li a0 , 0
 	li a1 , 0
 	li a2 , 320
 	li a3 , 240
+	li a4 , 1
+	call Renderizador
+
+	la t0, char_pos
+	lh a1 , 0(t0)
+	lh a2 , 2(t0)
+	li a3 , 5
+	la a0 personagem
+	call LoadImage
+	
+	li a0 , 0
+	li a1 , 0
+	li a2 , 320
+	li a3 , 240
+	li a4 , 1
 	call Renderizador
 	
+	#call FimPrograma		
 	
-	#call GAME_LOOP
-	call FimPrograma		
-	
-GAME_LOOP:
+#O game loop vai ser responsavel por administrar:
+#efeitos visuais e coisas que mudam na tela
+#receber teclas
+#Modificacoes chamarao a renderizacao	
+GAME_LOOP: 	
+
+	li t6 0
+	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
+	lw t0,0(a0)			# Le bit de Controle Teclado
+	andi t0,t0,0x0001		# mascara o bit menos significativo
+   	beq t0,zero,PularKeyDown   	# Se nao ha tecla pressionada entao vai para FIM			
 	call KeyDown
-	xori s0, s0,1
+	li t6, 1
+	PularKeyDown:
 	
-	la t0, char_pos
+	# << local para colocar mudancas no cenario
 	
-	la a0, personagem
-	lh a1, 0(t0)
-	lh a2, 2(t0)
-	mv a3, s0
-	call LoadScreen
+	beq  t6,zero,PularRenderizar
+	Renderizar:
+		la t0, char_pos
+		lh a1 , 0(t0)
+		lh a2 , 2(t0)
+		li a3 , 5
+		la a0 personagem
+		call LoadImage
 	
-	lw t0, selectframeads
-	sw s0,0(t0)
-	
-	la t0, old_char_pos
-	
-	la a0, fundopersonagem
-	lh a1, 0(t0)
-	lh a2, 2(t0)
-	mv a3, s0
-	xori a3, a3,1
-	call LoadScreen
-	
+		la t0, char_pos
+		la a0 personagem
+		li a4 , 1
+		lw a2 , 0(a0)
+		lw a3 , 4(a0)
+		lh a0 , 0(t0)
+		lh a1,  2(t0)
+		add a3 ,a3 ,a1
+		add a2 ,a2 ,a0
+		call Renderizador
+		
+		la t0, old_char_pos
+		lh a1 , 0(t0)
+		lh a2 , 2(t0)
+		li a3 , 5
+		la a0 personagem
+		call UnloadImage
+		
+		la t0, old_char_pos
+		la a0 personagem
+		li a4 , 0
+		lw a2 , 0(a0)
+		lw a3 , 4(a0)
+		lh a0 , 0(t0)
+		lh a1,  2(t0)
+		add a3 ,a3 ,a1
+		add a2 ,a2 ,a0
+		call Renderizador
+	PularRenderizar:
+		
 	j GAME_LOOP
 
 KeyDown:
-	li t1,0xFF200000		# carrega o endereco de controle do KDMMIO
-	lw t0,0(t1)			# Le bit de Controle Teclado
-	andi t0,t0,0x0001		# mascara o bit menos significativo
-   	beq t0,zero,FIM   	   	# Se nao ha tecla pressionada entao vai para FIM
-  	lw t2,4(t1)  			# le o valor da tecla tecla
-
-			
+	
+  	lw t2,4(a0)  			# le o valor da tecla tecla
+		
 	li t0, 'd'
 	li t1, 'D'
 	beq t2, t0, MoveRight
@@ -315,11 +348,11 @@ LoadImage:						# a0= endereco imagem
 
 Renderizador:
 	lw t0, selectframeads	
-	lb t0, 0(t0)			
-	xori t0,t0,1					#a0 = x0
-	li t1, 0xFF0					#a1 = y0
-	add t0 ,t0,t1					#a2 = x1
-	slli t0 ,t0, 20					#a3 = y1				
+	lb t0, 0(t0)					#a0 = x0
+	xori t0,t0,1					#a1 = y0
+	li t1, 0xFF0					#a2 = x1
+	add t0 ,t0,t1					#a3 = y1
+	slli t0 ,t0, 20					#a4 = atualizar tela ou nao				
 	la t6, array_layers				#x1 < x2, y1 < y2
 	li t5 , 320					#t0 eh o endereco da tela
 	mul t5 , t5, a1					#t1/t2/t3/t4 sao os contadores
@@ -364,11 +397,12 @@ Renderizador:
 		addi t4, t4,1
 		j While_R
 	EndWhile_R:
+	beq a4, zero , Fim_R
 	lw t0, selectframeads	
 	lb t1, 0(t0)			
 	xori t1,t1,1
 	sb t1,0(t0) 
-	ret
+	Fim_R:ret
 	
 FimPrograma:		#Nao recebe nada
 	li a7,10      	#Chama o procedimento de finalizar o programa
