@@ -3,7 +3,12 @@ selectframeads:	.word 0xFF200604
 char_pos:	.half 80, 176
 old_char_pos:	.half 80, 176
 char_pos_bounds:.half 80, 240, 232, 64
+<<<<<<< Updated upstream
 #array_layers:	.byte 0xC7:460800
+=======
+Music_config: 	.word 32,0,1,30 #notas total, nota atual, instrumento, volume
+Notas: 67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,594#array_layers:	.byte 0xC7:460800
+>>>>>>> Stashed changes
 .include "levels/array_layers.data"
 .include "levels/map_placeholder.s"
 .include "levels/Predio.data"
@@ -17,7 +22,9 @@ char_pos_bounds:.half 80, 240, 232, 64
 
 .text
 main:		
-	
+	li a7,30		# coloca o horario atual em s11
+	ecall
+	add s11 , zero , a0
 	li a0, 0
 	call TrocarTela			
 	# s7 = x_bounds_1
@@ -121,6 +128,11 @@ GAME_LOOP:
 		add a2 ,a2 ,a0
 		call Renderizador
 	PularRenderizar:
+<<<<<<< Updated upstream
+=======
+	
+		call TocarMusica #CHAMA A MUSICA. COLOQUEI AKI PQ FOI O LUGAR Q O DESEMPENHO FICOU MELHOR
+>>>>>>> Stashed changes
 		
 	j GAME_LOOP
 
@@ -218,6 +230,47 @@ KeyDown:
 
 #FUNCOES--->	
 
+<<<<<<< Updated upstream
+=======
+TocarMusica:#s11 é o contador
+	li a7,30		# coloca o horario atual em a0
+	ecall
+ 	If_TM:
+ 		blt a0,s11, Fim_If_TM
+		la t2,Music_config
+ 		lw t0, 0(t2)
+ 		lw t1, 4(t2)
+ 		lw a2, 8(t2)
+ 		lw a3, 12(t2)
+		If_TM1:
+			bne t0,t1, Fim_If_TM1	# contador chegou no final? então  vá para SET_SONG para zerar o contador e as notas (loop infinito)
+			sw zero, 4(t2)
+			li t1, 0
+		Fim_If_TM1:
+		la t4, Notas
+		li t3,8
+		mul t1, t1,t3
+		add t4,t4,t1
+		lw a0,0(t4)		# le o valor da nota
+		lw a1,4(t4)		# le a duracao da nota
+		li a7,31		# define a chamada de syscall
+		ecall			# toca a nota
+		
+		li a7,30		# coloca o horario atual em a0
+		ecall
+		
+		mv a0,s11
+		lw t4, 4(t4)
+		add s11,s11,t4
+
+		lw t6, 4(t2)
+		addi t6,t6,1
+		sw t6,4(t2)		# incrementa o contador de notas
+	Fim_If_TM:
+	ret
+
+
+>>>>>>> Stashed changes
 TrocarTela:					#recebe a0	 
 	lw t3, selectframeads 			# a0 = 0/1 define a tela, a0 = 2 troca
  	If_TT1: 					 	
