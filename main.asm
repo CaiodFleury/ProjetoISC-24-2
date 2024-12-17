@@ -6,6 +6,8 @@ char_pos_bounds:.half 80, 240, 232, 64
 #array_layers:	.byte 0xC7:460800
 .include "levels/array_layers.data"
 .include "levels/map_placeholder.s"
+.include "levels/Predio.data"
+.include "sprites/chapoca.data"
 .include "sprites/fundopersonagem.data"
 .include "sprites/personagem.data"	
 #Codigo vai comecar na main.
@@ -38,7 +40,7 @@ main:
 	li a1 , 0
 	li a2 , 0
 	li a3 , 4
-	la a0 map_placeholder
+	la a0 Predio
 	call LoadImage
 	
 	li a0 , 0
@@ -52,7 +54,7 @@ main:
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
 	li a3 , 5
-	la a0 personagem
+	la a0 chapoca
 	call LoadImage
 	
 	li a0 , 0
@@ -87,11 +89,11 @@ GAME_LOOP:
 		lh a1 , 0(t0)
 		lh a2 , 2(t0)
 		li a3 , 5
-		la a0 personagem
+		la a0 chapoca
 		call LoadImage
 	
 		la t0, char_pos
-		la a0 personagem
+		la a0 chapoca
 		li a4 , 1
 		lw a2 , 0(a0)
 		lw a3 , 4(a0)
@@ -105,11 +107,11 @@ GAME_LOOP:
 		lh a1 , 0(t0)
 		lh a2 , 2(t0)
 		li a3 , 5
-		la a0 personagem
+		la a0 chapoca
 		call UnloadImage
 		
 		la t0, old_char_pos
-		la a0 personagem
+		la a0 chapoca
 		li a4 , 0
 		lw a2 , 0(a0)
 		lw a3 , 4(a0)
