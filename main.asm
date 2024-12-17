@@ -421,6 +421,7 @@ GenerateGardens:
 	la s1, garden_matriz_y
 	li s2, 5 # tamanho_x
 	li s3, 3 # tamanho_y
+	li s11, 1
 	
 	# depois implementar um algoritmo para mudar os tipos de janela usando a3
 	
@@ -432,25 +433,25 @@ GenerateGardens:
 		For_GG_2:
 			bgeu s5, s2, Done_GG_2
 			
-			la a0, plantacao_1 # argumento pra função que vai ser chamada no for
+			la a0, plantacao_1 # endereco da imagem
 					
 			slli t0, s5, 1 # t0 = j * 2
 			add t1, s0, t0 # move o ponteiro para a direita t0 vezes
-			lh a1, 0(t1)
+			lh a1, 0(t1) # x da imagem
 			
-			slli t0, s4, 1
+			slli t0, s4, 1 # t0 = i * 2
 			add t1, s1, t0 # move o ponteiro da matriz_y agora
-			lh a2, 0(t1)
+			lh a2, 0(t1) # y da imagem
 			
-			li a3, 4
+			li a3, 4 # layer 4
 			
 			call LoadImage
 			
-			li a0, 0
-			li a1, 0
-			li a2, 320
-			li a3, 240
-			li a4, 4
+			mv a0, a1 # x0
+			mv a1, a2 # y0
+			addi a2, a0, 16 # x1
+			addi a3, a1, 16 # y1
+			li a4, 0
 			call Renderizador
 			
 			addi s5, s5, 1
@@ -461,7 +462,13 @@ GenerateGardens:
 			j For_GG_1
 		
 	Done_GG_1:
-		j GAME_LOOP
+		call TrocarTela
+		li t0, 3
+		bgeu s11, t0, SAIR
+		addi s11, s11, 1
+		j For_GG_1
+		
+		SAIR: j GAME_LOOP
 
 FimPrograma:		#Nao recebe nada
 	li a7,10      	#Chama o procedimento de finalizar o programa
