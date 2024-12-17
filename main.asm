@@ -3,13 +3,19 @@ selectframeads:	.word 0xFF200604
 char_pos:	.half 80, 176
 old_char_pos:	.half 80, 176
 char_pos_bounds:.half 80, 240, 232, 64
+garden_matriz_x:.half 80, 112, 144 , 192, 224
+garden_matriz_y:.half 190, 144, 96
+
 #array_layers:	.byte 0xC7:460800
 .include "levels/array_layers.data"
 .include "levels/map_placeholder.s"
 .include "levels/Predio.data"
 .include "sprites/chapoca.data"
 .include "sprites/fundopersonagem.data"
-.include "sprites/personagem.data"	
+.include "sprites/personagem.data"
+
+.include "sprites/plantacao/plantacao_1.s" ########
+.include "levels/map_placeholder_sem_janelas.s" #######
 #Codigo vai comecar na main.
 #Funcoes no final
 #Padrao for/while/if : Loop_num
@@ -40,7 +46,7 @@ main:
 	li a1 , 0
 	li a2 , 0
 	li a3 , 4
-	la a0 Predio
+	la a0 map_placeholder_sem_janelas
 	call LoadImage
 	
 	li a0 , 0
@@ -63,6 +69,8 @@ main:
 	li a3 , 240
 	li a4 , 1
 	call Renderizador
+	
+	call GenerateGardens
 	
 	#call FimPrograma		
 	
@@ -405,7 +413,56 @@ Renderizador:
 	xori t1,t1,1
 	sb t1,0(t0) 
 	Fim_R:ret
+
+
+# a2 = estado_tipo (byte)
+GenerateGardens:
+	la s0, garden_matriz_x
+	la s1, garden_matriz_y
+	li s2, 5 # tamanho_x
+	li s3, 3 # tamanho_y
 	
+	# depois implementar um algoritmo para mudar os tipos de janela usando a3
+	
+	li s4, 0 # i = 0
+	For_GG_1:
+		bgeu s4, s3, Done_GG_1
+		li s5, 0 # j = 0
+		
+		For_GG_2:
+			bgeu s5, s2, Done_GG_2
+			
+			la a0, plantacao_1 # argumento pra função que vai ser chamada no for
+					
+			slli t0, s5, 1 # t0 = j * 2
+			add t1, s0, t0 # move o ponteiro para a direita t0 vezes
+			lh a1, 0(t1)
+			
+			slli t0, s4, 1
+			add t1, s1, t0 # move o ponteiro da matriz_y agora
+			lh a2, 0(t1)
+			
+			li a3, 4
+			
+			call LoadImage
+			
+			li a0, 0
+			li a1, 0
+			li a2, 320
+			li a3, 240
+			li a4, 4
+			call Renderizador
+			
+			addi s5, s5, 1
+			j For_GG_2
+			
+		Done_GG_2:
+			addi s4, s4, 1 # incrementa a linha
+			j For_GG_1
+		
+	Done_GG_1:
+		j GAME_LOOP
+
 FimPrograma:		#Nao recebe nada
 	li a7,10      	#Chama o procedimento de finalizar o programa
 	ecall		#Nao retorna nada
