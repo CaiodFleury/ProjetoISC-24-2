@@ -8,9 +8,11 @@ Music_config: 	.word 32,0,121,30 #notas total, nota atual, instrumento, volume
 Notas: 67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,594
 #array_layers:	.byte 0xC7:460800
 .include "levels/array_layers.data"
-.include "levels/map_placeholder.s"
 .include "levels/Predio.data"
+.include "levels/fazendav1.data"
+.include "levels/Loading.data"
 .include "sprites/chapoca.data"
+.include "sprites/macaco.data"
 .include "sprites/fundopersonagem.data"
 .include "sprites/personagem.data"	
 #Codigo vai comecar na main.
@@ -20,56 +22,10 @@ Notas: 67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,6
 
 .text
 main:		
-	li a7,30		# coloca o horario atual em s11
-	ecall
-	add s11 , zero , a0
-	li a0, 0
-	call TrocarTela			
-	# s7 = x_bounds_1
-	# s8 = x_bounds_2
-	# s9 = y_bounds 1
-	# s10 = y_bounds 2
-	
-	# O carregamento eh feito aqui para poupar processamento posterior
-	##########################
-	la t0, char_pos_bounds
-	
-	lh s7, 0(t0) # x1
-	lh s8, 2(t0) # x2
-	lh s9, 4(t0) # y1
-	lh s10, 6(t0)# y2
-	
-	##########################
-	
-	
-	li a1 , 0
-	li a2 , 0
-	li a3 , 4
-	la a0 Predio
-	call LoadImage
-	
-	li a0 , 0
-	li a1 , 0
-	li a2 , 320
-	li a3 , 240
-	li a4 , 1
-	call Renderizador
-
-	la t0, char_pos
-	lh a1 , 0(t0)
-	lh a2 , 2(t0)
-	li a3 , 5
-	la a0 chapoca
-	call LoadImage
-	
-	li a0 , 0
-	li a1 , 0
-	li a2 , 320
-	li a3 , 240
-	li a4 , 1
-	call Renderizador
-	
-	#call FimPrograma		
+	call LoadGame
+	FimLoadGame:
+	call GAME_LOOP
+	call FimPrograma		
 	
 #O game loop vai ser responsavel por administrar:
 #efeitos visuais e coisas que mudam na tela
@@ -94,11 +50,11 @@ GAME_LOOP:
 		lh a1 , 0(t0)
 		lh a2 , 2(t0)
 		li a3 , 5
-		la a0 chapoca
+		la a0 macaco
 		call LoadImage
 	
 		la t0, char_pos
-		la a0 chapoca
+		la a0 macaco
 		li a4 , 1
 		lw a2 , 0(a0)
 		lw a3 , 4(a0)
@@ -112,11 +68,11 @@ GAME_LOOP:
 		lh a1 , 0(t0)
 		lh a2 , 2(t0)
 		li a3 , 5
-		la a0 chapoca
+		la a0 macaco
 		call UnloadImage
 		
 		la t0, old_char_pos
-		la a0 chapoca
+		la a0 macaco
 		li a4 , 0
 		lw a2 , 0(a0)
 		lw a3 , 4(a0)
@@ -222,6 +178,64 @@ KeyDown:
 		addi t1, t1, 56 # 56 bits pra esquerda
 		sh t1, 2(t0)
 		ret
+
+LoadGame:
+	li a7,30		# coloca o horario atual em s11
+	ecall
+	add s11 , zero , a0
+	
+	li a1 , 100
+	li a2 , 100
+	la a0 Loading
+	call LoadScreen
+	
+	li a0, 3
+	call TrocarTela			
+	# s7 = x_bounds_1
+	# s8 = x_bounds_2
+	# s9 = y_bounds 1
+	# s10 = y_bounds 2
+	
+	# O carregamento eh feito aqui para poupar processamento posterior
+	##########################
+	la t0, char_pos_bounds
+	
+	lh s7, 0(t0) # x1
+	lh s8, 2(t0) # x2
+	lh s9, 4(t0) # y1
+	lh s10, 6(t0)# y2
+	
+	##########################
+	
+	
+	li a1 , 0
+	li a2 , 0
+	li a3 , 4
+	la a0 fazendav1
+	call LoadImage
+	
+	li a0 , 0
+	li a1 , 0
+	li a2 , 320
+	li a3 , 240
+	li a4 , 1
+	call Renderizador
+
+	la t0, char_pos
+	lh a1 , 0(t0)
+	lh a2 , 2(t0)
+	li a3 , 5
+	la a0 macaco
+	call LoadImage
+	
+	li a0 , 0
+	li a1 , 0
+	li a2 , 320
+	li a3 , 240
+	li a4 , 1
+	call Renderizador
+
+	j FimLoadGame
 
 #FUNCOES--->	
 
