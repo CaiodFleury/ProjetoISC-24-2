@@ -3,15 +3,20 @@ selectframeads:	.word 0xFF200604
 char_pos:	.half 80, 176
 old_char_pos:	.half 80, 176
 char_pos_bounds:.half 80, 240, 232, 64
+garden_matriz_x:.half 72,116, 160 , 204, 248
+garden_matriz_y:.half 160,120, 80
 #array_layers:	.byte 0xC7:460800
-Music_config: 	.word 32,0,121,30 #notas total, nota atual, instrumento, volume
-Notas: 67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,594
+Music_config: 	.word 72,0,90,30 #notas total, nota atual, instrumento, volume
+Notas: 76,400,75,200,76,600,75,200,76,400,69,200,72,1200,76,400,75,200,76,200,76,300,72,300,74,1800,76,400,75,200,76,600,75,200,76,400,69,200,72,1200,76,400,76,200,76,200,67,300,69,300,72,1600,69,200,69,200,72,200,72,400,77,200,69,400,67,200,67,200,72,200,72,400,76,200,67,400,65,200,65,200,69,200,69,400,74,200,65,400,64,200,64,200,67,200,67,400,72,200,64,400,69,200,69,200,72,200,72,400,77,200,69,400,69,200,69,200,72,200,72,400,78,200,69,400,71,200,71,200,72,200,72,200,73,200,73,200,74,200,74,400,79,600,79,800
 #array_layers:	.byte 0xC7:460800
 .include "levels/array_layers.data"
-.include "levels/Predio.data"
+.include "levels/fundoverde.data"
 .include "levels/fazendav1.data"
 .include "levels/Loading.data"
-.include "sprites/chapoca.data"
+.include "sprites/planta1.data"
+.include "sprites/planta2.data"
+.include "sprites/planta3.data"
+.include "sprites/terrarada.data"
 .include "sprites/macaco.data"
 .include "sprites/fundopersonagem.data"
 .include "sprites/personagem.data"	
@@ -21,9 +26,13 @@ Notas: 67,297,67,297,69,297,67,1485,67,297,67,297,69,297,67,1485,67,297,67,297,6
 #Padrao funcoes FazerAlgo
 
 .text
-main:		
+main:	
+	call GenerateGardens
+	FimGenerateGardens:
+		
 	call LoadGame
 	FimLoadGame:
+	
 	call GAME_LOOP
 	call FimPrograma		
 	
@@ -126,10 +135,10 @@ KeyDown:
 
 		# blt t0,t1,Label # t0<t1 ? PC=Label : PC=PC+4 
 		
-		addi t5, t1, 32
+		addi t5, t1, 4
 		bge t5, s8, FIM # se o próximo passo vai sair do limite, vai ir para RETURN
 		
-		addi t1, t1, 32 # 32 bits pra direita
+		addi t1, t1, 4 # 32 bits pra direita
 		sh t1, 0(t0)
 		ret
 		
@@ -140,10 +149,10 @@ KeyDown:
 		sw t2, 0(t1)
 		lh t1, 0(t0)
 		
-		addi t5, t1, -32
+		addi t5, t1, -4
 		blt t5, s7, FIM # se o próximo passo vai sair do limite, vai ir para RETURN
 		
-		addi t1, t1, -32 # 32 bits pra esquerda
+		addi t1, t1, -4 # 32 bits pra esquerda
 		sh t1, 0(t0)
 		ret
 		
@@ -158,10 +167,10 @@ KeyDown:
 		sw t2, 0(t1)
 		lh t1, 2(t0)
 		
-		addi t5, t1, -56
+		addi t5, t1, -4
 		blt t5, s10, FIM
 		
-		addi t1, t1, -56 # 56 bits pra esquerda
+		addi t1, t1, -4 # 56 bits pra esquerda
 		sh t1, 2(t0)
 		ret
 		
@@ -172,10 +181,10 @@ KeyDown:
 		sw t2, 0(t1)
 		lh t1, 2(t0)
 		
-		addi t5, t1, 56
+		addi t5, t1, 4
 		bge t5, s9, FIM
 		
-		addi t1, t1, 56 # 56 bits pra esquerda
+		addi t1, t1, 4 # 56 bits pra esquerda
 		sh t1, 2(t0)
 		ret
 
@@ -210,8 +219,8 @@ LoadGame:
 	
 	li a1 , 0
 	li a2 , 0
-	li a3 , 4
-	la a0 fazendav1
+	li a3 , 3
+	la a0 fundoverde
 	call LoadImage
 	
 	li a0 , 0
@@ -464,6 +473,54 @@ Renderizador:
 	sb t1,0(t0) 
 	Fim_R:ret
 	
+# a2 = estado_tipo (byte)
+GenerateGardens:
+	la s0, garden_matriz_x
+	la s1, garden_matriz_y
+	li s2, 5 # tamanho_x
+	li s3, 3 # tamanho_y
+	li s11, 1
+	
+	# depois implementar um algoritmo para mudar os tipos de janela usando a3
+	
+	li s4, 0 # i = 0
+	For_GG_1:
+		bgeu s4, s3, Done_GG_1
+		li s5, 0 # j = 0
+		
+		For_GG_2:
+			bgeu s5, s2, Done_GG_2
+			
+			la a0, terrarada # endereco da imagem
+					
+			slli t0, s5, 1 # t0 = j * 2
+			add t1, s0, t0 # move o ponteiro para a direita t0 vezes
+			lh a1, 0(t1) # x da imagem
+			
+			slli t0, s4, 1 # t0 = i * 2
+			add t1, s1, t0 # move o ponteiro da matriz_y agora
+			lh a2, 0(t1) # y da imagem
+			
+			li a3, 4 # layer 4
+			
+			call LoadImage
+			
+			addi s5, s5, 1
+			j For_GG_2
+			
+		Done_GG_2:
+			addi s4, s4, 1 # incrementa a linha
+			j For_GG_1
+		
+	Done_GG_1:
+		call TrocarTela
+		li t0, 3
+		bgeu s11, t0, SAIR
+		addi s11, s11, 1
+		j For_GG_1
+		
+	SAIR: j FimGenerateGardens
+
 FimPrograma:		#Nao recebe nada
 	li a7,10      	#Chama o procedimento de finalizar o programa
 	ecall		#Nao retorna nada
