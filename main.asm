@@ -1,6 +1,6 @@
 .data
 selectframeads:	.word 0xFF200604
-Notas: 		.word 76,400,75,200,76,600,75,200,76,400,69,200,72,1200,76,400,75,200,76,200,76,300,72,300,74,1800,76,400,75,200,76,600,75,200,76,400,69,200,72,1200,76,400,76,200,76,200,67,300,69,300,72,1600,69,200,69,200,72,200,72,400,77,200,69,400,67,200,67,200,72,200,72,400,76,200,67,400,65,200,65,200,69,200,69,400,74,200,65,400,64,200,64,200,67,200,67,400,72,200,64,400,69,200,69,200,72,200,72,400,77,200,69,400,69,200,69,200,72,200,72,400,78,200,69,400,71,200,71,200,72,200,72,200,73,200,73,200,74,200,74,400,79,600,79,800
+Notas: 		.word 36,202,36,202,48,202,36,202,36,202,47,202,36,202,36,202,45,202,36,202,36,202,42,202,36,202,36,202,43,202,45,202,36,202,36,202,48,202,36,202,36,202,47,202,36,202,36,202,45,202,36,202,36,202,42,1015,36,202,36,202,48,202,36,202,36,202,47,202,36,202,36,202,45,202,36,202,36,202,42,202,36,202,36,202,43,202,45,202,36,202,36,202,48,202,36,202,36,202,47,202,36,202,36,202,67,100,64,100,60,100,64,100,67,100,64,100,67,100,72,100,67,100,64,100,67,100,64,100,67,100,72,100,76,100,79,100,41,202,41,202,53,202,41,202,41,202,52,202,41,202,41,202,50,202,41,202,41,202,49,202,41,202,41,202,48,202,50,202,41,202,41,202,53,202,41,202,41,202,52,202,41,202,41,202,50,202,41,202,41,202,49,1015,41,202,41,202,53,202,41,202,41,202,52,202,41,202,41,202,50,202,41,202,41,202,49,202,41,202,41,202,48,202,50,202,41,202,41,202,53,202,41,202,41,202,52,202,41,202,41,202,65,100,61,100,60,100,65,100,60,100,57,100,60,100,65,100,69,100,65,100
 .include "levels/array_layers.data"
 .include "levels/fundoverde.data"
 .include "levels/fazendav1.data"
@@ -14,11 +14,12 @@ Notas: 		.word 76,400,75,200,76,600,75,200,76,400,69,200,72,1200,76,400,75,200,7
 .include "sprites/fundopersonagem.data"
 .include "sprites/personagem.data"
 #Configurações:
-Music_config: 	.word 72,0,90,30  #notas total, nota atual, instrumento, volume	
+Music_config: 	.word 130,0,28,0  #notas total, nota atual, instrumento, volume	
 Time_line: 	.word 0,0 #playerTime, arrowTime
 char_pos:	.half 80, 176
 old_char_pos:	.half 80, 176
 arrow_pos:	.half 4
+indio_pos:	.half 48, 100
 char_pos_bounds:.half 80, 240, 232, 64
 garden_matriz_x:.half 72,116, 160 , 204, 248
 garden_matriz_y:.half 160,120, 80	
@@ -57,7 +58,24 @@ GAME_LOOP:
 	# << local para colocar mudancas no cenario
 	
 	#beq  t6,zero,PularRenderizar
+	#j PularRenderizar
 	Renderizar:
+		
+		la t0, old_char_pos
+		lh a1 , 0(t0)
+		lh a2 , 2(t0)
+		li a3 , 5
+		la a0 macaco
+		call UnloadImage
+		
+		#indio
+		la t0, indio_pos
+		lh a1 , 0(t0)
+		lh a2 , 2(t0)
+		li a3 , 4
+		la a0 personagem
+		call UnloadImage
+		#indio
 		
 		#macaco
 		la t0, char_pos
@@ -66,89 +84,29 @@ GAME_LOOP:
 		li a3 , 5
 		la a0 ,macaco
 		call LoadImage
-	
-		la t0, arrow_pos
-		li a1 , 100
-		lh a2 , 0(t0)
-		li a3 , 4
-		la a0 flecha
-		addi a2,a2,8
-		call LoadImage
 		
-		la t0, arrow_pos
-		la a0 flecha
-		li a4 , 0
-		lw a2 , 0(a0)
-		lw a3 , 4(a0)
-		li a0 , 100
-		lh a1,  0(t0)
-		addi a1,a1,8
-		add a3 ,a3 ,a1
-		add a2 ,a2 ,a0
-		call Renderizador
-		
-		la t0, char_pos
-		la a0 macaco
-		li a4 , 1
-		lw a2 , 0(a0)
-		lw a3 , 4(a0)
-		lh a0 , 0(t0)
-		lh a1,  2(t0)
-		add a3 ,a3 ,a1
-		add a2 ,a2 ,a0
-		call Renderizador
-		
-		la t0, old_char_pos
+		#indio
+		la t0, indio_pos
 		lh a1 , 0(t0)
 		lh a2 , 2(t0)
 		li a3 , 5
-		la a0 macaco
-		call UnloadImage
+		la a0 ,personagem
+		call LoadImage
+		#indio
 		
-		la t0, arrow_pos
-		li a1 , 100
-		lh a2 , 0(t0)
-		li a3 , 4
-		la a0 flecha
-		call UnloadImage
-		
-		la t0, old_char_pos
-		la a0 macaco
-		li a4 , 0
-		lw a2 , 0(a0)
-		lw a3 , 4(a0)
-		lh a0 , 0(t0)
-		lh a1,  2(t0)
-		add a3 ,a3 ,a1
-		add a2 ,a2 ,a0
+		li a0 , 0
+		li a1,  0
+		li a2 , 320
+		li a3 , 240
+		li a4 , 1
 		call Renderizador
 		
-		la t0, arrow_pos
-		la a0 flecha
-		li a4 , 0
-		lw a2 , 0(a0)
-		lw a3 , 4(a0)
-		li a0 , 100
-		lh a1,  0(t0)
-		add a3 ,a3 ,a1
-		add a2 ,a2 ,a0
-		call Renderizador
 		
-		la t0, arrow_pos
-		lh t1, 0 (t0)
-		addi t1,t1,1
-		sh t1, 0(t0)
 		#######
 	PularRenderizar:
-		li t2,220
-		blt t1,t2,Pular69
-		li t3,8
-		sh t3, 0(t0)
-		Pular69:
-		li a7, 32
-		li a0, 1
-		ecall
-		call TocarMusica #CHAMA A MUSICA. COLOQUEI AKI PQ FOI O LUGAR Q O DESEMPENHO FICOU MELHOR
+	
+
+		#call TocarMusica #CHAMA A MUSICA. COLOQUEI AKI PQ FOI O LUGAR Q O DESEMPENHO FICOU MELHOR
 		
 	j GAME_LOOP
 
@@ -194,7 +152,7 @@ KeyDown:
 		addi t5, t1, 4
 		bge t5, s8, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
 		
-		addi t1, t1, 4 # 32 bits pra direita
+		addi t1, t1, 44 # 32 bits pra direita
 		sh t1, 0(t0)
 		ret
 		
@@ -208,7 +166,7 @@ KeyDown:
 		addi t5, t1, -4
 		blt t5, s7, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
 		
-		addi t1, t1, -4 # 32 bits pra esquerda
+		addi t1, t1, -44 # 32 bits pra esquerda
 		sh t1, 0(t0)
 		ret
 		
@@ -226,7 +184,7 @@ KeyDown:
 		addi t5, t1, -4
 		blt t5, s10, FIM
 		
-		addi t1, t1, -4 # 56 bits pra esquerda
+		addi t1, t1, -50 # 56 bits pra esquerda
 		sh t1, 2(t0)
 		ret
 		
@@ -240,7 +198,7 @@ KeyDown:
 		addi t5, t1, 4
 		bge t5, s9, FIM
 		
-		addi t1, t1, 4 # 56 bits pra esquerda
+		addi t1, t1, 50 # 56 bits pra esquerda
 		sh t1, 2(t0)
 		ret
 
@@ -276,16 +234,9 @@ LoadGame:
 	li a1 , 0
 	li a2 , 0
 	li a3 , 3
-	la a0 fundoverde
+	la a0 fazendav1
 	call LoadImage
 	
-	li a0 , 0
-	li a1 , 0
-	li a2 , 320
-	li a3 , 240
-	li a4 , 1
-	call Renderizador
-
 	la t0, char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
@@ -293,13 +244,6 @@ LoadGame:
 	la a0 macaco
 	call LoadImage
 	
-	li a0 , 0
-	li a1 , 0
-	li a2 , 320
-	li a3 , 240
-	li a4 , 1
-	call Renderizador
-
 	j FimLoadGame
 
 #FUNCOES--->	
@@ -473,6 +417,8 @@ LoadImage:						# a0= endereco imagem
 
 Renderizador:
 	#le o frame atual e pega o outro para modificar
+	#array layers é a memoria das camadas
+	#
 	lw t0, selectframeads	
 	lb t0, 0(t0)					#a0 = x0
 	xori t0,t0,1					#a1 = y0
