@@ -28,11 +28,7 @@ garden_matriz_y:.half 160,120, 80
 
 .text
 main:	
-	li a1 , 0
-	li a2 , 0
-	li a3 , 3
-	la a0 fundoverde
-	call LoadScreen
+
 	call GenerateGardens
 	FimGenerateGardens:
 		
@@ -473,12 +469,14 @@ LoadImage:						# a0= endereco imagem
 	ret	
 
 Renderizador:
+	#le o frame atual e pega o outro para modificar
 	lw t0, selectframeads	
 	lb t0, 0(t0)					#a0 = x0
 	xori t0,t0,1					#a1 = y0
 	li t1, 0xFF0					#a2 = x1
 	add t0 ,t0,t1					#a3 = y1
-	slli t0 ,t0, 20					#a4 = atualizar tela ou nao				
+	slli t0 ,t0, 20
+	################				#a4 = atualizar tela ou nao				
 	la t6, array_layers				#x1 < x2, y1 < y2
 	li t5 , 320					#t0 eh o endereco da tela
 	mul t5 , t5, a1					#t1/t2/t3/t4 sao os contadores
@@ -501,13 +499,13 @@ Renderizador:
 			While_R2:
 				lb t5,0(a7)
 				bne t5, a6,EndWhile_R2
-				li t5 , 268577812
+				la t5 , array_layers 
 				blt a7,t5,EndWhile_R3
 				li t5, 76800
 				sub a7, a7,t5
 				j While_R2
 			EndWhile_R3:
-			li t5, 0xc7
+			li t5, 0
 			EndWhile_R2:
 			sb t5, 0(t0)
 			addi t3,t3,1
