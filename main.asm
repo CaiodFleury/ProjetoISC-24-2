@@ -13,15 +13,28 @@ Notas: 		.word 76,400,75,200,76,600,75,200,76,400,69,200,72,1200,76,400,75,200,7
 .include "sprites/macaco.data"
 .include "sprites/fundopersonagem.data"
 .include "sprites/personagem.data"
-#Configurações:
+#Configuraï¿½ï¿½es:
 Music_config: 	.word 72,0,90,30  #notas total, nota atual, instrumento, volume	
-Time_line: 	.word 0,0 #playerTime, arrowTime
-char_pos:	.half 80, 176
-old_char_pos:	.half 80, 176
-arrow_pos:	.half 4
-char_pos_bounds:.half 80, 240, 232, 64
-garden_matriz_x:.half 72,116, 160 , 204, 248
-garden_matriz_y:.half 160,120, 80	
+Time_line: 		.word 0,0 #playerTime, arrowTime
+char_pos:		.half 72, 160
+old_char_pos:	.half 72, 160
+arrow_pos:		.half 4
+char_pos_bounds:.half 72, 292, 160, 80
+
+garden_matriz_x:.half 72, 116, 160, 204, 248
+garden_matriz_y:.half 160,120, 80
+
+# a logica se consiste na equacao:
+# 72 + (44 * x)
+# 160 - (40 * y)
+# desse modo, podemos saber a coordenada do jardim de acordo com esse indice
+current_garden_x:.byte 0
+current_garden_y:.byte 0
+
+# matriz que representa o estado do jardim (quao regado ele esta)
+garden_state_x: .byte 0, 0, 0, 0, 0
+garden_state_y: .byte 0, 0, 0
+
 #Codigo vai comecar na main.
 #Funcoes no final
 #Padrao for/while/if : Loop_num
@@ -146,7 +159,7 @@ GAME_LOOP:
 		sh t3, 0(t0)
 		Pular69:
 		li a7, 32
-		li a0, 1
+		li a0, 20
 		ecall
 		call TocarMusica #CHAMA A MUSICA. COLOQUEI AKI PQ FOI O LUGAR Q O DESEMPENHO FICOU MELHOR
 		
@@ -155,6 +168,15 @@ GAME_LOOP:
 KeyDown:
 	
   	lw t2,4(a0)  			# le o valor da tecla tecla
+	la s0, char_pos_bounds 	# vetor com o limite do personagem
+
+	lh s1, 0(s0) # x1
+	lh s2, 2(s0) # x2
+	lh s3, 4(s0) # y1
+	lh s4, 6(s0) # y2
+
+	li t0, ' '
+	beq t2, t0, WaterGarden
 		
 	li t0, 'd'
 	li t1, 'D'
@@ -180,21 +202,31 @@ KeyDown:
 	
 	
 	# t1 = x, t2 = y
+	# s1 = x1
+	# s2 = x2
+	# s3 = y1
+	# s4 = y2
 	MoveRight:
 		la t0, char_pos
 		la t1, old_char_pos
 		lw t2, 0(t0)
 		sw t2, 0(t1)
 		lh t1, 0(t0)
+
+		# pegando os bounds
 		
 		# bge t0,t1,Label # t0>=t1 ? PC=Label : PC=PC+4 t0 e t1 sem sinal
 
 		# blt t0,t1,Label # t0<t1 ? PC=Label : PC=PC+4 
 		
-		addi t5, t1, 4
-		bge t5, s8, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
+		addi t5, t1, 44
+		bge t5, s2, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
 		
-		addi t1, t1, 4 # 32 bits pra direita
+		la t5, current_garden_x
+		addi t6, t6, 1 # incrementa o indice x do jardim
+		sw t6, 0(t5)
+
+		addi t1, t1, 44 # 32 bits pra direita
 		sh t1, 0(t0)
 		ret
 		
@@ -205,17 +237,17 @@ KeyDown:
 		sw t2, 0(t1)
 		lh t1, 0(t0)
 		
-		addi t5, t1, -4
-		blt t5, s7, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
+		addi t5, t1, -44
+		blt t5, s1, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
+
+		la t5, current_garden_x
+		addi t6, t6, -1 # decrementa o indice x do jardim
+		sw t6, 0(t5)
 		
-		addi t1, t1, -4 # 32 bits pra esquerda
+		addi t1, t1, -44 # 32 bits pra esquerda
 		sh t1, 0(t0)
 		ret
 		
-	# s7 = x_bounds_1
-	# s8 = x_bounds_2
-	# s9 = y_bounds 1
-	# s10 = y_bounds 2
 	MoveUp:
 		la t0, char_pos
 		la t1, old_char_pos
@@ -223,10 +255,14 @@ KeyDown:
 		sw t2, 0(t1)
 		lh t1, 2(t0)
 		
-		addi t5, t1, -4
-		blt t5, s10, FIM
+		addi t5, t1, -40
+		blt t5, s4, FIM
+
+		la t5, current_garden_y
+		addi t6, t6, 1 # incrementa o indice y do jardim
+		sw t6, 0(t5)
 		
-		addi t1, t1, -4 # 56 bits pra esquerda
+		addi t1, t1, -40 # 56 bits cima
 		sh t1, 2(t0)
 		ret
 		
@@ -237,12 +273,40 @@ KeyDown:
 		sw t2, 0(t1)
 		lh t1, 2(t0)
 		
-		addi t5, t1, 4
-		bge t5, s9, FIM
+		addi t5, t1, 40
+		bgt t5, s3, FIM
+
+		la t5, current_garden_y
+		addi t6, t6, -1 # decrementa o indice y do jardim
+		sw t6, 0(t5)
 		
-		addi t1, t1, 4 # 56 bits pra esquerda
+		addi t1, t1, 40 # 56 bits pra esquerda
 		sh t1, 2(t0)
 		ret
+
+	WaterGarden:
+		la t0, current_garden_x
+		lb s1, 0(t0)
+		la t0, current_garden_y
+		lb s2, 0(t0)
+
+		# s1 = current_x
+		# s2 = current_y
+
+		la s3, garden_state_x
+		add t0, s3, t1 			# move o ponteiro para o indice correto
+		lb t4, 0(t0)
+		addi t4, t4, 1
+		sb t4, 0(s3)			# salva o novo valor
+		
+		la t0, garden_state_y
+		add t0, t0, t2
+		lb t4, 0(t0)
+		addi t4, t4, 1
+
+		ret
+
+
 
 LoadGame:
 	li a7,30		# coloca o horario atual em s11
@@ -304,7 +368,7 @@ LoadGame:
 
 #FUNCOES--->	
 
-TocarMusica:#s11 é o contador
+TocarMusica:#s11 ï¿½ o contador
 	li a7,30		# coloca o horario atual em a0
 	ecall
  	If_TM:
@@ -315,7 +379,7 @@ TocarMusica:#s11 é o contador
  		lw a2, 8(t2)
  		lw a3, 12(t2)
 		If_TM1:
-			bne t0,t1, Fim_If_TM1	# contador chegou no final? então  vá para SET_SONG para zerar o contador e as notas (loop infinito)
+			bne t0,t1, Fim_If_TM1	# contador chegou no final? entï¿½o  vï¿½ para SET_SONG para zerar o contador e as notas (loop infinito)
 			sw zero, 4(t2)
 			li t1, 0
 		Fim_If_TM1:
@@ -403,9 +467,9 @@ LoadScreen:						#Recebe a0, a1, a2;
 	EndWhile_LS:
 	ret
 	
-UnloadImage:						# a0= endereco imagem
-	li t0, 76800					# a1 = x da imagem
-	mul t0, t0, a3					# a2 = y da imagem
+UnloadImage:							# a0= endereco imagem
+	li t0, 76800						# a1 = x da imagem
+	mul t0, t0, a3						# a2 = y da imagem
 	la t1 , array_layers				# a3 = layer(0,5)
 	add t0 , t0, t1
 	li t1 , 320
@@ -436,10 +500,10 @@ UnloadImage:						# a0= endereco imagem
 	EndWhile_UI:					
  	ret						
 
-LoadImage:						# a0= endereco imagem
+LoadImage:							# a0= endereco imagem
 	li t0, 76800					# a1 = x da imagem
 	mul t0, t0, a3					# a2 = y da imagem
-	la t1 , array_layers				# a3 = layer(0,5)
+	la t1 , array_layers			# a3 = layer(0,5)
 	add t0 , t0, t1	
 	li t1 , 320
 	mul t1,a2,t1
@@ -473,6 +537,11 @@ LoadImage:						# a0= endereco imagem
 
 Renderizador:
 	#le o frame atual e pega o outro para modificar
+	#
+	# 
+	#
+	#
+	#
 	lw t0, selectframeads	
 	lb t0, 0(t0)					#a0 = x0
 	xori t0,t0,1					#a1 = y0
@@ -481,7 +550,7 @@ Renderizador:
 	slli t0 ,t0, 20
 	################				#a4 = atualizar tela ou nao				
 	la t6, array_layers				#x1 < x2, y1 < y2
-	li t5 , 320					#t0 eh o endereco da tela
+	li t5 , 320						#t0 eh o endereco da tela
 	mul t5 , t5, a1					#t1/t2/t3/t4 sao os contadores
 	add t0, t5 , t0					#t5 eh usado como valor temporario a todo momento
 	add t6, t5,t6					#t6 eh o endereco na memoria
@@ -581,4 +650,4 @@ GenerateGardens:
 
 FimPrograma:		#Nao recebe nada
 	li a7,10      	#Chama o procedimento de finalizar o programa
-	ecall		#Nao retorna nada
+	ecall			#Nao retorna nada
