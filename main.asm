@@ -1,25 +1,26 @@
 .data
 selectframeads:	.word 0xFF200604
-char_pos:	.half 80, 176
-old_char_pos:	.half 80, 176
-char_pos_bounds:.half 80, 240, 232, 64
-garden_matriz_x:.half 72,116, 160 , 204, 248
-garden_matriz_y:.half 160,120, 80
-#array_layers:	.byte 0xC7:460800
-Music_config: 	.word 72,0,90,30 #notas total, nota atual, instrumento, volume
 Notas: 76,400,75,200,76,600,75,200,76,400,69,200,72,1200,76,400,75,200,76,200,76,300,72,300,74,1800,76,400,75,200,76,600,75,200,76,400,69,200,72,1200,76,400,76,200,76,200,67,300,69,300,72,1600,69,200,69,200,72,200,72,400,77,200,69,400,67,200,67,200,72,200,72,400,76,200,67,400,65,200,65,200,69,200,69,400,74,200,65,400,64,200,64,200,67,200,67,400,72,200,64,400,69,200,69,200,72,200,72,400,77,200,69,400,69,200,69,200,72,200,72,400,78,200,69,400,71,200,71,200,72,200,72,200,73,200,73,200,74,200,74,400,79,600,79,800
-#array_layers:	.byte 0xC7:460800
 .include "levels/array_layers.data"
 .include "levels/fundoverde.data"
 .include "levels/fazendav1.data"
 .include "levels/Loading.data"
+.include "sprites/flecha.data"
 .include "sprites/planta1.data"
 .include "sprites/planta2.data"
 .include "sprites/planta3.data"
 .include "sprites/terrarada.data"
 .include "sprites/macaco.data"
 .include "sprites/fundopersonagem.data"
-.include "sprites/personagem.data"	
+.include "sprites/personagem.data"
+#Configurações:
+Music_config: 	.word 72,0,90,30 #notas total, nota atual, instrumento, volume	
+char_pos:	.half 80, 176
+old_char_pos:	.half 80, 176
+arrow_pos:	.half 4
+char_pos_bounds:.half 80, 240, 232, 64
+garden_matriz_x:.half 72,116, 160 , 204, 248
+garden_matriz_y:.half 160,120, 80	
 #Codigo vai comecar na main.
 #Funcoes no final
 #Padrao for/while/if : Loop_num
@@ -27,6 +28,11 @@ Notas: 76,400,75,200,76,600,75,200,76,400,69,200,72,1200,76,400,75,200,76,200,76
 
 .text
 main:	
+	li a1 , 0
+	li a2 , 0
+	li a3 , 3
+	la a0 fundoverde
+	call LoadScreen
 	call GenerateGardens
 	FimGenerateGardens:
 		
@@ -41,7 +47,7 @@ main:
 #receber teclas
 #Modificacoes chamarao a renderizacao	
 GAME_LOOP: 	
-
+	
 	li t6 0
 	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
 	lw t0,0(a0)			# Le bit de Controle Teclado
@@ -55,11 +61,13 @@ GAME_LOOP:
 	
 	beq  t6,zero,PularRenderizar
 	Renderizar:
+		
+		#macaco
 		la t0, char_pos
 		lh a1 , 0(t0)
 		lh a2 , 2(t0)
 		li a3 , 5
-		la a0 macaco
+		la a0 ,macaco
 		call LoadImage
 	
 		la t0, char_pos
@@ -90,9 +98,58 @@ GAME_LOOP:
 		add a3 ,a3 ,a1
 		add a2 ,a2 ,a0
 		call Renderizador
+		
+		
+		#######
 	PularRenderizar:
+		#flecha
+		
+	j flecha2
+		la t0, arrow_pos
+		li a1 , 100
+		lh a2 , 0(t0)
+		li a3 , 4
+		la a0 flecha
+		call LoadImage
 	
-		call TocarMusica #CHAMA A MUSICA. COLOQUEI AKI PQ FOI O LUGAR Q O DESEMPENHO FICOU MELHOR
+		la t0, arrow_pos
+		la a0 flecha
+		li a4 , 1
+		lw a2 , 0(a0)
+		lw a3 , 4(a0)
+		li a0 , 100
+		lh a1,  0(t0)
+		add a3 ,a3 ,a1
+		add a2 ,a2 ,a0
+		call Renderizador
+		
+		la t0, arrow_pos
+		li a1 , 100
+		lh a2 , 0(t0)
+		sub a2,a2,t1
+		li a3 , 5
+		la a0 flecha
+		call UnloadImage
+		
+		la t0, arrow_pos
+		la a0 flecha
+		li a4 , 0
+		lw a2 , 0(a0)
+		lw a3 , 4(a0)
+		li a0 , 100
+		lh a1,  0(t0)
+		sub a1,a1,t1
+		add a3 ,a3 ,a1
+		add a2 ,a2 ,a0
+		call Renderizador
+		
+		la t0, arrow_pos
+		lh t1, 0 (t0)
+		addi t1,t1,8
+		sw t1, 0(t0)
+		########
+	flecha2:
+		#call TocarMusica #CHAMA A MUSICA. COLOQUEI AKI PQ FOI O LUGAR Q O DESEMPENHO FICOU MELHOR
 		
 	j GAME_LOOP
 
