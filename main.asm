@@ -1,34 +1,12 @@
 .data
-selectframeads:	.word 0xFF200604
-Notas: 		.word 36,202,36,202,48,202,36,202,36,202,47,202,36,202,36,202,45,202,36,202,36,202,42,202,36,202,36,202,43,202,45,202,36,202,36,202,48,202,36,202,36,202,47,202,36,202,36,202,45,202,36,202,36,202,42,1015,36,202,36,202,48,202,36,202,36,202,47,202,36,202,36,202,45,202,36,202,36,202,42,202,36,202,36,202,43,202,45,202,36,202,36,202,48,202,36,202,36,202,47,202,36,202,36,202,67,100,64,100,60,100,64,100,67,100,64,100,67,100,72,100,67,100,64,100,67,100,64,100,67,100,72,100,76,100,79,100,41,202,41,202,53,202,41,202,41,202,52,202,41,202,41,202,50,202,41,202,41,202,49,202,41,202,41,202,48,202,50,202,41,202,41,202,53,202,41,202,41,202,52,202,41,202,41,202,50,202,41,202,41,202,49,1015,41,202,41,202,53,202,41,202,41,202,52,202,41,202,41,202,50,202,41,202,41,202,49,202,41,202,41,202,48,202,50,202,41,202,41,202,53,202,41,202,41,202,52,202,41,202,41,202,65,100,61,100,60,100,65,100,60,100,57,100,60,100,65,100,69,100,65,100
-.include "levels/array_layers.data"
-.include "levels/fundoverde.data"
-.include "levels/fazendav1.data"
-.include "levels/Loading.data"
-.include "sprites/flecha.data"
-.include "sprites/planta1.data"
-.include "sprites/planta2.data"
-.include "sprites/planta3.data"
-.include "sprites/terrarada.data"
-.include "sprites/macaco.data"
-.include "sprites/fundopersonagem.data"
-.include "sprites/personagem.data"
-#Configurações:
-Music_config: 	.word 130,0,28,0  #notas total, nota atual, instrumento, volume	
-Time_line: 	.word 0,0 #playerTime, arrowTime
-char_pos:	.half 80, 176
-old_char_pos:	.half 80, 176
-arrow_pos:	.half 4
-indio_pos:	.half 48, 100
-char_pos_bounds:.half 80, 240, 232, 64
-garden_matriz_x:.half 72,116, 160 , 204, 248
-garden_matriz_y:.half 160,120, 80	
+.include ".data/imagens.asm"
+.include ".data/config.asm"
 #Codigo vai comecar na main.
 #Funcoes no final
 #Padrao for/while/if : Loop_num
 #Padrao funcoes FazerAlgo
-
 .text
+
 main:	
 
 	call GenerateGardens
@@ -101,12 +79,11 @@ GAME_LOOP:
 		li a4 , 1
 		call Renderizador
 		
-		
 		#######
 	PularRenderizar:
 	
 
-		#call TocarMusica #CHAMA A MUSICA. COLOQUEI AKI PQ FOI O LUGAR Q O DESEMPENHO FICOU MELHOR
+		call TocarMusica #CHAMA A MUSICA. COLOQUEI AKI PQ FOI O LUGAR Q O DESEMPENHO FICOU MELHOR
 		
 	j GAME_LOOP
 
@@ -524,7 +501,7 @@ GenerateGardens:
 		j For_GG_1
 		
 	SAIR: j FimGenerateGardens
-
+	
 FimPrograma:		#Nao recebe nada
 	li a7,10      	#Chama o procedimento de finalizar o programa
-	ecall		#Nao retorna nada
+	ecall			#Nao retorna nada
