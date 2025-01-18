@@ -223,8 +223,9 @@ KeyDown:
 		bge t5, s2, FIM # se o próximo passo vai sair do limite, vai ir para RETURN
 		
 		la t5, current_garden_x
+		lb t6, 0(t5)
 		addi t6, t6, 1 # incrementa o indice x do jardim
-		sw t6, 0(t5)
+		sb t6, 0(t5)
 
 		addi t1, t1, 44 # 32 bits pra direita
 		sh t1, 0(t0)
@@ -241,8 +242,9 @@ KeyDown:
 		blt t5, s1, FIM # se o próximo passo vai sair do limite, vai ir para RETURN
 
 		la t5, current_garden_x
+		lb t6, 0(t5)
 		addi t6, t6, -1 # decrementa o indice x do jardim
-		sw t6, 0(t5)
+		sb t6, 0(t5)
 		
 		addi t1, t1, -44 # 32 bits pra esquerda
 		sh t1, 0(t0)
@@ -259,8 +261,9 @@ KeyDown:
 		blt t5, s4, FIM
 
 		la t5, current_garden_y
+		lb t6, 0(t5)
 		addi t6, t6, 1 # incrementa o indice y do jardim
-		sw t6, 0(t5)
+		sb t6, 0(t5)
 		
 		addi t1, t1, -40 # 56 bits cima
 		sh t1, 2(t0)
@@ -277,8 +280,9 @@ KeyDown:
 		bgt t5, s3, FIM
 
 		la t5, current_garden_y
+		lb t6, 0(t5)
 		addi t6, t6, -1 # decrementa o indice y do jardim
-		sw t6, 0(t5)
+		sb t6, 0(t5)
 		
 		addi t1, t1, 40 # 56 bits pra esquerda
 		sh t1, 2(t0)
@@ -290,19 +294,87 @@ KeyDown:
 		la t0, current_garden_y
 		lb s2, 0(t0)
 
-		# s1 = current_x
-		# s2 = current_y
+		# s1 = current_garden_x
+		# s2 = current_garden_y
 
-		la s3, garden_state_x
-		add t0, s3, t1 			# move o ponteiro para o indice correto
-		lb t4, 0(t0)
-		addi t4, t4, 1
-		sb t4, 0(s3)			# salva o novo valor
+		# essa parte vai salvar o estado do jardim atual
+		la t0, garden_state_x
+		add t1, t0, s1 			# move o ponteiro para o indice correto
+		lb s3, 0(t1)
+		addi s3, s3, 1
+		sb s3, 0(t1)			# salva o novo valor
 		
 		la t0, garden_state_y
-		add t0, t0, t2
-		lb t4, 0(t0)
-		addi t4, t4, 1
+		add t1, t0, s2 			# move o ponteiro para o indice correto
+		lb s4, 0(t1)
+		addi s4, s4, 1
+		sb s4, 0(t1)			# salva o novo valor
+
+		# s3 = x_garden_state
+		# s4 = y_garden_state
+
+		# modificando sprite da plantacao
+		li t0, 44
+		li t1, 40
+		li t2, 160
+
+		# 72 + (44 * x)
+		mul t6, s1, t0
+		addi s10, t6, 72
+
+		# 160 - (40 * y)
+		mul t6, s2, t1
+		sub s11, t2, t6
+
+		# s10 = garden_x
+		# s11 = garden_y
+
+		li t0, 1
+		li t1, 2
+		li t3, 3
+
+		beq s3, t0, PLANTA1
+		beq s3, t1, PLANTA2
+		beq s3, t3, PLANTA3
+
+		PLANTA1:
+			bne s4, t0, VOLTAR # verificando tambem o garden_y_state
+			##### DEBUG
+			li a7, 1
+			li a0, 200
+			ecall
+
+			la a0, planta1
+			j PLANTAR
+
+		PLANTA2:
+			bne s4, t0, VOLTAR
+			##### DEBUG
+			li a7, 1
+			li a0, 201
+			ecall
+
+			la a0, planta2
+			j PLANTAR
+
+		PLANTA3:
+			bne s4, t0, VOLTAR
+			##### DEBUG
+			li a7, 1
+			li a0, 202
+			ecall
+
+			la a0, planta3
+			j PLANTAR
+
+		VOLTAR:
+			ret
+
+		PLANTAR:
+			mv a1, s10 # x da imagem
+			mv a2, s11 # y da imagem
+			li a3, 4 # layer 4
+			call LoadImage
 
 		ret
 
