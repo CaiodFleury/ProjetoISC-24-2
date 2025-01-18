@@ -12,7 +12,7 @@ main:
 	call StartScreen
 	FimStartScreen:
 	
-	#colocar anima��o de introdu��o aqui
+	#colocar animação de introdução aqui
 			
 	call LoadGame
 	FimLoadGame:
@@ -133,7 +133,7 @@ KeyDown:
 		# blt t0,t1,Label # t0<t1 ? PC=Label : PC=PC+4 
 		
 		addi t5, t1, 4
-		#bge t5, s8, FIM # se o próximo passo vai sair do limite, vai ir para RETURN
+		#bge t5, s8, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
 		
 		la t6,colisao1
 		add t6,t6,t5
@@ -157,7 +157,7 @@ KeyDown:
 		lh t1, 0(t0)
 		
 		addi t5, t1, -4
-		blt t5, s7, FIM # se o próximo passo vai sair do limite, vai ir para RETURN
+		blt t5, s7, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
 		
 		addi t1, t1, -4 # 32 bits pra esquerda
 		sh t1, 0(t0)
@@ -267,7 +267,7 @@ LoadGame:
 
 #FUNCOES--->	
 
-TocarMusica:#s11 � o contador
+TocarMusica:#s11 é o contador
 	li a7,30		# coloca o horario atual em a0
 	ecall
  	If_TM:
@@ -278,7 +278,7 @@ TocarMusica:#s11 � o contador
  		lw a2, 8(t2)
  		lw a3, 12(t2)
 		If_TM1:
-			bne t0,t1, Fim_If_TM1	# contador chegou no final? ent�o  v� para SET_SONG para zerar o contador e as notas (loop infinito)
+			bne t0,t1, Fim_If_TM1	# contador chegou no final? então  vá para SET_SONG para zerar o contador e as notas (loop infinito)
 			sw zero, 4(t2)
 			li t1, 0
 		Fim_If_TM1:
@@ -311,8 +311,8 @@ TrocarTela:					#recebe a0
  		bge a0,t0, Else_TT1		#If a0 < 2 troca tela para a0
 		sw a0, 0(t3)
 		ret
-	Else_TT1:				#Se nao, se a tela atual é 1 troca para 0
-		lb t1,0(t3)			#se a tela é 0 troca para 1
+	Else_TT1:				#Se nao, se a tela atual Ã© 1 troca para 0
+		lb t1,0(t3)			#se a tela Ã© 0 troca para 1
 		li t0, 1
 		If_TT2:
 			bne t1,t0, Else_TT2
@@ -436,7 +436,7 @@ LoadImage:						# a0= endereco imagem
 
 Renderizador:
 	#le o frame atual e pega o outro para modificar
-	#array layers � a memoria das camadas
+	#array layers é a memoria das camadas
 	#
 	lw t0, selectframeads	
 	lb t0, 0(t0)					#a0 = x0
@@ -495,7 +495,97 @@ Renderizador:
 	xori t1,t1,1
 	sb t1,0(t0) 
 	Fim_R:ret
-	
+
+WaterGarden:
+		la t0, current_garden_x
+		lb s1, 0(t0)
+		la t0, current_garden_y
+		lb s2, 0(t0)
+
+		# s1 = current_garden_x
+		# s2 = current_garden_y
+
+		# essa parte vai salvar o estado do jardim atual
+		la t0, garden_state_x
+		add t1, t0, s1 			# move o ponteiro para o indice correto
+		lb s3, 0(t1)
+		addi s3, s3, 1
+		sb s3, 0(t1)			# salva o novo valor
+		
+		la t0, garden_state_y
+		add t1, t0, s2 			# move o ponteiro para o indice correto
+		lb s4, 0(t1)
+		addi s4, s4, 1
+		sb s4, 0(t1)			# salva o novo valor
+
+		# s3 = x_garden_state
+		# s4 = y_garden_state
+
+		# modificando sprite da plantacao
+		li t0, 44
+		li t1, 40
+		li t2, 160
+
+		# 72 + (44 * x)
+		mul t6, s1, t0
+		addi s10, t6, 72
+
+		# 160 - (40 * y)
+		mul t6, s2, t1
+		sub s11, t2, t6
+
+		# s10 = garden_x
+		# s11 = garden_y
+
+		li t0, 1
+		li t1, 2
+		li t3, 3
+
+		beq s3, t0, PLANTA1
+		beq s3, t1, PLANTA2
+		beq s3, t3, PLANTA3
+
+		PLANTA1:
+			bne s4, t0, VOLTAR # verificando tambem o garden_y_state
+			##### DEBUG
+			li a7, 1
+			li a0, 200
+			ecall
+
+			la a0, planta1
+			j PLANTAR
+
+		PLANTA2:
+			bne s4, t0, VOLTAR
+			##### DEBUG
+			li a7, 1
+			li a0, 201
+			ecall
+
+			la a0, planta2
+			j PLANTAR
+
+		PLANTA3:
+			bne s4, t0, VOLTAR
+			##### DEBUG
+			li a7, 1
+			li a0, 202
+			ecall
+
+			la a0, planta3
+			j PLANTAR
+
+		VOLTAR:
+			ret
+
+		PLANTAR:
+			mv a1, s10 # x da imagem
+			mv a2, s11 # y da imagem
+			li a3, 4 # layer 4
+			call LoadImage
+
+		ret
+
 # a2 = estado_tipo (byte)
 GenerateGardens:
 	la s0, garden_matriz_x
