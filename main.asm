@@ -1,7 +1,7 @@
 .data
 .include ".data/imagens.asm"
 .include ".data/config.asm"
-var: .word 0
+var: .word 28
 .text
 #Codigo vai comecar na main.
 #Funcoes no final
@@ -53,7 +53,6 @@ GAME_LOOP:
 		li a3 , 5
 		la a0 macaco
 		call UnloadImage
-		
 		
 		la t0, char_pos
 		lh a1 , 0(t0)
@@ -238,6 +237,8 @@ AnimationScreen:
 
 	Loop_AS:
 	
+	call TocarMusica
+	
 	la t0, old_char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
@@ -280,6 +281,10 @@ AnimationScreen:
 	sh t2 , 0(t1)
 	addi t2,t2,-4
 	sh t2 , 0(t0)
+	
+	li a7, 32
+	li a0, 20
+	ecall
 	
 	j Loop_AS
 
