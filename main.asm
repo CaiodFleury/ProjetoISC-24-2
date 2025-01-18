@@ -1,21 +1,27 @@
 .data
 .include ".data/imagens.asm"
 .include ".data/config.asm"
+.text
 #Codigo vai comecar na main.
 #Funcoes no final
 #Padrao for/while/if : Loop_num
 #Padrao funcoes FazerAlgo
-.text
 
 main:	
-
-	call GenerateGardens
-	FimGenerateGardens:
-		
+	
+	call StartScreen
+	FimStartScreen:
+	
+	#colocar animação de introdução aqui
+			
 	call LoadGame
 	FimLoadGame:
 	
+	#call GenerateGardens
+	FimGenerateGardens:
+	
 	call GAME_LOOP
+	
 	call FimPrograma		
 	
 #O game loop vai ser responsavel por administrar:
@@ -127,9 +133,19 @@ KeyDown:
 		# blt t0,t1,Label # t0<t1 ? PC=Label : PC=PC+4 
 		
 		addi t5, t1, 4
-		bge t5, s8, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
+		#bge t5, s8, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
 		
-		addi t1, t1, 44 # 32 bits pra direita
+		la t6,colisao1
+		add t6,t6,t5
+		li t5,320
+		lh t2, 2(t0)
+		mul t2,t2,t5
+		add t6,t2,t6
+		lb t5,0(t6)
+		li t6,-1
+		bne t5,t6,FIM
+		
+		addi t1, t1, 4 # 32 bits pra direita
 		sh t1, 0(t0)
 		ret
 		
@@ -143,7 +159,7 @@ KeyDown:
 		addi t5, t1, -4
 		blt t5, s7, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
 		
-		addi t1, t1, -44 # 32 bits pra esquerda
+		addi t1, t1, -4 # 32 bits pra esquerda
 		sh t1, 0(t0)
 		ret
 		
@@ -161,7 +177,7 @@ KeyDown:
 		addi t5, t1, -4
 		blt t5, s10, FIM
 		
-		addi t1, t1, -50 # 56 bits pra esquerda
+		addi t1, t1, -4 # 56 bits pra esquerda
 		sh t1, 2(t0)
 		ret
 		
@@ -175,10 +191,29 @@ KeyDown:
 		addi t5, t1, 4
 		bge t5, s9, FIM
 		
-		addi t1, t1, 50 # 56 bits pra esquerda
+		addi t1, t1, 4 # 56 bits pra esquerda
 		sh t1, 2(t0)
 		ret
-
+StartScreen:
+	li a1 , 0
+	li a2 , 0
+	la a0 ,startscreen
+	call LoadScreen
+	
+	li a0, 2
+	call TrocarTela	
+	
+	li a1 , 100
+	li a2 , 100
+	la a0 Loading
+	call LoadScreen
+	
+	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
+	lw t0,0(a0)			# Le bit de Controle Teclado
+	andi t0,t0,0x0001		# mascara o bit menos significativo
+   	beq t0,zero,StartScreen  	# Se nao ha tecla pressionada entao vai para FIM			
+	
+	j FimStartScreen
 LoadGame:
 	li a7,30		# coloca o horario atual em s11
 	ecall
@@ -189,7 +224,7 @@ LoadGame:
 	la a0 Loading
 	call LoadScreen
 	
-	li a0, 3
+	li a0, 2
 	call TrocarTela			
 	# s7 = x_bounds_1
 	# s8 = x_bounds_2
@@ -212,6 +247,13 @@ LoadGame:
 	li a2 , 0
 	li a3 , 3
 	la a0 fazendav1
+	la a0 colisao1
+	call LoadImage
+	
+	li a1 , 0
+	li a2 , 0
+	li a3 , 1
+	la a0 colisao1
 	call LoadImage
 	
 	la t0, char_pos
