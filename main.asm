@@ -1,6 +1,7 @@
 .data
 .include ".data/imagens.asm"
 .include ".data/config.asm"
+var: .word 0
 .text
 #Codigo vai comecar na main.
 #Funcoes no final
@@ -61,23 +62,6 @@ GAME_LOOP:
 		la a0 ,macaco
 		call LoadImage
 		
-		
-		#indio
-		#la t0, indio_pos
-		#lh a1 , 0(t0)
-		#lh a2 , 2(t0)
-		#li a3 , 4
-		#la a0 personagem
-		#call UnloadImage
-
-		#la t0, indio_pos
-		#lh a1 , 0(t0)
-		#lh a2 , 2(t0)
-		#li a3 , 5
-		#la a0 ,personagem
-		#call LoadImage
-		#indio
-		
 		li a0 , 0
 		li a1,  0
 		li a2 , 320
@@ -88,8 +72,7 @@ GAME_LOOP:
 		#######
 	PularRenderizar:
 	
-
-		call TocarMusica #CHAMA A MUSICA. COLOQUEI AKI PQ FOI O LUGAR Q O DESEMPENHO FICOU MELHOR
+	call TocarMusica #CHAMA A MUSICA. COLOQUEI AKI PQ FOI O LUGAR Q O DESEMPENHO FICOU MELHOR
 		
 	j GAME_LOOP
 
@@ -135,7 +118,7 @@ KeyDown:
 		addi t5, t1, 4
 		#bge t5, s8, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
 		
-		la t6,colisao1
+		la t6,array_layers
 		add t6,t6,t5
 		li t5,320
 		lh t2, 2(t0)
@@ -146,7 +129,8 @@ KeyDown:
 		lb t5,0(t6)
 		li t6,-110
 		beq t5,t6,FIM
-		
+		li t6,63
+		beq t5,t6,AnimationScreen
 		addi t1, t1, 4 # 32 bits pra direita
 		sh t1, 0(t0)
 		ret
@@ -161,7 +145,7 @@ KeyDown:
 		addi t5, t1, -4
 		blt t5, s7, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
 		
-		la t6,colisao1
+		la t6,array_layers
 		add t6,t6,t5
 		li t5,320
 		lh t2, 2(t0)
@@ -191,7 +175,7 @@ KeyDown:
 		addi t5, t1, -4
 		blt t5, s10, FIM
 		
-		la t6,colisao1
+		la t6,array_layers
 		li t4,320
 		mul t4,t4,t5
 		lh t5, 0(t0)
@@ -217,7 +201,7 @@ KeyDown:
 		addi t5, t1, 4
 		bge t5, s9, FIM
 		
-		la t6,colisao1
+		la t6,array_layers
 		li t4,320
 		mul t4,t4,t5
 		lh t5, 0(t0)
@@ -252,6 +236,62 @@ StartScreen:
    	beq t0,zero,StartScreen  	# Se nao ha tecla pressionada entao vai para FIM			
 	
 	j FimStartScreen
+	
+AnimationScreen:
+	
+	li a1 , 0
+	li a2 , 0
+	li a3 , 0
+	la a0 colisao2
+	call LoadImage
+	Loop_AS:
+	
+	la t0, old_char_pos
+	lh a1 , 0(t0)
+	lh a2 , 2(t0)
+	li a3 , 5
+	la a0 macaco
+	call UnloadImage
+	
+	la t0, char_pos
+	lh a1 , 0(t0)
+	lh a2 , 2(t0)
+	li a3 , 5
+	la a0 ,macaco
+	call LoadImage
+
+	la t0, var
+	la a0 fazendav2
+	li a1 , 0
+	li a2 , 0
+	li a3 , 3
+	lw a4,0(t0)
+	call LoadAnimation
+	
+	li a0 , 0
+	li a1,  0
+	li a2 , 320
+	li a3 , 240
+	li a4 , 1
+	call Renderizador
+	
+	la t0, var
+	lw t2, 0(t0)
+	li t1, 160
+	beq t1,t2,GAME_LOOP
+	addi t2,t2,4
+	sw t2,0(t0)
+	
+	la t0, char_pos
+	la t1, old_char_pos
+	lh t2 , 0(t0)
+	sh t2 , 0(t1)
+	addi t2,t2,-4
+	sh t2 , 0(t0)
+	
+	j Loop_AS
+
+
 LoadGame:
 	li a7,30		# coloca o horario atual em s11
 	ecall
@@ -290,7 +330,7 @@ LoadGame:
 	
 	li a1 , 0
 	li a2 , 0
-	li a3 , 1
+	li a3 , 0
 	la a0 colisao1
 	call LoadImage
 	
@@ -470,6 +510,48 @@ LoadImage:						# a0= endereco imagem
 		addi t4, t4,1
 		j While_LI
 	EndWhile_LI:
+	ret	
+
+LoadAnimation:						# a0= endereco imagem
+	li t0, 76800					# a1 = x da imagem
+	mul t0, t0, a3					# a2 = y da imagem
+	la t1 , array_layers				# a3 = layer(0,5)
+	add t0 , t0, t1					# a4 = jump x
+	li t1 , 320
+	mul t1,a2,t1
+	add t0,t0,t1
+	mv t1,a0				
+ 	li t2, 320
+	li t3, 240
+	li t4, 0
+	li t5, 0
+	addi a0,a0,8
+	While_LA:	
+		beq t3, t4, EndWhile_LA
+		add t0, t0,a1
+		add a0, a0,a4
+		While_LA1:
+			beq t2, t5, EndWhile_LA1
+			lw t6, 0(a0)
+			sw t6, 0(t0)
+			addi t5,t5,4
+			addi a0,a0,4
+			addi t0,t0,4
+			j While_LA1
+		EndWhile_LA1:
+		li t5, 320
+		sub t5, t5, a1
+		sub t5, t5, t2
+		add t0, t0, t5
+		
+		lw t5,0(t1)
+		sub t5,t5,t2
+		add a0,a0,t5
+		sub a0,a0,a4
+		li t5, 0
+		addi t4, t4,1
+		j While_LA
+	EndWhile_LA:
 	ret	
 
 Renderizador:
