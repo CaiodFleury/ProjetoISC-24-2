@@ -45,6 +45,7 @@ GAME_LOOP:
 	#j PularRenderizar
 	Renderizar:
 		
+		#macaco
 		la t0, old_char_pos
 		lh a1 , 0(t0)
 		lh a2 , 2(t0)
@@ -52,16 +53,7 @@ GAME_LOOP:
 		la a0 macaco
 		call UnloadImage
 		
-		#indio
-		la t0, indio_pos
-		lh a1 , 0(t0)
-		lh a2 , 2(t0)
-		li a3 , 4
-		la a0 personagem
-		call UnloadImage
-		#indio
 		
-		#macaco
 		la t0, char_pos
 		lh a1 , 0(t0)
 		lh a2 , 2(t0)
@@ -69,13 +61,21 @@ GAME_LOOP:
 		la a0 ,macaco
 		call LoadImage
 		
+		
 		#indio
-		la t0, indio_pos
-		lh a1 , 0(t0)
-		lh a2 , 2(t0)
-		li a3 , 5
-		la a0 ,personagem
-		call LoadImage
+		#la t0, indio_pos
+		#lh a1 , 0(t0)
+		#lh a2 , 2(t0)
+		#li a3 , 4
+		#la a0 personagem
+		#call UnloadImage
+
+		#la t0, indio_pos
+		#lh a1 , 0(t0)
+		#lh a2 , 2(t0)
+		#li a3 , 5
+		#la a0 ,personagem
+		#call LoadImage
 		#indio
 		
 		li a0 , 0
@@ -141,9 +141,11 @@ KeyDown:
 		lh t2, 2(t0)
 		mul t2,t2,t5
 		add t6,t2,t6
+		li t4,12800
+		add t6,t6,t4
 		lb t5,0(t6)
-		li t6,-1
-		bne t5,t6,FIM
+		li t6,-110
+		beq t5,t6,FIM
 		
 		addi t1, t1, 4 # 32 bits pra direita
 		sh t1, 0(t0)
@@ -158,6 +160,18 @@ KeyDown:
 		
 		addi t5, t1, -4
 		blt t5, s7, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
+		
+		la t6,colisao1
+		add t6,t6,t5
+		li t5,320
+		lh t2, 2(t0)
+		mul t2,t2,t5
+		add t6,t2,t6
+		li t4,12800
+		add t6,t6,t4
+		lb t5,0(t6)
+		li t6,-110
+		beq t5,t6,FIM
 		
 		addi t1, t1, -4 # 32 bits pra esquerda
 		sh t1, 0(t0)
@@ -177,6 +191,18 @@ KeyDown:
 		addi t5, t1, -4
 		blt t5, s10, FIM
 		
+		la t6,colisao1
+		li t4,320
+		mul t4,t4,t5
+		lh t5, 0(t0)
+		add t6,t6,t5
+		add t6,t4,t6
+		li t4,12800
+		add t6,t6,t4
+		lb t5,0(t6)
+		li t6,-110
+		beq t5,t6,FIM
+		
 		addi t1, t1, -4 # 56 bits pra esquerda
 		sh t1, 2(t0)
 		ret
@@ -190,6 +216,18 @@ KeyDown:
 		
 		addi t5, t1, 4
 		bge t5, s9, FIM
+		
+		la t6,colisao1
+		li t4,320
+		mul t4,t4,t5
+		lh t5, 0(t0)
+		add t6,t6,t5
+		add t6,t4,t6
+		li t4,12800
+		add t6,t6,t4
+		lb t5,0(t6)
+		li t6,-110
+		beq t5,t6,FIM
 		
 		addi t1, t1, 4 # 56 bits pra esquerda
 		sh t1, 2(t0)
@@ -247,7 +285,7 @@ LoadGame:
 	li a2 , 0
 	li a3 , 3
 	la a0 fazendav1
-	la a0 colisao1
+	#la a0 colisao1
 	call LoadImage
 	
 	li a1 , 0
