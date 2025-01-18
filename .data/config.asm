@@ -1,7 +1,7 @@
 #Configurações:
 Music_config: 	.word 130,0,28,30  #notas total, nota atual, instrumento, volume	
 Time_line: 	.word 0,0 #playerTime, arrowTime
-char_pos:	.half 200, 100
+char_pos:	.half 100, 120
 old_char_pos:	.half 200, 0
 arrow_pos:	.half 4
 indio_pos:	.half 48, 100

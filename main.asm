@@ -103,36 +103,31 @@ KeyDown:
 	FIM:	ret				# retorna
 	
 	
-	# t1 = x, t2 = y
+	# t0 = x, t1 = y
 	MoveRight:
-		la t0, char_pos
-		la t1, old_char_pos
-		lw t2, 0(t0)
-		sw t2, 0(t1)
-		lh t1, 0(t0)
-		
-		# bge t0,t1,Label # t0>=t1 ? PC=Label : PC=PC+4 t0 e t1 sem sinal
-
-		# blt t0,t1,Label # t0<t1 ? PC=Label : PC=PC+4 
-		
-		addi t5, t1, 4
-		#bge t5, s8, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
-		
 		la t6,array_layers
-		add t6,t6,t5
-		li t5,320
-		lh t2, 2(t0)
-		mul t2,t2,t5
+		la t5, char_pos
+		la t4, old_char_pos
+		lw t0, 0(t5)
+		sw t0, 0(t4)
+		lh t0, 0(t5)
+		lh t1, 2(t5)
+		#opera��es para chegar no ponto certo
+		addi t2, t0, 4
+		add t6,t6,t2
+		li t2,320
+		mul t2,t2,t1
 		add t6,t2,t6
-		li t4,12800
-		add t6,t6,t4
-		lb t5,0(t6)
-		li t6,-110
-		beq t5,t6,FIM
-		li t6,63
-		beq t5,t6,AnimationScreen
-		addi t1, t1, 4 # 32 bits pra direita
-		sh t1, 0(t0)
+		li t2,8640
+		add t6,t6,t2
+		#pega o bit e ve o valor
+		lb t2,0(t6)
+		li t3,-110
+		beq t2,t3,FIM
+		li t3,63
+		beq t2,t3,AnimationScreen
+		addi t2, t0,4 
+		sh t2, 0(t5)
 		ret
 		
 	MoveLeft:
@@ -143,7 +138,6 @@ KeyDown:
 		lh t1, 0(t0)
 		
 		addi t5, t1, -4
-		blt t5, s7, FIM # se o prÃ³ximo passo vai sair do limite, vai ir para RETURN
 		
 		la t6,array_layers
 		add t6,t6,t5
@@ -151,7 +145,7 @@ KeyDown:
 		lh t2, 2(t0)
 		mul t2,t2,t5
 		add t6,t2,t6
-		li t4,12800
+		li t4,8640
 		add t6,t6,t4
 		lb t5,0(t6)
 		li t6,-110
@@ -173,7 +167,6 @@ KeyDown:
 		lh t1, 2(t0)
 		
 		addi t5, t1, -4
-		blt t5, s10, FIM
 		
 		la t6,array_layers
 		li t4,320
@@ -181,7 +174,7 @@ KeyDown:
 		lh t5, 0(t0)
 		add t6,t6,t5
 		add t6,t4,t6
-		li t4,12800
+		li t4,8640
 		add t6,t6,t4
 		lb t5,0(t6)
 		li t6,-110
@@ -198,16 +191,14 @@ KeyDown:
 		sw t2, 0(t1)
 		lh t1, 2(t0)
 		
-		addi t5, t1, 4
-		bge t5, s9, FIM
-		
+		addi t5, t1, 4		
 		la t6,array_layers
 		li t4,320
 		mul t4,t4,t5
 		lh t5, 0(t0)
 		add t6,t6,t5
 		add t6,t4,t6
-		li t4,12800
+		li t4,8640
 		add t6,t6,t4
 		lb t5,0(t6)
 		li t6,-110
@@ -244,6 +235,7 @@ AnimationScreen:
 	li a3 , 0
 	la a0 colisao2
 	call LoadImage
+
 	Loop_AS:
 	
 	la t0, old_char_pos
