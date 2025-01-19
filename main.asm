@@ -18,9 +18,6 @@ main:
 	call LoadGame
 	FimLoadGame:
 	
-	#call GenerateGardens
-	FimGenerateGardens:
-	
 	call GAME_LOOP
 	
 	call FimPrograma		
@@ -30,6 +27,8 @@ main:
 #receber teclas
 #Modificacoes chamarao a renderizacao	
 GAME_LOOP: 	
+	
+	FimGenerateGardens:
 	
 	li t6 0
 	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
@@ -79,6 +78,10 @@ KeyDown:
 	
   	lw t2,4(a0)  			# le o valor da tecla tecla
 		
+		
+	li t0, 'e'
+	beq t2,t0, SpaceInteraction	
+	
 	li t0, 'd'
 	li t1, 'D'
 	beq t2, t0, MoveRight
@@ -101,7 +104,22 @@ KeyDown:
 
 	FIM:	ret				# retorna
 	
-	
+	SpaceInteraction:
+		la t6,array_layers
+		la t5, char_pos
+		lh t0, 0(t5)
+		lh t1, 2(t5)
+		#operações para chegar no ponto certo
+		add t6,t6,t0
+		li t2,320
+		mul t2,t2,t1
+		add t6,t2,t6
+		li t2,8640
+		add t6,t6,t2
+		lb t2,0(t6)
+		li t3, 20
+		bltu t2,t3,WaterGarden
+		ret
 	# t0 = x, t1 = y
 	MoveRight:
 		la t6,array_layers
@@ -614,81 +632,54 @@ Renderizador:
 	Fim_R:ret
 
 WaterGarden:
-		la t0, current_garden_x
-		lb s1, 0(t0)
-		la t0, current_garden_y
-		lb s2, 0(t0)
-
-		# s1 = current_garden_x
-		# s2 = current_garden_y
-
+		# t2 era minha posição
+		mv a0,t2
 		# essa parte vai salvar o estado do jardim atual
-		la t0, garden_state_x
-		add t1, t0, s1 			# move o ponteiro para o indice correto
-		lb s3, 0(t1)
-		addi s3, s3, 1
-		sb s3, 0(t1)			# salva o novo valor
+		la t0, garden_state
+		add t1, t0, a0 			# move o ponteiro para o indice correto
+		lb a1, 0(t1)
+		addi a1, a1, 1
+		sb a1, 0(t1)			# salva o novo valor
 		
-		la t0, garden_state_y
-		add t1, t0, s2 			# move o ponteiro para o indice correto
-		lb s4, 0(t1)
-		addi s4, s4, 1
-		sb s4, 0(t1)			# salva o novo valor
-
-		# s3 = x_garden_state
-		# s4 = y_garden_state
+		li t0,5
+		rem t5,a0,t0
+		divu t6,a0,t0
+		# t5 = x_garden_state
+		# t6 = y_garden_state
 
 		# modificando sprite da plantacao
-		li t0, 44
-		li t1, 40
-		li t2, 160
+		li t0, 36
+		li t1, 28
+		li t2, 92
+		# 88 + (36 * x)
+		
+		mul t4, t5, t0
+		addi t5, t4, 88
 
-		# 72 + (44 * x)
-		mul t6, s1, t0
-		addi s10, t6, 72
+		# 92 + (28 * y)
+		mul t4, t6, t1
+		add t6, t2, t4
 
-		# 160 - (40 * y)
-		mul t6, s2, t1
-		sub s11, t2, t6
-
-		# s10 = garden_x
-		# s11 = garden_y
+		# t5 = garden_x
+		# t6 = garden_y
 
 		li t0, 1
 		li t1, 2
 		li t3, 3
 
-		beq s3, t0, PLANTA1
-		beq s3, t1, PLANTA2
-		beq s3, t3, PLANTA3
+		beq a1, t0, PLANTA1
+		beq a1, t1, PLANTA2
+		beq a1, t3, PLANTA3
 
 		PLANTA1:
-			bne s4, t0, VOLTAR # verificando tambem o garden_y_state
-			##### DEBUG
-			li a7, 1
-			li a0, 200
-			ecall
-
 			la a0, planta1
 			j PLANTAR
 
 		PLANTA2:
-			bne s4, t0, VOLTAR
-			##### DEBUG
-			li a7, 1
-			li a0, 201
-			ecall
-
 			la a0, planta2
 			j PLANTAR
 
 		PLANTA3:
-			bne s4, t0, VOLTAR
-			##### DEBUG
-			li a7, 1
-			li a0, 202
-			ecall
-
 			la a0, planta3
 			j PLANTAR
 
@@ -696,12 +687,12 @@ WaterGarden:
 			ret
 
 		PLANTAR:
-			mv a1, s10 # x da imagem
-			mv a2, s11 # y da imagem
+			mv a1, t5 # x da imagem
+			mv a2, t6 # y da imagem
 			li a3, 4 # layer 4
 			call LoadImage
 
-		ret
+		j GAME_LOOP
 
 # a2 = estado_tipo (byte)
 GenerateGardens:
@@ -709,7 +700,7 @@ GenerateGardens:
 	la s1, garden_matriz_y
 	li s2, 5 # tamanho_x
 	li s3, 3 # tamanho_y
-	li s11, 1
+	li s10, 1
 	
 	# depois implementar um algoritmo para mudar os tipos de janela usando a3
 	
@@ -745,8 +736,8 @@ GenerateGardens:
 	Done_GG_1:
 		call TrocarTela
 		li t0, 3
-		bgeu s11, t0, SAIR
-		addi s11, s11, 1
+		bgeu s10, t0, SAIR
+		addi s10, s10, 1
 		j For_GG_1
 		
 	SAIR: j FimGenerateGardens
