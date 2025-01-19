@@ -57,7 +57,7 @@ GAME_LOOP:
 		lh a1 , 0(t0)
 		lh a2 , 2(t0)
 		li a3 , 5
-		la a0 ,macaco
+		la a0 , macaco
 		call LoadImage
 		
 		li a0 , 0
