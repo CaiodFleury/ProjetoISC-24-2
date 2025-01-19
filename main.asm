@@ -154,6 +154,26 @@ KeyDown:
 	li t1, 'S'
 	beq t2, t0, MoveDown
 	beq t2, t1, MoveDown
+	
+	li t0, 'm'
+	li t1, 'M'
+	beq t2, t0, MoveUpRight
+	beq t2, t1, MoveUpRight
+	
+	li t0, 'j'
+	li t1, 'J'
+	beq t2, t0, MoveUpLeft
+	beq t2, t1, MoveUpLeft
+		
+	li t0, 'k'
+	li t1, 'K'
+	beq t2, t0, MoveDownRight
+	beq t2, t1, MoveDownRight
+	
+	li t0, 'n'
+	li t1, 'N'
+	beq t2, t0, MoveDownLeft
+	beq t2, t1, MoveDownLeft
 
 	FIM:	ret				# retorna
 	
@@ -172,7 +192,7 @@ KeyDown:
 		li t3,63
 		beq t2,t3,SegundaParte # se for amarelo ele vai para a segunda parte do mapa
 		lh t2, 0(t5)
-		addi t2, t2,4 
+		addi t2, t2,4
 		sh t2, 0(t5)
 		ret
 		
@@ -212,5 +232,64 @@ KeyDown:
 		addi t1, t1, 4 
 		sh t1, 2(t5)
 		ret
+		
+	MoveUpRight:
+		addi t6,t6,-1276
+		lb t2,0(t6)
+		li t3,-110
+		beq t2,t3,FIM # se o pixel for azul ele não se meche
+		li t3,63
+		beq t2,t3,SegundaParte # se for amarelo ele vai para a segunda parte do mapa
+		lh t2, 0(t5)
+		addi t2, t2,4
+		sh t2, 0(t5)
+		lh t2, 2(t5)
+		addi t2, t2,4
+		sh t2, 2(t5)
+		ret
+		
+	MoveDownRight:
+		addi t6,t6,1284
+		lb t2,0(t6)
+		li t3,-110
+		beq t2,t3,FIM # se o pixel for azul ele não se meche
+		li t3,63
+		beq t2,t3,SegundaParte # se for amarelo ele vai para a segunda parte do mapa
+		lh t2, 0(t5)
+		addi t2, t2,4
+		sh t2, 0(t5)
+		lh t2, 2(t5)
+		addi t2, t2,-4
+		sh t2, 2(t5)
+		ret
+	
+	MoveUpLeft:
+		addi t6,t6,-1284
+		
+		lb t4,0(t6)
+		li t6,-110
+		beq t4,t6,FIM
 
+		lh t1, 2(t5)
+		addi t1, t1, -4 
+		sh t1, 2(t5)
+		lh t1, 0(t5)
+		addi t1, t1, -4 
+		sh t1, 0(t5)
+		ret
+	
+	MoveDownLeft:
+		addi t6,t6,1276
+		
+		lb t4,0(t6)
+		li t6,-110
+		beq t4,t6,FIM
+
+		lh t1, 2(t5)
+		addi t1, t1, 4 
+		sh t1, 2(t5)
+		lh t1, 0(t5)
+		addi t1, t1, -4 
+		sh t1, 0(t5)
+		ret
 .include "data/funcoes.asm"
