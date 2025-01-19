@@ -9,6 +9,7 @@ char_pos_bounds:.half 84, 240, 232, 64
 selectframeads:	.word 0xFF200604
 garden_matriz_x:.half 88, 124, 160, 196, 232
 garden_matriz_y:.half 148,120, 92
+var: .word 28
 
 # a logica se consiste na equacao:
 # 88 + (36 * x)
