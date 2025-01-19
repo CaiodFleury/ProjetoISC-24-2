@@ -6,7 +6,7 @@
 #Funcoes no final
 #Padrao for/while/if : Loop_num
 #Padrao funcoes FazerAlgo
-
+#UNICA VARIAVEL GLOBAL É S11 q é o tempo atual
 main:	
 	
 	call StartScreen

@@ -1,8 +1,8 @@
 #FUNCOES--->
-TocarMusica:#s11 Ã© o contador
-	li a7,30		# coloca o horario atual em a0
-	ecall
- 	If_TM:
+TocarMusica:						#s11 eh o contador de tempo
+	li a7,30					#coloca o horario atual em a0
+	ecall						#fun��o n�o recebe entrada
+ 	If_TM:						#apenas toca a proxima nota de Notas
  		blt a0,s11, Fim_If_TM
 		la t2,Music_config
  		lw t0, 0(t2)
@@ -44,16 +44,9 @@ TrocarTela:					#recebe a0
 		sw a0, 0(t3)
 		ret
 	Else_TT1:				#Se nao, se a tela atual ÃƒÂ© 1 troca para 0
-		lb t1,0(t3)			#se a tela ÃƒÂ© 0 troca para 1
-		li t0, 1
-		If_TT2:
-			bne t1,t0, Else_TT2
-			li t1, 0
-			sw t1, 0(t3)
-			ret
-		Else_TT2:
-			li t1, 1
-			sw t1, 0(t3)
+		lb t1, 0(t3)			#se a tela for 0 troca para 1 vice-versa
+		xori t1,t1,1
+		sb t1,0(t3) 
 	ret
 
 LoadScreen:						#Recebe a0, a1, a2;
@@ -258,7 +251,7 @@ Renderizador:
 	xori t1,t1,1
 	sb t1,0(t0) 
 	ret
-
+# deixei aqui o renderizador que le baseado em a0, a1, a2 e a3, se for usar teste, pois nao conferi codigo
 Renderizador2:
 	#le o frame atual e pega o outro para modificar
 	#array layers Ã© a memoria das camadas
@@ -433,6 +426,6 @@ AnimationScreen:
 	
 	j Loop_AS
 
-FimPrograma:		#Nao recebe nada
-	li a7,10      	#Chama o procedimento de finalizar o programa
+FimPrograma:			#Nao recebe nada
+	li a7,10      		#Chama o procedimento de finalizar o programa
 	ecall			#Nao retorna nada
