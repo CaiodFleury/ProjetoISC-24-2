@@ -86,44 +86,54 @@ GAME_LOOP:
    	beq t0,zero,PularKeyDown   	# Se nao ha tecla pressionada entao vai para FIM			
 	call KeyDown
 	PularKeyDown:
+			
+	#renderização
+	la t0, old_char_pos
+	lh a1 , 0(t0)
+	lh a2 , 2(t0)
+	li a3 , 5
+	la a0 macaco
+	call UnloadImage
 	
-	#j PularRenderizar
-	Renderizar:
-		
-		#macaco
-		la t0, old_char_pos
-		lh a1 , 0(t0)
-		lh a2 , 2(t0)
-		li a3 , 5
-		la a0 macaco
-		call UnloadImage
-		
-		la t0, char_pos
-		lh a1 , 0(t0)
-		lh a2 , 2(t0)
-		li a3 , 5
-		la a0 , macaco
-		call LoadImage
-		
-		call Renderizador
-		
-		#######
-	PularRenderizar:
+	la t0, char_pos
+	lh a1 , 0(t0)
+	lh a2 , 2(t0)
+	li a3 , 5
+	la a0 , macaco
+	call LoadImage
+	
+	call Renderizador
 	
 	call TocarMusica #CHAMA A MUSICA. COLOQUEI AKI PQ FOI O LUGAR Q O DESEMPENHO FICOU MELHOR
 		
 	j GAME_LOOP
 
-
-
-
 KeyDown:
 	
   	lw t2,4(a0)  			# le o valor da tecla tecla
 		
-		
+	#Variaveis para atingir o ponto atual
+	la t6,array_layers
+	la t5, char_pos
+	lh t3, 0(t5)
+	lh t4, 2(t5)
+	#operações para chegar no ponto certo
+	add t6,t6,t3
+	li t3,320
+	mul t4,t4,t3
+	add t6,t4,t6
+	li t4,8640
+	add t6,t6,t4
+	# t6 recebe o valor do pixel na tela desejado q é o ponto esquerdo inferior
+	
 	li t0, 'e'
 	beq t2,t0, SpaceInteraction	
+	
+	#Troca a posição antiga com a atual e carrega t5 com char_pos
+	la t5, char_pos
+	la t4, old_char_pos
+	lw t3, 0(t5)
+	sw t3, 0(t4)
 	
 	li t0, 'd'
 	li t1, 'D'
@@ -148,124 +158,59 @@ KeyDown:
 	FIM:	ret				# retorna
 	
 	SpaceInteraction:
-		la t6,array_layers
-		la t5, char_pos
-		lh t0, 0(t5)
-		lh t1, 2(t5)
-		#operações para chegar no ponto certo
-		add t6,t6,t0
-		li t2,320
-		mul t2,t2,t1
-		add t6,t2,t6
-		li t2,8640
-		add t6,t6,t2
 		lb t2,0(t6)
 		li t3, 20
 		bltu t2,t3,WaterGarden
 		ret
-	# t0 = x, t1 = y
+	
 	MoveRight:
-		la t6,array_layers
-		la t5, char_pos
-		la t4, old_char_pos
-		lw t0, 0(t5)
-		sw t0, 0(t4)
-		lh t0, 0(t5)
-		lh t1, 2(t5)
-		#operações para chegar no ponto certo
-		addi t2, t0, 4
-		add t6,t6,t2
-		li t2,320
-		mul t2,t2,t1
-		add t6,t2,t6
-		li t2,8640
-		add t6,t6,t2
-		#pega o bit e ve o valor
+
+		addi t6,t6,4
 		lb t2,0(t6)
 		li t3,-110
-		beq t2,t3,FIM
+		beq t2,t3,FIM # se o pixel for azul ele não se meche
 		li t3,63
-		beq t2,t3,SegundaParte
-		addi t2, t0,4 
+		beq t2,t3,SegundaParte # se for amarelo ele vai para a segunda parte do mapa
+		lh t2, 0(t5)
+		addi t2, t2,4 
 		sh t2, 0(t5)
 		ret
 		
 	MoveLeft:
-		la t0, char_pos
-		la t1, old_char_pos
-		lw t2, 0(t0)
-		sw t2, 0(t1)
-		lh t1, 0(t0)
+		addi t6,t6,-4
 		
-		addi t5, t1, -4
-		
-		la t6,array_layers
-		add t6,t6,t5
-		li t5,320
-		lh t2, 2(t0)
-		mul t2,t2,t5
-		add t6,t2,t6
-		li t4,8640
-		add t6,t6,t4
-		lb t5,0(t6)
+		lb t2,0(t6)
 		li t6,-110
-		beq t5,t6,FIM
+		beq t2,t6,FIM
 		
-		addi t1, t1, -4 # 32 bits pra esquerda
-		sh t1, 0(t0)
+		lh t1,0(t5)
+		addi t1, t1, -4
+		sh t1, 0(t5)
 		ret
 		
-	# s7 = x_bounds_1
-	# s8 = x_bounds_2
-	# s9 = y_bounds 1
-	# s10 = y_bounds 2
 	MoveUp:
-		la t0, char_pos
-		la t1, old_char_pos
-		lw t2, 0(t0)
-		sw t2, 0(t1)
-		lh t1, 2(t0)
+		addi t6,t6,-1280
 		
-		addi t5, t1, -4
-		
-		la t6,array_layers
-		li t4,320
-		mul t4,t4,t5
-		lh t5, 0(t0)
-		add t6,t6,t5
-		add t6,t4,t6
-		li t4,8640
-		add t6,t6,t4
-		lb t5,0(t6)
+		lb t4,0(t6)
 		li t6,-110
-		beq t5,t6,FIM
-		
-		addi t1, t1, -4 # 56 bits pra esquerda
-		sh t1, 2(t0)
+		beq t4,t6,FIM
+
+		lh t1, 2(t5)
+		addi t1, t1, -4 
+		sh t1, 2(t5)
 		ret
 		
 	MoveDown:
-		la t0, char_pos
-		la t1, old_char_pos
-		lw t2, 0(t0)
-		sw t2, 0(t1)
-		lh t1, 2(t0)
+
+		addi t6,t6,1280
 		
-		addi t5, t1, 4		
-		la t6,array_layers
-		li t4,320
-		mul t4,t4,t5
-		lh t5, 0(t0)
-		add t6,t6,t5
-		add t6,t4,t6
-		li t4,8640
-		add t6,t6,t4
-		lb t5,0(t6)
+		lb t4,0(t6)
 		li t6,-110
-		beq t5,t6,FIM
-		
-		addi t1, t1, 4 # 56 bits pra esquerda
-		sh t1, 2(t0)
+		beq t4,t6,FIM
+
+		lh t1, 2(t5)
+		addi t1, t1, 4 
+		sh t1, 2(t5)
 		ret
 
 .include "data/funcoes.asm"
