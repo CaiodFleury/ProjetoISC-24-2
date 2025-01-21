@@ -467,6 +467,7 @@ Inimigo:
 	la t1, old_indio_pos
 	lh a1, 0(t0)
 	sh a1, 0(t1)
+	sh zero, 6(t0)
 	li t3, 232
 	li t4, 88
 	li t5, -1
