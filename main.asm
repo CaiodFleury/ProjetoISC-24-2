@@ -107,6 +107,13 @@ GAME_LOOP:
 	lh t1, 4(t0)
 	beq t1, zero, Back2
 	
+	la t0, indio_pos
+	lh t1, 6(t0)
+	li t2, 20
+	addi t1, t1, 1
+	sh t1, 6(t0)
+	bne t1, t2, Back1
+	
 	call Inimigo
 	
 Back1:	#

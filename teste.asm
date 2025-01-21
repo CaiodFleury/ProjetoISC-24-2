@@ -1,8 +1,14 @@
 .data
-indio_pos:	.half 160, 32, 1
+indio_pos:	.half 300, 32, 0, 5	#posição x, posição y, contador de esq dir, controlador de velocidade
 old_indio_pos:	.half 160, 32
 
 .text
+
+	la t0, indio_pos
+	lh t1, 6(t0)
+	mv a0, t1
+	li a7, 1
+	ecall
 
 Inimigo:
 	
