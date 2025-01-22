@@ -1,6 +1,10 @@
 #include <dinput.h>
 #include <iostream>
 #include <windows.h>
+#include <atomic>
+#include <thread>
+
+std::atomic<bool> running(true);
 
 int count = 3;
 
@@ -36,7 +40,9 @@ void PressKey(WORD virtualKey) {
 void CaptureInput() {
     if (!g_pJoystick) {
         std::cerr << "Joystick não inicializado." << std::endl;
-        return;
+        system("start \"..\\fpgrars-x86_64-pc-windows-msvc--unb.exe\" \"..\\main.asm\"");
+
+        exit(0);
     }
 
     HRESULT hr = g_pJoystick->Poll();
@@ -77,7 +83,7 @@ void CaptureInput() {
         PressKey(0x44); // D
     }
 
-    if (count == 3) {
+    if (count == 3) { // timer para evitar segurar o E
         for (int i = 0; i < 32; i++) {
             if (js.rgbButtons[i] & 0x80) {
                 if (i == 0) {
@@ -93,17 +99,33 @@ void CaptureInput() {
     }
 }
 
+void MonitorFpgrars(HANDLE hProcess) {
+    WaitForSingleObject(hProcess, INFINITE); //aguarda o término do processo `fpgrars`
+    std::cout << "fpgrars encerrado\n";
+    running = false; // sinaliza para desabilitar o capture input
+}
+
 int main() {
-    if (FAILED(DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION,
-                                  IID_IDirectInput8, (VOID**)&g_pDI, nullptr))) {
-        std::cerr << "Falha ao inicializar DirectInput." << std::endl;
+
+    // vai ser ativo quando finalizar o programa C++
+    if (!SetConsoleCtrlHandler([](DWORD signal) -> BOOL {
+        if (signal == CTRL_C_EVENT) {
+            running = false; // desabilita todo o processo de captura de input nos threads
+            return TRUE;
+        }
+        return FALSE;
+    }, TRUE)) {
+        std::cerr << "erro ao configurar o manipulador de sinais\n";
         return 1;
     }
 
-    if (FAILED(g_pDI->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoysticksCallback,
-                                  g_pDI, DIEDFL_ATTACHEDONLY))) {
-        std::cerr << "Falha ao enumerar dispositivos." << std::endl;
+    if (FAILED(DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION, IID_IDirectInput8, (VOID**)&g_pDI, nullptr))) {
+        std::cerr << "falha ao inicializar DirectInput" << std::endl;
         return 1;
+    }
+
+    if (FAILED(g_pDI->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoysticksCallback, g_pDI, DIEDFL_ATTACHEDONLY))) {
+        std::cerr << "falha ao enumerar dispositivos" << std::endl;
     }
 
     if (g_pJoystick) {
@@ -111,18 +133,35 @@ int main() {
         g_pJoystick->SetCooperativeLevel(nullptr, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
         g_pJoystick->Acquire();
     } else {
-        std::cerr << "Nenhum joystick encontrado." << std::endl;
+        std::cerr << "nenhum joystick encontrado" << std::endl;
+    }
+
+    STARTUPINFO si = {};
+    si.cb = sizeof(STARTUPINFO);
+
+    PROCESS_INFORMATION pi;
+
+    const char* arg = "\"..\\fpgrars-x86_64-pc-windows-msvc--unb.exe\" \"..\\main.asm\"";
+
+    if (!CreateProcess(nullptr, LPSTR(arg), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi)) {
+        std::cerr << "falha ao iniciar o fpgrars\nCODIGO ERRO: " << GetLastError();
         return 1;
     }
 
-    while (true) {
+    std::thread monitorThread(MonitorFpgrars, pi.hProcess);
+
+    while (running) {
         CaptureInput();
-        Sleep(100); // tempo pra n explodir o processador
+        Sleep(100); // evita sobrecarregar o processador
     }
+
+    TerminateProcess(pi.hProcess, 0); // garante que o fpgrars será encerrado
+    monitorThread.join();
 
     if (g_pJoystick) g_pJoystick->Unacquire();
     if (g_pJoystick) g_pJoystick->Release();
     if (g_pDI) g_pDI->Release();
 
+    std::cout << "programa encerrado\n";
     return 0;
 }
