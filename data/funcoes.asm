@@ -95,7 +95,7 @@ UnloadImage:						# a0= endereco imagem
 	li t0, 76800					# a1 = x da imagem
 	mul t0, t0, a3					# a2 = y da imagem
 	la t1 , array_layers				# a3 = layer(0,5)
-	add t0 , t0, t1
+	add t0 , t0, t1					# a7 vai ser variavel aq
 	li t1 , 320
 	mul t1,a2,t1
 	add t0,t0,t1					
@@ -104,14 +104,24 @@ UnloadImage:						# a0= endereco imagem
 	li t4, 0
 	li t5, 0
 	li t6 ,0xC7C7C7C7
+	li t1,240
+	sub t1,t1,a2
+	bgt t1,t3,PularTroca_UI
+	mv t3,t1
+	PularTroca_UI:
 	While_UI:	
 		beq t3, t4, EndWhile_UI
 		add t0, t0,a1
+		add t1, zero,a1
 		While_UI1:
 			beq t2, t5, EndWhile_UI1
+			li a7, 320
+			bgt t1,a7 Pular_UI
 			sw t6, 0(t0)
-			addi t5,t5,4
 			addi t0,t0,4
+			Pular_UI:
+			addi t1,t1,4
+			addi t5,t5,4
 			j While_UI1
 		EndWhile_UI1:
 		li t5, 320
@@ -128,7 +138,7 @@ LoadImage:						# a0= endereco imagem
 	li t0, 76800					# a1 = x da imagem
 	mul t0, t0, a3					# a2 = y da imagem
 	la t1 , array_layers				# a3 = layer(0,5)
-	add t0 , t0, t1	
+	add t0 , t0, t1					# a7 vai ser uma variavel
 	li t1 , 320
 	mul t1,a2,t1
 	add t0,t0,t1				
@@ -137,16 +147,26 @@ LoadImage:						# a0= endereco imagem
 	li t4, 0
 	li t5, 0
 	addi a0,a0,8
+	li t1,240
+	sub t1,t1,a2
+	bgt t1,t3,PularTroca_LI
+	mv t3,t1
+	PularTroca_LI:
 	While_LI:	
 		beq t3, t4, EndWhile_LI
 		add t0, t0,a1
+		add t1, zero,a1
 		While_LI1:
 			beq t2, t5, EndWhile_LI1
+			li a7, 320
+			bgt t1,a7 Pular_LI
 			lw t6, 0(a0)
 			sw t6, 0(t0)
+			addi t0,t0,4
+			Pular_LI:
+			addi t1,t1,4
 			addi t5,t5,4
 			addi a0,a0,4
-			addi t0,t0,4
 			j While_LI1
 		EndWhile_LI1:
 		li t5, 320
@@ -229,6 +249,8 @@ Renderizador:
 				lb t5,0(a7)
 				bne t5, a6,EndWhile_R2
 				la t5 , array_layers 
+				li a5, 76800
+				add t5, t5,a5
 				blt a7,t5,EndWhile_R3
 				li t5, 76800
 				sub a7, a7,t5
