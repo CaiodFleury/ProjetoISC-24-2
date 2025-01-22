@@ -407,14 +407,14 @@ AnimationScreen:
 	la t0, old_char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 5
+	li a3 , 4
 	la a0 macaco
 	call UnloadImage
 	
 	la t0, char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 5
+	li a3 , 4
 	la a0 ,macaco
 	call LoadImage
 
@@ -422,7 +422,7 @@ AnimationScreen:
 	la a0 fazendav2
 	li a1 , 0
 	li a2 , 0
-	li a3 , 3
+	li a3 , 2
 	lw a4,0(t0)
 	call LoadAnimation
 	

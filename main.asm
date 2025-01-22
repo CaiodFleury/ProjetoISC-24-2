@@ -29,11 +29,6 @@ StartScreen:
 	li a0, 2
 	call TrocarTela	
 	
-	li a1 , 100
-	li a2 , 100
-	la a0 Loading
-	call LoadScreen
-	
 	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
 	lw t0,0(a0)			# Le bit de Controle Teclado
 	andi t0,t0,0x0001		# mascara o bit menos significativo
@@ -50,7 +45,7 @@ LoadGame:
 	#Primeira parte do nivel
 	li a1 , 0
 	li a2 , 0
-	li a3 , 3
+	li a3 , 2
 	la a0 fazendav1
 	call LoadImage
 	
@@ -91,15 +86,34 @@ GAME_LOOP:
 	la t0, old_char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 5
+	li a3 , 4
 	la a0 macaco
 	call UnloadImage
 	
 	la t0, char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 5
+	li a3 , 4
 	la a0 , macaco
+	call LoadImage
+	
+	la t0, arrow_pos
+	li a1 , 100
+	lh a2 , 0(t0)
+	li a3 , 3
+	la a0 flecha
+	li t2, 240
+	beq a2,t2,PuLLLLAr
+	addi t1,a2,1
+	sh t1,0(t0)
+	PuLLLLAr:
+	call UnloadImage
+	
+	la t0, arrow_pos
+	li a1 , 100
+	lh a2 , 0(t0)
+	li a3 , 3
+	la a0 flecha
 	call LoadImage
 	
 	call Renderizador
