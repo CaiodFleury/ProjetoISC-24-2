@@ -6,13 +6,13 @@
 #Funcoes no final
 #Padrao for/while/if : Loop_num
 #Padrao funcoes FazerAlgo
-#UNICA VARIAVEL GLOBAL � S11 q � o tempo atual
+#UNICA VARIAVEL GLOBAL É S11 q é o tempo atual
 main:	
 	
 	call StartScreen
 	FimStartScreen:
 	
-	#colocar animação de introdução aqui
+	#colocar animaÃ§Ã£o de introduÃ§Ã£o aqui
 			
 	call LoadGame
 	FimGame:
@@ -89,7 +89,7 @@ GAME_LOOP:
 	addi t2,t2,1
 	sb t2,0(t0)
 	Sairrrrr:
-	#renderiza��o
+	#renderização
 	
 	la t0, old_char_pos
 	lh a1 , 0(t0)
@@ -128,6 +128,51 @@ GAME_LOOP:
 	li a3 , 4
 	la a0 mosquito
 	call LoadImage
+
+	la t0, indio_pos
+	lh t1, 4(t0)
+	beq t1, zero, Back2
+	
+	la t0, indio_pos
+	lh t1, 6(t0)
+	li t2, 20
+	addi t1, t1, 1
+	sh t1, 6(t0)
+	bne t1, t2, Back1
+	
+	call Inimigo
+	
+Back1:	#
+	
+	la t0, old_indio_pos
+	lh a1 , 0(t0)
+	lh a2 , 2(t0)
+	li a3 , 5
+	la a0 inimigo
+	call UnloadImage
+	
+	la t0, indio_pos
+	lh a1 , 0(t0)
+	lh a2 , 2(t0)
+	li a3 , 5
+	la a0 , inimigo
+	call LoadImage
+	
+	#
+Back2:
+	la t0, indio_pos
+	lh t1, 4(t0)
+	bne t1, zero, Skip
+	la t0, indio_pos
+	lh a1 , 0(t0)
+	lh a2 , 2(t0)
+	li a3 , 5
+	la a0 , inimigo
+	call LoadImage
+	#
+	
+Skip:
+	#
 	
 	call Renderizador
 	
@@ -148,19 +193,19 @@ KeyDown:
 	la t5, char_pos
 	lh t3, 0(t5)
 	lh t4, 2(t5)
-	#opera��es para chegar no ponto certo
+	#operações para chegar no ponto certo
 	add t6,t6,t3
 	li t3,320
 	mul t4,t4,t3
 	add t6,t4,t6
 	li t4,8640
 	add t6,t6,t4
-	# t6 recebe o valor do pixel na tela desejado q � o ponto esquerdo inferior
+	# t6 recebe o valor do pixel na tela desejado q é o ponto esquerdo inferior
 	
 	li t0, 'e'
 	beq t2,t0, SpaceInteraction	
 	
-	#Troca a posi��o antiga com a atual e carrega t5 com char_pos
+	#Troca a posição antiga com a atual e carrega t5 com char_pos
 	la t5, char_pos
 	la t4, old_char_pos
 	lw t3, 0(t5)
@@ -219,7 +264,7 @@ KeyDown:
 		addi t6,t6,4
 		lb t2,0(t6)
 		li t3,-110
-		beq t2,t3,FIM # se o pixel for azul ele n�o se meche
+		beq t2,t3,FIM # se o pixel for azul ele não se meche
 		li t3,63
 		beq t2,t3,SegundaParte # se for amarelo ele vai para a segunda parte do mapa
 		lh t2, 0(t5)
@@ -270,7 +315,7 @@ KeyDown:
 		addi t6,t6,-1276
 		lb t2,0(t6)
 		li t3,-110
-		beq t2,t3,FIM # se o pixel for azul ele n�o se meche
+		beq t2,t3,FIM # se o pixel for azul ele não se meche
 		li t3,63
 		beq t2,t3,SegundaParte # se for amarelo ele vai para a segunda parte do mapa
 		lh t2, 0(t5)
@@ -285,7 +330,7 @@ KeyDown:
 		addi t6,t6,1284
 		lb t2,0(t6)
 		li t3,-110
-		beq t2,t3,FIM # se o pixel for azul ele n�o se meche
+		beq t2,t3,FIM # se o pixel for azul ele não se meche
 		li t3,63
 		beq t2,t3,SegundaParte # se for amarelo ele vai para a segunda parte do mapa
 		lh t2, 0(t5)
