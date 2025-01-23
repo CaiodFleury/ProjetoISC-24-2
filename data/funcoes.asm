@@ -480,7 +480,7 @@ WaterGarden:
 		PLANTAR:
 			mv a1, t5 # x da imagem
 			mv a2, t6 # y da imagem
-			li a3, 4 # layer 4
+			li a3, 3 # layer 4
 			call LoadImage
 
 		j GAME_LOOP	
@@ -503,6 +503,22 @@ AnimationScreen:
 	li a3 , 4
 	la a0 ,macaco
 	call LoadImage
+
+	#
+	la t0, old_indio_pos
+	lh a1 , 0(t0)
+	lh a2 , 2(t0)
+	li a3 , 5
+	la a0 inimigo
+	call UnloadImage
+	
+	la t0, indio_pos
+	lh a1 , 0(t0)
+	lh a2 , 2(t0)
+	li a3 , 5
+	la a0 ,inimigo
+	call LoadImage
+	#
 
 	la t0, var
 	la a0 fazendav2
