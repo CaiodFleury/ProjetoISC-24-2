@@ -4,6 +4,7 @@ Time_line: 	.word 0,0 #playerTime, arrowTime
 char_pos:	.half 100, 120
 old_char_pos:	.half 200, 0
 arrow_pos:	.half 4
+mosq_pos:	.half 320
 indio_pos:	.half 48, 100
 char_pos_bounds:.half 84, 240, 232, 64
 selectframeads:	.word 0xFF200604

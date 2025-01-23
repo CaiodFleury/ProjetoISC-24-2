@@ -90,80 +90,163 @@ LoadScreen:						#Recebe a0, a1, a2;
 		j While_LS
 	EndWhile_LS:
 	ret
-	
-UnloadImage:						# a0= endereco imagem
-	li t0, 76800					# a1 = x da imagem
-	mul t0, t0, a3					# a2 = y da imagem
-	la t1 , array_layers				# a3 = layer(0,5)
-	add t0 , t0, t1					# a7 vai ser variavel aq
-	li t1 , 320
-	mul t1,a2,t1
-	add t0,t0,t1					
- 	lw t2, 0(a0)
+
+# a1 = x da imagem
+# a2 = y da imagem
+# a3 = layer(0,5)
+# a7 vai ser variavel aq
+UnloadImage:
+	#If_UI1: se y >= 240, return	
+	li t0,240	
+	bge a2,t0 Fim_UI
+	#If_UI2: se X >= 320, return	
+	li t0,320	
+	bge a1,t0 Fim_UI
+	#If_UI3: se y + y(a0) < 0, return		
+	lw t0,4(a0)
+	add t0,t0,a2
+	blt t0,zero Fim_UI	
+	#If_UI4: se X + X(a0) < 0, return		
+	lw t0,0(a0)
+	add t0,t0,a1
+	blt t0,zero Fim_UI	
+	# Carrega o array_layers e coloca na camada correta															# a0= endereco imagem
+	li t0, 76800					
+	mul t0, t0, a3					
+	la t1 , array_layers				
+	add t0 , t0, t1	
+	#Carrega variaveis importantes
+	lw t2, 0(a0)
 	lw t3, 4(a0)
 	li t4, 0
 	li t5, 0
-	li t6 ,0xC7C7C7C7
+	li t6 ,0xC7C7C7C7					
+	#If_UI5: Se y for negativo a camada inicial vai ser y = 0
+	blt a2,zero Else_UI5
+	li t1 , 320
+	mul t1,a2,t1
+	add t0,t0,t1
+	Else_UI5:
+	#If_UI6: Se y for negativo a0+= y(a0) * -(y)
+	bge a2,zero Else_UI6
+	add t3,t3,a2
+	Else_UI6: 
+	#If_UI7: Se 240 - y > y(a0), y(a0) = 240 - y;	
 	li t1,240
 	sub t1,t1,a2
-	bgt t1,t3,PularTroca_UI
+	bgt t1,t3,Else_UI7
 	mv t3,t1
-	PularTroca_UI:
+	Else_UI7:
+	#If_UI8: Se x for negativo x(a0) += a1
+	bge a1,zero Else_UI8
+	add t2,t2,a1
+	Else_UI8:
+	#############################################
 	While_UI:	
 		beq t3, t4, EndWhile_UI
-		add t0, t0,a1
+		#If_UI9: Se x < 0:
+		bge a1,zero Else_UI9
+		sub a0,a0,a1
+		j Fim_If_UI9
+		Else_UI9:
+		add t0, t0,a1 
+		Fim_If_UI9:
 		add t1, zero,a1
 		While_UI1:
 			beq t2, t5, EndWhile_UI1
 			li a7, 320
-			bgt t1,a7 Pular_UI
+			bge t1,a7 Pular_UI
 			sw t6, 0(t0)
-			addi t0,t0,4
 			Pular_UI:
+			addi t0,t0,4
 			addi t1,t1,4
 			addi t5,t5,4
 			j While_UI1
 		EndWhile_UI1:
 		li t5, 320
 		sub t5, t5, a1
+		bge a1,zero Else_UI10
+		add t5,t5,a1
+		Else_UI10:
 		sub t5, t5,t2
 		add t0, t0, t5
 		li t5, 0
 		addi t4, t4,1
 		j While_UI
 	EndWhile_UI:					
- 	ret						
-
-LoadImage:						# a0= endereco imagem
-	li t0, 76800					# a1 = x da imagem
-	mul t0, t0, a3					# a2 = y da imagem
-	la t1 , array_layers				# a3 = layer(0,5)
-	add t0 , t0, t1					# a7 vai ser uma variavel
+ 	Fim_UI:ret						
+# a0= endereco imagem
+# a1 = x da imagem
+# a2 = y da imagem
+# a3 = layer(0,5)
+# a7 vai ser uma variavel
+LoadImage:	
+	#If_LI1: se y >= 240, return	
+	li t0,240	
+	bge a2,t0 Fim_LI
+	#If_LI2: se X >= 320, return	
+	li t0,320	
+	bge a1,t0 Fim_LI
+	#If_LI3: se y + y(a0) < 0, return		
+	lw t0,4(a0)
+	add t0,t0,a2
+	blt t0,zero Fim_LI	
+	#If_LI4: se X + X(a0) < 0, return		
+	lw t0,0(a0)
+	add t0,t0,a1
+	blt t0,zero Fim_LI	
+	# Carrega o array_layers e coloca na camada correta															# a0= endereco imagem
+	li t0, 76800					
+	mul t0, t0, a3					
+	la t1 , array_layers				
+	add t0 , t0, t1	
+	#Carrega variaveis importantes
+	lw t2, 0(a0)
+	lw t3, 4(a0)	
+	li t4, 0
+	li t5, 0											
+	addi a0,a0,8
+	#If_LI5: Se y for negativo a camada inicial vai ser y = 0
+	blt a2,zero Else_LI5
 	li t1 , 320
 	mul t1,a2,t1
-	add t0,t0,t1				
- 	lw t2, 0(a0)
-	lw t3, 4(a0)
-	li t4, 0
-	li t5, 0
-	addi a0,a0,8
+	add t0,t0,t1
+	Else_LI5:
+	#If_LI6: Se y for negativo a0+= y(a0) * -(y)
+	bge a2,zero Else_LI6
+	mul t1,a2,t2
+	sub a0,a0,t1
+	add t3,t3,a2
+	Else_LI6: 
+	#If_LI7: Se 240 - y > y(a0), y(a0) = 240 - y;	
 	li t1,240
 	sub t1,t1,a2
-	bgt t1,t3,PularTroca_LI
+	bgt t1,t3,Else_LI7
 	mv t3,t1
-	PularTroca_LI:
+	Else_LI7:
+	#If_LI8: Se x for negativo x(a0) += a1
+	bge a1,zero Else_LI8
+	add t2,t2,a1
+	Else_LI8: 
+	#############################################		
 	While_LI:	
 		beq t3, t4, EndWhile_LI
-		add t0, t0,a1
+		#If_LI9: Se x < 0:
+		bge a1,zero Else_LI9
+		sub a0,a0,a1
+		j Fim_If_LI9
+		Else_LI9:
+		add t0, t0,a1 
+		Fim_If_LI9:
 		add t1, zero,a1
 		While_LI1:
 			beq t2, t5, EndWhile_LI1
 			li a7, 320
-			bgt t1,a7 Pular_LI
+			bge t1,a7 Pular_LI
 			lw t6, 0(a0)
 			sw t6, 0(t0)
-			addi t0,t0,4
 			Pular_LI:
+			addi t0,t0,4
 			addi t1,t1,4
 			addi t5,t5,4
 			addi a0,a0,4
@@ -171,13 +254,16 @@ LoadImage:						# a0= endereco imagem
 		EndWhile_LI1:
 		li t5, 320
 		sub t5, t5, a1
+		bge a1,zero Else_LI10
+		add t5,t5,a1
+		Else_LI10:
 		sub t5, t5, t2
 		add t0, t0, t5
 		li t5, 0
 		addi t4, t4,1
 		j While_LI
 	EndWhile_LI:
-	ret	
+	Fim_LI:ret	
 
 LoadAnimation:						# a0= endereco imagem
 	li t0, 76800					# a1 = x da imagem
