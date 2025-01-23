@@ -5,7 +5,8 @@ char_pos:	.half 100, 120
 old_char_pos:	.half 200, 0
 arrow_pos:	.half 4
 mosq_pos:	.half 320
-indio_pos:	.half 48, 100
+indio_pos:	.half 300, 48, 0, 0	#posição x, posição y, contador de esq dir, controlador de velocidade
+old_indio_pos:	.half 160, 48
 char_pos_bounds:.half 84, 240, 232, 64
 selectframeads:	.word 0xFF200604
 garden_matriz_x:.half 88, 124, 160, 196, 232
