@@ -81,8 +81,16 @@ GAME_LOOP:
    	beq t0,zero,PularKeyDown   	# Se nao ha tecla pressionada entao vai para FIM			
 	call KeyDown
 	PularKeyDown:
-			
+	
+	la t0, sprite_macaco
+	lb,t2,0(t0)
+	li t1,3
+	beq t2,t1,Sairrrrr
+	addi t2,t2,1
+	sb t2,0(t0)
+	Sairrrrr:
 	#renderização
+	
 	la t0, old_char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
@@ -94,31 +102,40 @@ GAME_LOOP:
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
 	li a3 , 4
-	la a0 , macaco
+	la t0,sprite_macaco
+	lb t0,0(t0)
+	li t1,548
+	mul t0,t1,t0
+	la a0 , macaco1
+	add a0,t0,a0
 	call LoadImage
 	
-	la t0, arrow_pos
-	li a1 , 100
-	lh a2 , 0(t0)
-	li a3 , 3
-	la a0 flecha
-	li t2, 240
-	beq a2,t2,PuLLLLAr
-	addi t1,a2,1
+	la t0, mosq_pos
+	lh a1 , 0(t0)
+	li a2 , 100
+	li a3 , 4
+	la a0 mosquito
+	addi t1,a1,20
+	beq t1,zero,PuLLLLAr
+	addi t1,a1,-4
 	sh t1,0(t0)
 	PuLLLLAr:
 	call UnloadImage
 	
-	la t0, arrow_pos
-	li a1 , 100
-	lh a2 , 0(t0)
-	li a3 , 3
-	la a0 flecha
+	la t0, mosq_pos
+	lh a1 , 0(t0)
+	li a2 , 100
+	li a3 , 4
+	la a0 mosquito
 	call LoadImage
 	
 	call Renderizador
 	
 	call TocarMusica #CHAMA A MUSICA. COLOQUEI AKI PQ FOI O LUGAR Q O DESEMPENHO FICOU MELHOR
+		
+	li a7,32
+	li a0,50
+	ecall
 		
 	j GAME_LOOP
 
@@ -198,7 +215,7 @@ KeyDown:
 		ret
 	
 	MoveRight:
-
+		
 		addi t6,t6,4
 		lb t2,0(t6)
 		li t3,-110
@@ -208,6 +225,8 @@ KeyDown:
 		lh t2, 0(t5)
 		addi t2, t2,4
 		sh t2, 0(t5)
+		la t0, sprite_macaco
+		sb zero,0(t0)
 		ret
 		
 	MoveLeft:
