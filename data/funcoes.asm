@@ -1,7 +1,7 @@
 #FUNCOES--->
 TocarMusica:						#s11 eh o contador de tempo
 	li a7,30					#coloca o horario atual em a0
-	ecall						#fun��o n�o recebe entrada
+	ecall						#função não recebe entrada
  	If_TM:						#apenas toca a proxima nota de Notas
  		blt a0,s11, Fim_If_TM
 		la t2,Music_config
@@ -10,7 +10,7 @@ TocarMusica:						#s11 eh o contador de tempo
  		lw a2, 8(t2)
  		lw a3, 12(t2)
 		If_TM1:
-			bne t0,t1, Fim_If_TM1	# contador chegou no final? entÃ£o  vÃ¡ para SET_SONG para zerar o contador e as notas (loop infinito)
+			bne t0,t1, Fim_If_TM1	# contador chegou no final? entÃƒÂ£o  vÃƒÂ¡ para SET_SONG para zerar o contador e as notas (loop infinito)
 			sw zero, 4(t2)
 			li t1, 0
 		Fim_If_TM1:
@@ -43,7 +43,7 @@ TrocarTela:					#recebe a0
  		bge a0,t0, Else_TT1		#If a0 < 2 troca tela para a0
 		sw a0, 0(t3)
 		ret
-	Else_TT1:				#Se nao, se a tela atual ÃƒÂ© 1 troca para 0
+	Else_TT1:				#Se nao, se a tela atual ÃƒÆ’Ã‚Â© 1 troca para 0
 		lb t1, 0(t3)			#se a tela for 0 troca para 1 vice-versa
 		xori t1,t1,1
 		sb t1,0(t3) 
@@ -310,7 +310,7 @@ LoadAnimation:						# a0= endereco imagem
 
 Renderizador:
 	#le o frame atual e pega o outro para modificar
-	#array layers Ã© a memoria das camadas
+	#array layers ÃƒÂ© a memoria das camadas
 	#
 	lw t0, selectframeads				#a4 = atualizar tela ou nao
 	lb t0, 0(t0)					#x1 < x2, y1 < y2
@@ -362,7 +362,7 @@ Renderizador:
 # deixei aqui o renderizador que le baseado em a0, a1, a2 e a3, se for usar teste, pois nao conferi codigo
 Renderizador2:
 	#le o frame atual e pega o outro para modificar
-	#array layers Ã© a memoria das camadas
+	#array layers ÃƒÂ© a memoria das camadas
 	#
 	lw t0, selectframeads	
 	lb t0, 0(t0)					#a0 = x0
@@ -423,7 +423,7 @@ Renderizador2:
 	Fim_2R:ret
 
 WaterGarden:
-		# t2 era minha posição
+		# t2 era minha posiÃ§Ã£o
 		mv a0,t2
 		# essa parte vai salvar o estado do jardim atual
 		la t0, garden_state
@@ -527,12 +527,62 @@ AnimationScreen:
 	sh t2 , 0(t1)
 	addi t2,t2,-4
 	sh t2 , 0(t0)
+
+	#
+	la t0, indio_pos
+	la t1, old_indio_pos
+	li t3, 1
+	sh t3, 4(t0)
+	lh t2, 0(t0)
+	sh t2, 0(t1)
+	addi t2, t2, -4
+	sh t2, 0(t0)
+	
+	#li t3, 160
+	#sh t3, 0(t0)
+	#
 	
 	li a7, 32
 	li a0, 20
 	ecall
 	
 	j Loop_AS
+
+Inimigo:
+	
+	#li a0, 200
+	#li a7, 32
+	#ecall
+
+	la t0, indio_pos
+	la t1, old_indio_pos
+	lh a1, 0(t0)
+	sh a1, 0(t1)
+	sh zero, 6(t0)
+	li t3, 232
+	li t4, 88
+	li t5, -1
+	lh t6, 4(t0)
+	
+	beq t6, t5, Esq
+	
+Dir:	beq a1, t3, Reset
+	addi a1, a1, 4
+	sh a1, 0(t0)
+	sh t6, 4(t0)
+	j Back1
+	
+Esq:	beq a1, t4, Reset
+	addi a1, a1, -4
+	sh a1, 0(t0)
+	sh t6, 4(t0)
+	j Back1
+	
+Reset:
+	mul t6, t6, t5
+	sh t6, 4(t0)
+	j Back1
+	
 
 FimPrograma:			#Nao recebe nada
 	li a7,10      		#Chama o procedimento de finalizar o programa
