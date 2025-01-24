@@ -35,7 +35,22 @@ StartScreen:
    	beq t0,zero,StartScreen  	# Se nao ha tecla pressionada entao vai para FIM			
 	
 	j FimStartScreen
-
+#tela de end
+EndScreen:
+	li a1 , 0
+	li a2 , 0
+	la a0 ,macacofundofinal
+	call LoadScreen
+	
+	li a0, 2
+	call TrocarTela	
+	
+	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
+	lw t0,0(a0)			# Le bit de Controle Teclado
+	andi t0,t0,0x0001		# mascara o bit menos significativo
+   	beq t0,zero,EndScreen  	# Se nao ha tecla pressionada entao vai para FIM			
+	
+	j FimEndScreen
 #Administrador maximo do jogo
 LoadGame:
 	li a7,30		# coloca o horario atual em s11
@@ -68,6 +83,13 @@ LoadGame:
 	call LoadImage
 	
 	call GAME_LOOP
+	#terceira parte do nivel
+	TerceiraParte:
+	
+	call EndScreen
+	FimEndScreen:
+	
+	j FimGame
 	
 #O game loop vai ser responsavel por administrar:
 #efeitos visuais e coisas que mudam na tela
@@ -81,6 +103,12 @@ GAME_LOOP:
    	beq t0,zero,PularKeyDown   	# Se nao ha tecla pressionada entao vai para FIM			
 	call KeyDown
 	PularKeyDown:
+	
+	la a0 banana
+	li a1 , 280
+	li a2 , 4
+	li a3 , 5
+	call LoadImage
 	
 	la t0, sprite_macaco
 	lb,t2,0(t0)
@@ -172,18 +200,20 @@ Back2:
 	#
 	
 Skip:
-	#
+	
+	la t0,bananatotal
+	lb t0,0(t0)
+	li t1,10
+	beq t1,t0,TerceiraParte
 	
 	call Renderizador
 	
 	call TocarMusica #CHAMA A MUSICA. COLOQUEI AKI PQ FOI O LUGAR Q O DESEMPENHO FICOU MELHOR
 		
-	li a7,32
-	li a0,50
-	ecall
-		
 	j GAME_LOOP
-
+###############
+#FIM GAME_LOOP#
+###############
 KeyDown:
 	
   	lw t2,4(a0)  			# le o valor da tecla tecla

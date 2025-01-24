@@ -457,11 +457,28 @@ WaterGarden:
 		li t0, 1
 		li t1, 2
 		li t3, 3
-
+		
 		beq a1, t0, PLANTA1
 		beq a1, t1, PLANTA2
 		beq a1, t3, PLANTA3
-
+		
+		la t0, garden_state
+		add t1, t0, a0 			# move o ponteiro para o indice correto
+		sb zero, 0(t1)
+		
+		la a0, planta1
+		mv a1, t5 # x da imagem
+		mv a2, t6 # y da imagem
+		li a3, 3 # layer 4
+		call UnloadImage
+		
+		la t0,bananatotal
+		lb t1,0(t0)
+		addi t1,t1,1
+		sb t1,0(t0)
+		
+		j GAME_LOOP
+		
 		PLANTA1:
 			la a0, planta1
 			j PLANTAR
