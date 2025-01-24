@@ -1,4 +1,41 @@
 #FUNCOES--->
+
+#tela de inicio
+StartScreen:
+	li a1 , 0
+	li a2 , 0
+	la a0 ,startscreen
+	call LoadScreen
+	
+	li a0, 2
+	call TrocarTela	
+	
+	Esperar_Leitura_SS:
+	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
+	lw t0,0(a0)			# Le bit de Controle Teclado
+	andi t0,t0,0x0001		# mascara o bit menos significativo
+   	beq t0,zero,Esperar_Leitura_SS  # Se nao ha tecla pressionada entao vai para FIM			
+	
+	j FimStartScreen
+
+#tela de endday
+EndDayScreen:
+	li a1 , 0
+	li a2 , 0
+	la a0 ,macacofundofinal
+	call LoadScreen
+	
+	li a0, 2
+	call TrocarTela	
+	
+	Esperar_Leitura_EDS:
+	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
+	lw t0,0(a0)			# Le bit de Controle Teclado
+	andi t0,t0,0x0001		# mascara o bit menos significativo
+   	beq t0,zero,Esperar_Leitura_EDS # Se nao ha tecla pressionada entao vai para FIM			
+	
+	j FimEndDayScreen
+
 TocarMusica:						#s11 eh o contador de tempo
 	li a7,30					#coloca o horario atual em a0
 	ecall						#função não recebe entrada
@@ -525,14 +562,14 @@ AnimationScreen:
 	la t0, old_indio_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 5
+	li a3 , 4
 	la a0 inimigo
 	call UnloadImage
 	
 	la t0, indio_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 5
+	li a3 , 4
 	la a0 ,inimigo
 	call LoadImage
 	#

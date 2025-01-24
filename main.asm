@@ -6,57 +6,52 @@
 #Funcoes no final
 #Padrao for/while/if : Loop_num
 #Padrao funcoes FazerAlgo
-#UNICA VARIAVEL GLOBAL É S11 q é o tempo atual
+#UNICA VARIAVEL GLOBAL Eh S11 q eh o tempo atual
 main:	
 	
 	call StartScreen
 	FimStartScreen:
 	
-	#colocar animaÃ§Ã£o de introduÃ§Ã£o aqui
+	#colocar animacao de introducao aqui
 			
 	call LoadGame
 	FimGame:
 	
 	call FimPrograma
-			
-#tela de inicio
-StartScreen:
-	li a1 , 0
-	li a2 , 0
-	la a0 ,startscreen
-	call LoadScreen
 	
-	li a0, 2
-	call TrocarTela	
-	
-	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
-	lw t0,0(a0)			# Le bit de Controle Teclado
-	andi t0,t0,0x0001		# mascara o bit menos significativo
-   	beq t0,zero,StartScreen  	# Se nao ha tecla pressionada entao vai para FIM			
-	
-	j FimStartScreen
-#tela de end
-EndScreen:
-	li a1 , 0
-	li a2 , 0
-	la a0 ,macacofundofinal
-	call LoadScreen
-	
-	li a0, 2
-	call TrocarTela	
-	
-	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
-	lw t0,0(a0)			# Le bit de Controle Teclado
-	andi t0,t0,0x0001		# mascara o bit menos significativo
-   	beq t0,zero,EndScreen  	# Se nao ha tecla pressionada entao vai para FIM			
-	
-	j FimEndScreen
 #Administrador maximo do jogo
 LoadGame:
+
 	li a7,30		# coloca o horario atual em s11
 	ecall
 	add s11 , zero , a0
-	
+	#Inicializacao de variaveis
+	li a1 , 0
+	li a2 , 0
+	li a3 , 4
+	la a0 colisao1
+	call UnloadImage
+	la t0,bananatotal
+	sb zero,0(t0)
+	la t0,garden_state
+	sw zero,0(t0)
+	sw zero,4(t0)
+	sw zero,8(t0)
+	sw zero,12(t0)
+	li t0,28
+	la t1,var
+	sw t0,0(t1)
+	la t0, char_pos
+	li t1,100
+	sh t1,0(t0)
+	li t1,120
+	sh t1,0(t0)	
+	la t0, indio_pos
+	li t1,300
+	sh t1,0(t0)
+	li t1,48
+	sh t1,2(t0)
+	sw zero,4(t0)
 	#Primeira parte do nivel
 	li a1 , 0
 	li a2 , 0
@@ -86,10 +81,15 @@ LoadGame:
 	#terceira parte do nivel
 	TerceiraParte:
 	
-	call EndScreen
-	FimEndScreen:
+	call EndDayScreen
+	FimEndDayScreen:
 	
-	j FimGame
+	la t0, level
+	lb t1,0(t0)
+	addi t1,t1,1
+	sb t1,0(t0)
+	
+	j LoadGame
 	
 #O game loop vai ser responsavel por administrar:
 #efeitos visuais e coisas que mudam na tela
@@ -175,14 +175,14 @@ Back1:	#
 	la t0, old_indio_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 5
+	li a3 , 4
 	la a0 inimigo
 	call UnloadImage
 	
 	la t0, indio_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 5
+	li a3 , 4
 	la a0 , inimigo
 	call LoadImage
 	
@@ -194,7 +194,7 @@ Back2:
 	la t0, indio_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 5
+	li a3 , 4
 	la a0 , inimigo
 	call LoadImage
 	#
