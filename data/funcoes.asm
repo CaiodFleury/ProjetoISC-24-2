@@ -28,6 +28,10 @@ EndDayScreen:
 	li a0, 2
 	call TrocarTela	
 	
+	li a7, 32
+	li a0, 5000
+	ecall
+	
 	Esperar_Leitura_EDS:
 	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
 	lw t0,0(a0)			# Le bit de Controle Teclado
