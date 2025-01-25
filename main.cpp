@@ -1,3 +1,5 @@
+#define DIRECTINPUT_VERSION 0x0800
+
 #include <dinput.h>
 #include <iostream>
 #include <windows.h>
@@ -40,7 +42,7 @@ void PressKey(WORD virtualKey) {
 void CaptureInput() {
     if (!g_pJoystick) {
         std::cerr << "Joystick não inicializado." << std::endl;
-        system("start \"..\\fpgrars-x86_64-pc-windows-msvc--unb.exe\" \"..\\main.asm\"");
+        system("start \"fpgrars-x86_64-pc-windows-msvc--unb.exe\" \"main.asm\"");
 
         exit(0);
     }
@@ -141,7 +143,7 @@ int main() {
 
     PROCESS_INFORMATION pi;
 
-    const char* arg = "\"..\\fpgrars-x86_64-pc-windows-msvc--unb.exe\" \"..\\main.asm\"";
+    const char* arg = "\"fpgrars-x86_64-pc-windows-msvc--unb.exe\" \"main.asm\"";
 
     if (!CreateProcess(nullptr, LPSTR(arg), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi)) {
         std::cerr << "falha ao iniciar o fpgrars\nCODIGO ERRO: " << GetLastError();

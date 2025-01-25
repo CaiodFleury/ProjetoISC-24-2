@@ -4,7 +4,6 @@ project(ProjetoISC)
 set(DIRECTX_SDK_INCLUDE_DIR "data\\DirectX\\Include")
 
 include_directories(${DIRECTX_SDK_INCLUDE_DIR})
-link_directories(${DIRECTX_SDK_LIB_DIR})
 
 add_executable(ProjetoISC main.cpp)
 target_link_libraries(ProjetoISC dinput8 dxguid)
