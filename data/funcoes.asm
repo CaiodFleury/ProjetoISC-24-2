@@ -1,7 +1,48 @@
 #FUNCOES--->
+
+#tela de inicio
+StartScreen:
+	li a1 , 0
+	li a2 , 0
+	la a0 ,startscreen
+	call LoadScreen
+	
+	li a0, 2
+	call TrocarTela	
+	
+	Esperar_Leitura_SS:
+	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
+	lw t0,0(a0)			# Le bit de Controle Teclado
+	andi t0,t0,0x0001		# mascara o bit menos significativo
+   	beq t0,zero,Esperar_Leitura_SS  # Se nao ha tecla pressionada entao vai para FIM			
+	
+	j FimStartScreen
+
+#tela de endday
+EndDayScreen:
+	li a1 , 0
+	li a2 , 0
+	la a0 ,macacofundofinal
+	call LoadScreen
+	
+	li a0, 2
+	call TrocarTela	
+	
+	li a7, 32
+	li a0, 5000
+	ecall
+	
+	Esperar_Leitura_EDS:
+	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
+	lw t0,0(a0)			# Le bit de Controle Teclado
+	andi t0,t0,0x0001		# mascara o bit menos significativo
+   	beq t0,zero,Esperar_Leitura_EDS # Se nao ha tecla pressionada entao vai para FIM			
+	
+	j FimEndDayScreen
+
 TocarMusica:						#s11 eh o contador de tempo
 	li a7,30					#coloca o horario atual em a0
-	ecall						#fun��o n�o recebe entrada
+	ecall						#função não recebe entrada
  	If_TM:						#apenas toca a proxima nota de Notas
  		blt a0,s11, Fim_If_TM
 		la t2,Music_config
@@ -10,7 +51,7 @@ TocarMusica:						#s11 eh o contador de tempo
  		lw a2, 8(t2)
  		lw a3, 12(t2)
 		If_TM1:
-			bne t0,t1, Fim_If_TM1	# contador chegou no final? entÃ£o  vÃ¡ para SET_SONG para zerar o contador e as notas (loop infinito)
+			bne t0,t1, Fim_If_TM1	# contador chegou no final? entÃƒÂ£o  vÃƒÂ¡ para SET_SONG para zerar o contador e as notas (loop infinito)
 			sw zero, 4(t2)
 			li t1, 0
 		Fim_If_TM1:
@@ -43,7 +84,7 @@ TrocarTela:					#recebe a0
  		bge a0,t0, Else_TT1		#If a0 < 2 troca tela para a0
 		sw a0, 0(t3)
 		ret
-	Else_TT1:				#Se nao, se a tela atual ÃƒÂ© 1 troca para 0
+	Else_TT1:				#Se nao, se a tela atual ÃƒÆ’Ã‚Â© 1 troca para 0
 		lb t1, 0(t3)			#se a tela for 0 troca para 1 vice-versa
 		xori t1,t1,1
 		sb t1,0(t3) 
@@ -90,80 +131,163 @@ LoadScreen:						#Recebe a0, a1, a2;
 		j While_LS
 	EndWhile_LS:
 	ret
-	
-UnloadImage:						# a0= endereco imagem
-	li t0, 76800					# a1 = x da imagem
-	mul t0, t0, a3					# a2 = y da imagem
-	la t1 , array_layers				# a3 = layer(0,5)
-	add t0 , t0, t1					# a7 vai ser variavel aq
-	li t1 , 320
-	mul t1,a2,t1
-	add t0,t0,t1					
- 	lw t2, 0(a0)
+
+# a1 = x da imagem
+# a2 = y da imagem
+# a3 = layer(0,5)
+# a7 vai ser variavel aq
+UnloadImage:
+	#If_UI1: se y >= 240, return	
+	li t0,240	
+	bge a2,t0 Fim_UI
+	#If_UI2: se X >= 320, return	
+	li t0,320	
+	bge a1,t0 Fim_UI
+	#If_UI3: se y + y(a0) < 0, return		
+	lw t0,4(a0)
+	add t0,t0,a2
+	blt t0,zero Fim_UI	
+	#If_UI4: se X + X(a0) < 0, return		
+	lw t0,0(a0)
+	add t0,t0,a1
+	blt t0,zero Fim_UI	
+	# Carrega o array_layers e coloca na camada correta															# a0= endereco imagem
+	li t0, 76800					
+	mul t0, t0, a3					
+	la t1 , array_layers				
+	add t0 , t0, t1	
+	#Carrega variaveis importantes
+	lw t2, 0(a0)
 	lw t3, 4(a0)
 	li t4, 0
 	li t5, 0
-	li t6 ,0xC7C7C7C7
+	li t6 ,0xC7C7C7C7					
+	#If_UI5: Se y for negativo a camada inicial vai ser y = 0
+	blt a2,zero Else_UI5
+	li t1 , 320
+	mul t1,a2,t1
+	add t0,t0,t1
+	Else_UI5:
+	#If_UI6: Se y for negativo a0+= y(a0) * -(y)
+	bge a2,zero Else_UI6
+	add t3,t3,a2
+	Else_UI6: 
+	#If_UI7: Se 240 - y > y(a0), y(a0) = 240 - y;	
 	li t1,240
 	sub t1,t1,a2
-	bgt t1,t3,PularTroca_UI
+	bgt t1,t3,Else_UI7
 	mv t3,t1
-	PularTroca_UI:
+	Else_UI7:
+	#If_UI8: Se x for negativo x(a0) += a1
+	bge a1,zero Else_UI8
+	add t2,t2,a1
+	Else_UI8:
+	#############################################
 	While_UI:	
 		beq t3, t4, EndWhile_UI
-		add t0, t0,a1
+		#If_UI9: Se x < 0:
+		bge a1,zero Else_UI9
+		sub a0,a0,a1
+		j Fim_If_UI9
+		Else_UI9:
+		add t0, t0,a1 
+		Fim_If_UI9:
 		add t1, zero,a1
 		While_UI1:
 			beq t2, t5, EndWhile_UI1
 			li a7, 320
-			bgt t1,a7 Pular_UI
+			bge t1,a7 Pular_UI
 			sw t6, 0(t0)
-			addi t0,t0,4
 			Pular_UI:
+			addi t0,t0,4
 			addi t1,t1,4
 			addi t5,t5,4
 			j While_UI1
 		EndWhile_UI1:
 		li t5, 320
 		sub t5, t5, a1
+		bge a1,zero Else_UI10
+		add t5,t5,a1
+		Else_UI10:
 		sub t5, t5,t2
 		add t0, t0, t5
 		li t5, 0
 		addi t4, t4,1
 		j While_UI
 	EndWhile_UI:					
- 	ret						
-
-LoadImage:						# a0= endereco imagem
-	li t0, 76800					# a1 = x da imagem
-	mul t0, t0, a3					# a2 = y da imagem
-	la t1 , array_layers				# a3 = layer(0,5)
-	add t0 , t0, t1					# a7 vai ser uma variavel
+ 	Fim_UI:ret						
+# a0= endereco imagem
+# a1 = x da imagem
+# a2 = y da imagem
+# a3 = layer(0,5)
+# a7 vai ser uma variavel
+LoadImage:	
+	#If_LI1: se y >= 240, return	
+	li t0,240	
+	bge a2,t0 Fim_LI
+	#If_LI2: se X >= 320, return	
+	li t0,320	
+	bge a1,t0 Fim_LI
+	#If_LI3: se y + y(a0) < 0, return		
+	lw t0,4(a0)
+	add t0,t0,a2
+	blt t0,zero Fim_LI	
+	#If_LI4: se X + X(a0) < 0, return		
+	lw t0,0(a0)
+	add t0,t0,a1
+	blt t0,zero Fim_LI	
+	# Carrega o array_layers e coloca na camada correta															# a0= endereco imagem
+	li t0, 76800					
+	mul t0, t0, a3					
+	la t1 , array_layers				
+	add t0 , t0, t1	
+	#Carrega variaveis importantes
+	lw t2, 0(a0)
+	lw t3, 4(a0)	
+	li t4, 0
+	li t5, 0											
+	addi a0,a0,8
+	#If_LI5: Se y for negativo a camada inicial vai ser y = 0
+	blt a2,zero Else_LI5
 	li t1 , 320
 	mul t1,a2,t1
-	add t0,t0,t1				
- 	lw t2, 0(a0)
-	lw t3, 4(a0)
-	li t4, 0
-	li t5, 0
-	addi a0,a0,8
+	add t0,t0,t1
+	Else_LI5:
+	#If_LI6: Se y for negativo a0+= y(a0) * -(y)
+	bge a2,zero Else_LI6
+	mul t1,a2,t2
+	sub a0,a0,t1
+	add t3,t3,a2
+	Else_LI6: 
+	#If_LI7: Se 240 - y > y(a0), y(a0) = 240 - y;	
 	li t1,240
 	sub t1,t1,a2
-	bgt t1,t3,PularTroca_LI
+	bgt t1,t3,Else_LI7
 	mv t3,t1
-	PularTroca_LI:
+	Else_LI7:
+	#If_LI8: Se x for negativo x(a0) += a1
+	bge a1,zero Else_LI8
+	add t2,t2,a1
+	Else_LI8: 
+	#############################################		
 	While_LI:	
 		beq t3, t4, EndWhile_LI
-		add t0, t0,a1
+		#If_LI9: Se x < 0:
+		bge a1,zero Else_LI9
+		sub a0,a0,a1
+		j Fim_If_LI9
+		Else_LI9:
+		add t0, t0,a1 
+		Fim_If_LI9:
 		add t1, zero,a1
 		While_LI1:
 			beq t2, t5, EndWhile_LI1
 			li a7, 320
-			bgt t1,a7 Pular_LI
+			bge t1,a7 Pular_LI
 			lw t6, 0(a0)
 			sw t6, 0(t0)
-			addi t0,t0,4
 			Pular_LI:
+			addi t0,t0,4
 			addi t1,t1,4
 			addi t5,t5,4
 			addi a0,a0,4
@@ -171,13 +295,16 @@ LoadImage:						# a0= endereco imagem
 		EndWhile_LI1:
 		li t5, 320
 		sub t5, t5, a1
+		bge a1,zero Else_LI10
+		add t5,t5,a1
+		Else_LI10:
 		sub t5, t5, t2
 		add t0, t0, t5
 		li t5, 0
 		addi t4, t4,1
 		j While_LI
 	EndWhile_LI:
-	ret	
+	Fim_LI:ret	
 
 LoadAnimation:						# a0= endereco imagem
 	li t0, 76800					# a1 = x da imagem
@@ -224,7 +351,7 @@ LoadAnimation:						# a0= endereco imagem
 
 Renderizador:
 	#le o frame atual e pega o outro para modificar
-	#array layers Ã© a memoria das camadas
+	#array layers ÃƒÂ© a memoria das camadas
 	#
 	lw t0, selectframeads				#a4 = atualizar tela ou nao
 	lb t0, 0(t0)					#x1 < x2, y1 < y2
@@ -276,7 +403,7 @@ Renderizador:
 # deixei aqui o renderizador que le baseado em a0, a1, a2 e a3, se for usar teste, pois nao conferi codigo
 Renderizador2:
 	#le o frame atual e pega o outro para modificar
-	#array layers Ã© a memoria das camadas
+	#array layers ÃƒÂ© a memoria das camadas
 	#
 	lw t0, selectframeads	
 	lb t0, 0(t0)					#a0 = x0
@@ -337,7 +464,7 @@ Renderizador2:
 	Fim_2R:ret
 
 WaterGarden:
-		# t2 era minha posição
+		# t2 era minha posiÃ§Ã£o
 		mv a0,t2
 		# essa parte vai salvar o estado do jardim atual
 		la t0, garden_state
@@ -371,11 +498,28 @@ WaterGarden:
 		li t0, 1
 		li t1, 2
 		li t3, 3
-
+		
 		beq a1, t0, PLANTA1
 		beq a1, t1, PLANTA2
 		beq a1, t3, PLANTA3
-
+		
+		la t0, garden_state
+		add t1, t0, a0 			# move o ponteiro para o indice correto
+		sb zero, 0(t1)
+		
+		la a0, planta1
+		mv a1, t5 # x da imagem
+		mv a2, t6 # y da imagem
+		li a3, 3 # layer 4
+		call UnloadImage
+		
+		la t0,bananatotal
+		lb t1,0(t0)
+		addi t1,t1,1
+		sb t1,0(t0)
+		
+		j GAME_LOOP
+		
 		PLANTA1:
 			la a0, planta1
 			j PLANTAR
@@ -394,7 +538,7 @@ WaterGarden:
 		PLANTAR:
 			mv a1, t5 # x da imagem
 			mv a2, t6 # y da imagem
-			li a3, 4 # layer 4
+			li a3, 3 # layer 4
 			call LoadImage
 
 		j GAME_LOOP	
@@ -407,22 +551,38 @@ AnimationScreen:
 	la t0, old_char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 5
+	li a3 , 4
 	la a0 macaco
 	call UnloadImage
 	
 	la t0, char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 5
+	li a3 , 4
 	la a0 ,macaco
 	call LoadImage
+
+	#
+	la t0, old_indio_pos
+	lh a1 , 0(t0)
+	lh a2 , 2(t0)
+	li a3 , 4
+	la a0 inimigo
+	call UnloadImage
+	
+	la t0, indio_pos
+	lh a1 , 0(t0)
+	lh a2 , 2(t0)
+	li a3 , 4
+	la a0 ,inimigo
+	call LoadImage
+	#
 
 	la t0, var
 	la a0 fazendav2
 	li a1 , 0
 	li a2 , 0
-	li a3 , 3
+	li a3 , 2
 	lw a4,0(t0)
 	call LoadAnimation
 	
@@ -441,12 +601,62 @@ AnimationScreen:
 	sh t2 , 0(t1)
 	addi t2,t2,-4
 	sh t2 , 0(t0)
+
+	#
+	la t0, indio_pos
+	la t1, old_indio_pos
+	li t3, 1
+	sh t3, 4(t0)
+	lh t2, 0(t0)
+	sh t2, 0(t1)
+	addi t2, t2, -4
+	sh t2, 0(t0)
+	
+	#li t3, 160
+	#sh t3, 0(t0)
+	#
 	
 	li a7, 32
 	li a0, 20
 	ecall
 	
 	j Loop_AS
+
+Inimigo:
+	
+	#li a0, 200
+	#li a7, 32
+	#ecall
+
+	la t0, indio_pos
+	la t1, old_indio_pos
+	lh a1, 0(t0)
+	sh a1, 0(t1)
+	sh zero, 6(t0)
+	li t3, 232
+	li t4, 88
+	li t5, -1
+	lh t6, 4(t0)
+	
+	beq t6, t5, Esq
+	
+Dir:	beq a1, t3, Reset
+	addi a1, a1, 4
+	sh a1, 0(t0)
+	sh t6, 4(t0)
+	j Back1
+	
+Esq:	beq a1, t4, Reset
+	addi a1, a1, -4
+	sh a1, 0(t0)
+	sh t6, 4(t0)
+	j Back1
+	
+Reset:
+	mul t6, t6, t5
+	sh t6, 4(t0)
+	j Back1
+	
 
 FimPrograma:			#Nao recebe nada
 	li a7,10      		#Chama o procedimento de finalizar o programa
