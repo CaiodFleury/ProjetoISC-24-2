@@ -44,7 +44,7 @@ TocarMusica:						#s11 eh o contador de tempo
 	li a7,30					#coloca o horario atual em a0
 	ecall						#função não recebe entrada
  	If_TM:						#apenas toca a proxima nota de Notas
- 		blt a0,s11, Fim_If_TM
+ 		bltu a0,s11, Fim_If_TM
 		la t2,Music_config
  		lw t0, 0(t2)
  		lw t1, 4(t2)
@@ -197,11 +197,11 @@ UnloadImage:
 			beq t2, t5, EndWhile_UI1
 			li a7, 320
 			bge t1,a7 Pular_UI
-			sw t6, 0(t0)
+			sh t6, 0(t0)
 			Pular_UI:
-			addi t0,t0,4
-			addi t1,t1,4
-			addi t5,t5,4
+			addi t0,t0,2
+			addi t1,t1,2
+			addi t5,t5,2
 			j While_UI1
 		EndWhile_UI1:
 		li t5, 320
@@ -284,13 +284,13 @@ LoadImage:
 			beq t2, t5, EndWhile_LI1
 			li a7, 320
 			bge t1,a7 Pular_LI
-			lw t6, 0(a0)
-			sw t6, 0(t0)
+			lh t6, 0(a0)
+			sh t6, 0(t0)
 			Pular_LI:
-			addi t0,t0,4
-			addi t1,t1,4
-			addi t5,t5,4
-			addi a0,a0,4
+			addi t0,t0,2
+			addi t1,t1,2
+			addi t5,t5,2
+			addi a0,a0,2
 			j While_LI1
 		EndWhile_LI1:
 		li t5, 320
