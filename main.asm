@@ -118,6 +118,10 @@ GAME_LOOP:
 	call KeyDown
 	PularKeyDown:
 	
+	li a7,30		# coloca o horario atual em s11
+	ecall
+	mv s0, a0
+	
 	addi t0, s10, 500
 	blt s0, t0, NaoResetar
 	li t1, 3
@@ -211,25 +215,25 @@ KeyDown:				#Recebe:
 	beq t2, t0, MoveDown
 	beq t2, t1, MoveDown
 	
-	li t0, 'm'
-	li t1, 'M'
-	beq t2, t0, MoveUpRight
-	beq t2, t1, MoveUpRight
+	li t0, 'n'
+	li t1, 'N'
+	beq t2, t0, MoveDownLeft
+	beq t2, t1, MoveDownLeft
 	
 	li t0, 'j'
 	li t1, 'J'
 	beq t2, t0, MoveUpLeft
 	beq t2, t1, MoveUpLeft
 		
-	li t0, 'k'
-	li t1, 'K'
+	li t0, 'm'
+	li t1, 'M'
 	beq t2, t0, MoveDownRight
 	beq t2, t1, MoveDownRight
 	
-	li t0, 'n'
-	li t1, 'N'
-	beq t2, t0, MoveDownLeft
-	beq t2, t1, MoveDownLeft
+	li t0, 'k'
+	li t1, 'K'
+	beq t2, t0, MoveUpRight
+	beq t2, t1, MoveUpRight
 
 	add s10,s0,zero
 
@@ -343,34 +347,62 @@ KeyDown:				#Recebe:
 		
 		ret
 		
-	MoveUpRight:
-		addi t6,t6,-1276
+	MoveDownRight:
+		addi t6,t6,1284
 		lb t2,0(t6)
 		li t3,-110
 		beq t2,t3,FIM # se o pixel for azul ele não se meche
+		
 		li t3,63
 		beq t2,t3,SegundaParte # se for amarelo ele vai para a segunda parte do mapa
+		
+		
+		addi s10,s10,20
+		
 		lh t2, 0(t5)
 		addi t2, t2,4
 		sh t2, 0(t5)
 		lh t2, 2(t5)
 		addi t2, t2,4
 		sh t2, 2(t5)
+		
+		la t0, sprite_macaco
+		lb t1,0(t0)
+		addi t1,t1,1
+		li t2,4
+		sb t1,0(t0)
+		blt t1, t2, FIM
+		sb zero,0(t0)
+		
 		ret
 		
-	MoveDownRight:
-		addi t6,t6,1284
+	MoveUpRight:
+		addi t6,t6,-1276
 		lb t2,0(t6)
 		li t3,-110
+		
 		beq t2,t3,FIM # se o pixel for azul ele não se meche
 		li t3,63
+		
 		beq t2,t3,SegundaParte # se for amarelo ele vai para a segunda parte do mapa
+		
+		addi s10,s10,20
+		
 		lh t2, 0(t5)
 		addi t2, t2,4
 		sh t2, 0(t5)
 		lh t2, 2(t5)
 		addi t2, t2,-4
 		sh t2, 2(t5)
+		
+		la t0, sprite_macaco
+		lb t1,0(t0)
+		addi t1,t1,1
+		li t2,4
+		sb t1,0(t0)
+		blt t1, t2, FIM
+		sb zero,0(t0)
+		
 		ret
 	
 	MoveUpLeft:
@@ -380,12 +412,29 @@ KeyDown:				#Recebe:
 		li t6,-110
 		beq t4,t6,FIM
 
+		addi s10,s10,20
+		
 		lh t1, 2(t5)
 		addi t1, t1, -4 
 		sh t1, 2(t5)
 		lh t1, 0(t5)
 		addi t1, t1, -4 
 		sh t1, 0(t5)
+		
+		la t0, sprite_macaco
+		lb t1,0(t0)
+		addi t1,t1,1
+		li t2,4
+		sb t1,0(t0)
+		bge t1, t2, Pular_PKE
+		sb t2,0(t0)
+		ret
+		Pular_PKE:
+		li t3,7
+		blt t1,t3, FIM
+		sb t2,0(t0)
+		ret
+		
 		ret
 	
 	MoveDownLeft:
@@ -394,6 +443,8 @@ KeyDown:				#Recebe:
 		lb t4,0(t6)
 		li t6,-110
 		beq t4,t6,FIM
+			
+		addi s10,s10,20
 
 		lh t1, 2(t5)
 		addi t1, t1, 4 
@@ -401,6 +452,21 @@ KeyDown:				#Recebe:
 		lh t1, 0(t5)
 		addi t1, t1, -4 
 		sh t1, 0(t5)
+		
+		la t0, sprite_macaco
+		lb t1,0(t0)
+		addi t1,t1,1
+		li t2,4
+		sb t1,0(t0)
+		bge t1, t2, Pular_PKE
+		sb t2,0(t0)
+		ret
+		Pular_PKE:
+		li t3,7
+		blt t1,t3, FIM
+		sb t2,0(t0)
+		ret
+		
 		ret
 .include "data/funcoes.asm"
 
