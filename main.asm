@@ -155,11 +155,18 @@ LoadGame:
 #Modificacoes chamarao a renderizacao	
 #Variaveis S vao ser utilizadas para colocar os tempos das coisas
 #S0  - Tempo atual
+#S8  - Mosquito
+#S9  - Delay vida
 #S10 - Player
 #S11 - Musica
 GAME_LOOP: 	
 	
-	li a7,30		# coloca o horario atual em s11
+	la a0, vidas
+	lb a0,0(a0)
+	li a7, 1
+	ecall
+	
+	li a7,30			# coloca o horario atual em s11
 	ecall
 	mv s0, a0
 	
@@ -170,7 +177,7 @@ GAME_LOOP:
 	call KeyDown
 	PularKeyDown:
 	
-	addi t0, s10, 500
+	addi t0, s10, 500		#Reseta a animação do personagem para a inicial
 	blt s0, t0, NaoResetar
 	li t1, 3
 	la t2, sprite_macaco
@@ -181,20 +188,14 @@ GAME_LOOP:
 	sb t1,0(t2) 
 	NaoResetar:
 	
+	#INICIO RENDERIZACAO MACACO
 	la t0, old_char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
 	li a3 , 4
 	la a0 macaco
 	call UnloadImage
-	
-	la t0, old_char_pos
-	lh a1 , 0(t0)
-	lh a2 , 2(t0)
-	li a3 , 1
-	la a0 macacohitbox
-	call UnloadImage
-	
+
 	la t0, char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
@@ -206,35 +207,101 @@ GAME_LOOP:
 	la a0 , macaco1
 	add a0,t0,a0
 	call LoadImage
-	
+	#FIM RENDERIZACAO MACACO
+	#INICIO TESTE COLISAO
 	la t0, char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 1
-	la a0 , macacohitbox
-	call LoadImage
+	la a0,macaco1
+	call EstaColidindo
 	
-	call Renderizador
+	beq a3,zero, Pular_DecrescimoDeVida
+	bltu s0, s9, Pular_DecrescimoDeVida
+	addi s9, s0, 500
+	la t0, vidas
+	lb t1, 0(t0)
+	addi t1,t1,-1
+	sb t1,0(t0)
+	beq t1,zero,FimGame
+	li t3,2
+	li t2,1
+	beq t1,t3,TirarVida3
+	beq t1,t2,TirarVida2
+	j Pular_DecrescimoDeVida 
+	TirarVida3:
+		li a1 , 58
+		li a2 , 52
+		li a3 , 5
+		la a0 gorilavida
+		call UnloadImage
+		j Pular_DecrescimoDeVida
+	TirarVida2:
+		li a1 , 39
+		li a2 , 52
+		li a3 , 5
+		la a0 gorilavida
+		call UnloadImage 
+	Pular_DecrescimoDeVida:
+	#FIM TESTE COLISAO
 	
-	call TocarMusica
-		
-	la t0,bananatotal
-	lb t0,0(t0)
-	li t1,10
-	beq t1,t0,TerceiraParte
-	
+	#GAMEMOMENT == 1
 	la t0, game_moment
 	lb t0,0(t0)	
 	beq t0, zero, PularGameMoment1
-	
-	
+		#Mosca 1 adiministrador
+		bltu s0, s8, Fim_Mosca1
+		addi s8, s0, 20
+		la t0, mosq1_pos
+		lh a1 , 0(t0)
+		li a2 , 100
+		li a3 , 1
+		la a0 mosquito
+		call UnloadImage
+		
+		la t0, mosq1_pos
+		lh a1 , 0(t0)
+		li a2 , 100
+		li a3 , 5
+		la a0 mosquito
+		addi t1,a1,20
+		beq t1,zero,PuLLLLAraaa
+		addi t1,a1,-4
+		sh t1,0(t0)
+		PuLLLLAraaa:
+		call UnloadImage
+		
+		la t0, mosq1_pos
+		lh a1 , 0(t0)
+		li a2 , 100
+		li a3 , 1
+		la a0 mosquito
+		call LoadImage
+		
+		la t0, mosq1_pos
+		lh a1 , 0(t0)
+		li a2 , 100
+		li a3 , 5
+		la a0 mosquito
+		call LoadImage
+		Fim_Mosca1:
 	PularGameMoment1:
-		
-		
+	#FIMGAMEMOMENT == 1
+	
+	la t0,bananatotal
+	lb t0,0(t0)
+	li t1,10
+	beq t1,t0,TerceiraParte	
+	
+	call TocarMusica
+	
+	call Renderizador
+			
 	j GAME_LOOP
-###############
-#FIM GAME_LOOP#
-###############
+	
+#######################################
+#############FIM GAME_LOOP#############
+#######################################
+
 KeyDown:				#Recebe:
 					# a0 - o endereco de controle do KDMMIO
   	lw t2,4(a0)  			# a1 - recebe ponto na tela que deve ser analizadp
@@ -496,10 +563,10 @@ KeyDown:				#Recebe:
 		addi t1,t1,1
 		li t2,4
 		sb t1,0(t0)
-		bge t1, t2, Pular_PKE
+		bge t1, t2, Pular_PKEU
 		sb t2,0(t0)
 		ret
-		Pular_PKE:
+		Pular_PKEU:
 		li t3,7
 		blt t1,t3, FIM
 		sb t2,0(t0)
@@ -528,10 +595,10 @@ KeyDown:				#Recebe:
 		addi t1,t1,1
 		li t2,4
 		sb t1,0(t0)
-		bge t1, t2, Pular_PKE
+		bge t1, t2, Pular_PKED
 		sb t2,0(t0)
 		ret
-		Pular_PKE:
+		Pular_PKED:
 		li t3,7
 		blt t1,t3, FIM
 		sb t2,0(t0)
@@ -539,35 +606,7 @@ KeyDown:				#Recebe:
 		
 		ret
 .include "data/funcoes.asm"
-
-la a0 banana
-	li a1 , 280
-	li a2 , 4
-	li a3 , 5
-	call LoadImage
 	
-	
-	#renderizaÃ§Ã£o
-	
-	la t0, mosq_pos
-	lh a1 , 0(t0)
-	li a2 , 100
-	li a3 , 4
-	la a0 mosquito
-	addi t1,a1,20
-	beq t1,zero,PuLLLLAr
-	addi t1,a1,-4
-	sh t1,0(t0)
-	PuLLLLAr:
-	call UnloadImage
-	
-	la t0, mosq_pos
-	lh a1 , 0(t0)
-	li a2 , 100
-	li a3 , 4
-	la a0 mosquito
-	call LoadImage
-
 	la t0, indio_pos
 	lh t1, 4(t0)
 	beq t1, zero, Back2

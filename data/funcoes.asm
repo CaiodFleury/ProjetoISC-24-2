@@ -543,6 +543,45 @@ WaterGarden:
 
 		j GAME_LOOP	
 
+
+
+
+EstaColidindo:					# a0= endereco imagem		
+	la t0,array_layers			# a1 = x da imagem
+	li t1,76800				# a2 = y da imagem
+	add t0,t1,t0				# retorna a3, 1 para está colidindo e 0 se nao esta
+	li t1,320
+	mul t1,a2,t1
+	add t0,t1,t0
+	lw t1, 0(a0)
+	lw t2, 4(a0)
+	li t3, 0
+	li t4, 0
+	li t6, 0xC7C7C7C7
+	While_EC:	
+		beq t2, t4, EndWhile_EC
+		add t0, t0,a1
+		While_EC1:
+			beq t1, t3, EndWhile_EC1
+			lw t5, 0(t0)
+			beq t5,t6, Pular_EC
+			li a3, 1
+			ret
+			Pular_EC:
+			addi t3,t3,4
+			addi t0,t0,4
+			j While_EC1
+		EndWhile_EC1:
+		li t5, 320
+		sub t5, t5, a1
+		sub t5, t5,t1
+		add t0, t0, t5
+		li t3, 0
+		addi t4, t4,1
+		j While_EC
+	EndWhile_EC:
+	li a3,0
+	ret
 AnimationScreen:
 	Loop_AS:
 	
