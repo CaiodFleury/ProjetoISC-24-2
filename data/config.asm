@@ -10,6 +10,8 @@ sprite_macaco: .byte 3
 game_moment: .byte 0
 level: .byte 0
 
+vidas: .byte 3
+
 #variaveis inicializaveis
 bananatotal: .byte 0
 var: .word 28

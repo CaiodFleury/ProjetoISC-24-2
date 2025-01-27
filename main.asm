@@ -28,7 +28,17 @@ LoadGame:
 	#Inicializacao de variaveis
 	li a1 , 0
 	li a2 , 0
+	li a3 , 2
+	la a0 colisao1
+	call UnloadImage
+	li a1 , 0
+	li a2 , 0
 	li a3 , 4
+	la a0 colisao1
+	call UnloadImage
+	li a1 , 0
+	li a2 , 0
+	li a3 , 5
 	la a0 colisao1
 	call UnloadImage
 	li a1 , 0
@@ -58,6 +68,8 @@ LoadGame:
 	li t1,48
 	sh t1,2(t0)
 	sw zero,4(t0)
+	la t0, game_moment
+	sb zero,0(t0)
 	#Primeira parte do nivel
 	li a1 , 0
 	li a2 , 0
@@ -82,6 +94,46 @@ LoadGame:
 	li a3 , 0
 	la a0 colisao2
 	call LoadImage
+	
+	li a1 , 20
+	li a2 , 0
+	li a3 , 5
+	la a0 placaHUD
+	call LoadImage 
+	
+	li a1 , 270
+	li a2 , 13
+	li a3 , 5
+	la a0 placaHUD2
+	call LoadImage 
+	
+	li a1 , 20
+	li a2 , 0
+	li a3 , 5
+	la a0 placaHUD
+	call LoadImage 
+	
+	li a1 , 20
+	li a2 , 52
+	li a3 , 5
+	la a0 gorilavida
+	call LoadImage 
+	
+	li a1 , 39
+	li a2 , 52
+	li a3 , 5
+	la a0 gorilavida
+	call LoadImage 
+	
+	li a1 , 58
+	li a2 , 52
+	li a3 , 5
+	la a0 gorilavida
+	call LoadImage 
+	
+	la t0, game_moment
+	li t1,1
+	sb t1,0(t0)
 	
 	call GAME_LOOP
 	#terceira parte do nivel
@@ -118,10 +170,6 @@ GAME_LOOP:
 	call KeyDown
 	PularKeyDown:
 	
-	li a7,30		# coloca o horario atual em s11
-	ecall
-	mv s0, a0
-	
 	addi t0, s10, 500
 	blt s0, t0, NaoResetar
 	li t1, 3
@@ -140,6 +188,13 @@ GAME_LOOP:
 	la a0 macaco
 	call UnloadImage
 	
+	la t0, old_char_pos
+	lh a1 , 0(t0)
+	lh a2 , 2(t0)
+	li a3 , 1
+	la a0 macacohitbox
+	call UnloadImage
+	
 	la t0, char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
@@ -152,6 +207,13 @@ GAME_LOOP:
 	add a0,t0,a0
 	call LoadImage
 	
+	la t0, char_pos
+	lh a1 , 0(t0)
+	lh a2 , 2(t0)
+	li a3 , 1
+	la a0 , macacohitbox
+	call LoadImage
+	
 	call Renderizador
 	
 	call TocarMusica
@@ -160,6 +222,14 @@ GAME_LOOP:
 	lb t0,0(t0)
 	li t1,10
 	beq t1,t0,TerceiraParte
+	
+	la t0, game_moment
+	lb t0,0(t0)	
+	beq t0, zero, PularGameMoment1
+	
+	
+	PularGameMoment1:
+		
 		
 	j GAME_LOOP
 ###############
