@@ -54,7 +54,7 @@ LoadGame:
 	sw t1,4(t0)
 	sw t1,8(t0)
 	sw t1,12(t0)
-	li t0,28
+	li t0,0
 	la t1,var
 	sw t0,0(t1)
 	la t0, char_pos
@@ -160,11 +160,6 @@ LoadGame:
 #S10 - Player
 #S11 - Musica
 GAME_LOOP: 	
-	
-	la a0, vidas
-	lb a0,0(a0)
-	li a7, 1
-	ecall
 	
 	li a7,30			# coloca o horario atual em s11
 	ecall

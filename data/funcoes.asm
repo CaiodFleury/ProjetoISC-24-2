@@ -306,47 +306,7 @@ LoadImage:
 	EndWhile_LI:
 	Fim_LI:ret	
 
-LoadAnimation:						# a0= endereco imagem
-	li t0, 76800					# a1 = x da imagem
-	mul t0, t0, a3					# a2 = y da imagem
-	la t1 , array_layers				# a3 = layer(0,5)
-	add t0 , t0, t1					# a4 = jump x
-	li t1 , 320
-	mul t1,a2,t1
-	add t0,t0,t1
-	mv t1,a0				
- 	li t2, 320
-	li t3, 240
-	li t4, 0
-	li t5, 0
-	addi a0,a0,8
-	While_LA:	
-		beq t3, t4, EndWhile_LA
-		add t0, t0,a1
-		add a0, a0,a4
-		While_LA1:
-			beq t2, t5, EndWhile_LA1
-			lw t6, 0(a0)
-			sw t6, 0(t0)
-			addi t5,t5,4
-			addi a0,a0,4
-			addi t0,t0,4
-			j While_LA1
-		EndWhile_LA1:
-		li t5, 320
-		sub t5, t5, a1
-		sub t5, t5, t2
-		add t0, t0, t5
-		
-		lw t5,0(t1)
-		sub t5,t5,t2
-		add a0,a0,t5
-		sub a0,a0,a4
-		li t5, 0
-		addi t4, t4,1
-		j While_LA
-	EndWhile_LA:
-	ret
+
 
 
 Renderizador:
@@ -480,15 +440,15 @@ WaterGarden:
 		# t6 = y_garden_state
 
 		# modificando sprite da plantacao
-		li t0, 36
-		li t1, 28
-		li t2, 92
-		# 88 + (36 * x)
+		li t0, 35
+		li t1, 27
+		li t2, 83
+		# 88 + (35 * x)
 		
 		mul t4, t5, t0
 		addi t5, t4, 88
 
-		# 92 + (28 * y)
+		# 83 + (27 * y)
 		mul t4, t6, t1
 		add t6, t2, t4
 
@@ -582,6 +542,49 @@ EstaColidindo:					# a0= endereco imagem
 	EndWhile_EC:
 	li a3,0
 	ret
+	
+LoadAnimation:						# a0= endereco imagem
+	li t0, 76800					# a1 = x da imagem
+	mul t0, t0, a3					# a2 = y da imagem
+	la t1 , array_layers				# a3 = layer(0,5)
+	add t0 , t0, t1					# a4 = jump x
+	li t1 , 320
+	mul t1,a2,t1
+	add t0,t0,t1
+	mv t1,a0				
+ 	li t2, 320
+	li t3, 240
+	li t4, 0
+	li t5, 0
+	addi a0,a0,8
+	While_LA:	
+		beq t3, t4, EndWhile_LA
+		add t0, t0,a1
+		add a0, a0,a4
+		While_LA1:
+			beq t2, t5, EndWhile_LA1
+			lw t6, 0(a0)
+			sw t6, 0(t0)
+			addi t5,t5,4
+			addi a0,a0,4
+			addi t0,t0,4
+			j While_LA1
+		EndWhile_LA1:
+		li t5, 320
+		sub t5, t5, a1
+		sub t5, t5, t2
+		add t0, t0, t5
+		
+		lw t5,0(t1)
+		sub t5,t5,t2
+		add a0,a0,t5
+		sub a0,a0,a4
+		li t5, 0
+		addi t4, t4,1
+		j While_LA
+	EndWhile_LA:
+	ret	
+
 AnimationScreen:
 	Loop_AS:
 	
@@ -629,7 +632,7 @@ AnimationScreen:
 	
 	la t0, var
 	lw t2, 0(t0)
-	li t1, 160
+	li t1, 132
 	beq t1,t2,FimAnimacaoUm
 	addi t2,t2,4
 	sw t2,0(t0)
@@ -650,11 +653,7 @@ AnimationScreen:
 	sh t2, 0(t1)
 	addi t2, t2, -4
 	sh t2, 0(t0)
-	
-	#li t3, 160
-	#sh t3, 0(t0)
-	#
-	
+		
 	li a7, 32
 	li a0, 20
 	ecall
