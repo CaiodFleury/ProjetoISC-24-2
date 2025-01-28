@@ -1,11 +1,11 @@
 #Configurações:
 Music_config: 	.word 130,0,28,30  #notas total, nota atual, instrumento, volume	
 garden_matriz_x:.half 88, 124, 160, 196, 232
-garden_matriz_y:.half 148,120, 72
+garden_matriz_y:.half 148,120, 92
 selectframeads:	.word 0xFF200604
 
 arrow_pos:	.half 4
-mosq1_pos:	.half 320
+mosq1_pos:	.half 0
 sprite_macaco: .byte 3
 game_moment: .byte 0
 level: .byte 0

@@ -11,7 +11,7 @@
 .include "sprites/planta1.data"
 .include "sprites/planta2.data"
 .include "sprites/planta3.data"
-.include "sprites/terrarada.data"
+.include "sprites/TerraMolhada.data"
 .include "sprites/macaco1.data"
 .include "sprites/macaco2.data"
 .include "sprites/macaco3.data"

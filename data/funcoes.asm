@@ -330,7 +330,7 @@ Renderizador:
 		beq t1, t4, EndWhile_R
 		While_R1:
 			beq t2, t3, EndWhile_R1
-			li t5,384000
+			li t5,460800
 			add a7, t6, t5
 			While_R2:
 				lb t5,0(a7)
@@ -430,6 +430,90 @@ WaterGarden:
 		la t0, garden_state
 		add t1, t0, a0 			# move o ponteiro para o indice correto
 		lb a1, 0(t1)
+
+		li t0,5
+		rem t5,a0,t0
+		divu t6,a0,t0
+		# t5 = x_garden_state
+		# t6 = y_garden_state
+
+		# modificando sprite da plantacao
+		li t0, 35
+		li t1, 27
+		li t2, 100
+		# 88 + (35 * x)
+		
+		mul t4, t5, t0
+		addi t5, t4, 88
+
+		# 100 + (27 * y)
+		mul t4, t6, t1
+		add t6, t2, t4
+
+		# t5 = garden_x
+		# t6 = garden_y
+		li t1, 3
+		bne a1,t1 NaoResetarWP
+		
+		la t0, garden_state
+		add t1, t0, a0 			# move o ponteiro para o indice correto
+		sb zero, 0(t1)
+		
+		addi t6,t6,-17
+		
+		la a0, planta1
+		mv a1, t5 # x da imagem
+		mv a2, t6 # y da imagem
+		li a3, 4 # layer 4
+		call UnloadImage
+		
+		la t0,bananatotal
+		lb t1,0(t0)
+		addi t1,t1,1
+		sb t1,0(t0)
+		
+		j GAME_LOOP
+		#---
+		NaoResetarWP:
+		
+		la t0, garden_time
+		li t1,4
+		mul t1,a0,t1
+		add t0,t1,t0
+		addi a2,s0,4000
+		sw a2,0(t0)
+		
+		la a0,TerraMolhada
+		mv a1, t5 # x da imagem
+		mv a2, t6 # y da imagem
+		li a3, 3 # layer 3
+		call LoadImage
+		
+		j GAME_LOOP
+
+GrowGarden:
+		li t0,15
+		li t1,0
+		li t2,4
+		For_GG:
+		beq t1,t0,GAME_LOOP
+		mul t3,t2,t1
+		la t4, garden_time
+		add t4,t4,t3
+		lw t5, 0(t4)
+		bgeu s0, t5, Mudar_Pos_GG
+		addi t1,t1,1
+		j For_GG
+		Mudar_Pos_GG:
+		li t0,-1
+		sw t0,0(t4)
+		mv a0,t1
+		#li a7,1
+		#ecall
+		# essa parte vai salvar o estado do jardim atual
+		la t0, garden_state
+		add t1, t0, a0 			# move o ponteiro para o indice correto
+		lb a1, 0(t1)
 		addi a1, a1, 1
 		sb a1, 0(t1)			# salva o novo valor
 		
@@ -454,56 +538,46 @@ WaterGarden:
 
 		# t5 = garden_x
 		# t6 = garden_y
-
+		addi a6,t6,17
+		add a5,t5,zero	
+		
 		li t0, 1
 		li t1, 2
 		li t3, 3
 		
-		beq a1, t0, PLANTA1
-		beq a1, t1, PLANTA2
-		beq a1, t3, PLANTA3
-		
-		la t0, garden_state
-		add t1, t0, a0 			# move o ponteiro para o indice correto
-		sb zero, 0(t1)
-		
-		la a0, planta1
-		mv a1, t5 # x da imagem
-		mv a2, t6 # y da imagem
-		li a3, 3 # layer 4
-		call UnloadImage
-		
-		la t0,bananatotal
-		lb t1,0(t0)
-		addi t1,t1,1
+		beq a1, t0, PLANTAG1
+		beq a1, t1, PLANTAG2
+		beq a1, t3, PLANTAG3
+	
 		sb t1,0(t0)
 		
 		j GAME_LOOP
 		
-		PLANTA1:
+		PLANTAG1:
 			la a0, planta1
-			j PLANTAR
+			j PLANTARG
 
-		PLANTA2:
+		PLANTAG2:
 			la a0, planta2
-			j PLANTAR
+			j PLANTARG
 
-		PLANTA3:
+		PLANTAG3:
 			la a0, planta3
-			j PLANTAR
+			j PLANTARG
 
-		VOLTAR:
-			ret
-
-		PLANTAR:
+		PLANTARG:
 			mv a1, t5 # x da imagem
 			mv a2, t6 # y da imagem
-			li a3, 3 # layer 4
+			li a3, 4 # layer 3
 			call LoadImage
+		
+			la a0, TerraMolhada
+			mv a1, a5 # x da imagem
+			mv a2, a6 # y da imagem
+			li a3, 3 # layer 3
+			call UnloadImage
 
-		j GAME_LOOP	
-
-
+		j GAME_LOOP
 
 
 EstaColidindo:					# a0= endereco imagem		
@@ -593,14 +667,14 @@ AnimationScreen:
 	la t0, old_char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 4
+	li a3 , 5
 	la a0 macaco
 	call UnloadImage
 	
 	la t0, char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 4
+	li a3 , 5
 	la a0 ,macaco
 	call LoadImage
 
@@ -608,14 +682,14 @@ AnimationScreen:
 	la t0, old_indio_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 4
+	li a3 , 5
 	la a0 inimigo
 	call UnloadImage
 	
 	la t0, indio_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 4
+	li a3 , 5
 	la a0 ,inimigo
 	call LoadImage
 	#

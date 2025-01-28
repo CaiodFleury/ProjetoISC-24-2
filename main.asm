@@ -43,6 +43,11 @@ LoadGame:
 	call UnloadImage
 	li a1 , 0
 	li a2 , 0
+	li a3 , 6
+	la a0 colisao1
+	call UnloadImage
+	li a1 , 0
+	li a2 , 0
 	li a3 , 3
 	la a0 colisao1
 	call UnloadImage
@@ -54,6 +59,23 @@ LoadGame:
 	sw t1,4(t0)
 	sw t1,8(t0)
 	sw t1,12(t0)
+	la t0,garden_time
+	li t1,-1
+	sw t1,0(t0)
+	sw t1,4(t0)
+	sw t1,8(t0)
+	sw t1,12(t0)
+	sw t1,16(t0)
+	sw t1,20(t0)
+	sw t1,24(t0)
+	sw t1,28(t0)
+	sw t1,32(t0)
+	sw t1,36(t0)
+	sw t1,40(t0)
+	sw t1,44(t0)
+	sw t1,48(t0)
+	sw t1,52(t0)
+	sw t1,56(t0)
 	li t0,0
 	la t1,var
 	sw t0,0(t1)
@@ -97,37 +119,37 @@ LoadGame:
 	
 	li a1 , 20
 	li a2 , 0
-	li a3 , 5
+	li a3 , 6
 	la a0 placaHUD
 	call LoadImage 
 	
 	li a1 , 270
 	li a2 , 13
-	li a3 , 5
+	li a3 , 6
 	la a0 placaHUD2
 	call LoadImage 
 	
 	li a1 , 20
 	li a2 , 0
-	li a3 , 5
+	li a3 , 6
 	la a0 placaHUD
 	call LoadImage 
 	
 	li a1 , 20
 	li a2 , 52
-	li a3 , 5
+	li a3 , 6
 	la a0 gorilavida
 	call LoadImage 
 	
 	li a1 , 39
 	li a2 , 52
-	li a3 , 5
+	li a3 , 6
 	la a0 gorilavida
 	call LoadImage 
 	
 	li a1 , 58
 	li a2 , 52
-	li a3 , 5
+	li a3 , 6
 	la a0 gorilavida
 	call LoadImage 
 	
@@ -187,14 +209,14 @@ GAME_LOOP:
 	la t0, old_char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 4
+	li a3 , 5
 	la a0 macaco
 	call UnloadImage
 
 	la t0, char_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 4
+	li a3 , 5
 	la t0,sprite_macaco
 	lb t0,0(t0)
 	li t1,548
@@ -256,13 +278,16 @@ GAME_LOOP:
 		la t0, mosq1_pos
 		lh a1 , 0(t0)
 		li a2 , 100
-		li a3 , 5
+		li a3 , 6
 		la a0 mosquito
-		addi t1,a1,20
-		beq t1,zero,PuLLLLAraaa
-		addi t1,a1,-4
-		sh t1,0(t0)
+		li t2,340
+		beq a1,t2,PuLLLLAraaa
+		addi t1,a1,4
+		#sh t1,0(t0)
+		j PULLAR
 		PuLLLLAraaa:
+		sh zero,0(t0)
+		PULLAR:
 		call UnloadImage
 		
 		la t0, mosq1_pos
@@ -275,7 +300,7 @@ GAME_LOOP:
 		la t0, mosq1_pos
 		lh a1 , 0(t0)
 		li a2 , 100
-		li a3 , 5
+		li a3 , 6
 		la a0 mosquito
 		call LoadImage
 		Fim_Mosca1:
@@ -290,7 +315,9 @@ GAME_LOOP:
 	call TocarMusica
 	
 	call Renderizador
-			
+	
+	call GrowGarden
+							
 	j GAME_LOOP
 	
 #######################################
