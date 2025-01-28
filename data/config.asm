@@ -5,7 +5,7 @@ garden_matriz_y:.half 148,120, 92
 selectframeads:	.word 0xFF200604
 
 arrow_pos:	.half 4
-mosq1_pos:	.half 0
+mosq1_pos:	.half 0,100
 sprite_macaco: .byte 3
 game_moment: .byte 0
 level: .byte 0

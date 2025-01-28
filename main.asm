@@ -248,14 +248,14 @@ GAME_LOOP:
 	TirarVida3:
 		li a1 , 58
 		li a2 , 52
-		li a3 , 5
+		li a3 , 6
 		la a0 gorilavida
 		call UnloadImage
 		j Pular_DecrescimoDeVida
 	TirarVida2:
 		li a1 , 39
 		li a2 , 52
-		li a3 , 5
+		li a3 , 6
 		la a0 gorilavida
 		call UnloadImage 
 	Pular_DecrescimoDeVida:
@@ -270,36 +270,43 @@ GAME_LOOP:
 		addi s8, s0, 20
 		la t0, mosq1_pos
 		lh a1 , 0(t0)
-		li a2 , 100
+		lh a2 , 2(t0)
 		li a3 , 1
 		la a0 mosquito
 		call UnloadImage
 		
 		la t0, mosq1_pos
 		lh a1 , 0(t0)
-		li a2 , 100
+		lh a2 , 2(t0)
 		li a3 , 6
 		la a0 mosquito
 		li t2,340
 		beq a1,t2,PuLLLLAraaa
 		addi t1,a1,4
-		#sh t1,0(t0)
+		sh t1,0(t0)
 		j PULLAR
 		PuLLLLAraaa:
 		sh zero,0(t0)
+		li a7, 40
+		mv a1, s0
+		ecall
+		li t1,60
+		rem a0,a0,t1
+		addi a0,a0,100
+		sh a0,2(t0)
 		PULLAR:
 		call UnloadImage
 		
 		la t0, mosq1_pos
 		lh a1 , 0(t0)
-		li a2 , 100
+		lh a2 , 2(t0)
 		li a3 , 1
 		la a0 mosquito
 		call LoadImage
 		
 		la t0, mosq1_pos
 		lh a1 , 0(t0)
-		li a2 , 100
+		lh a2 , 2(t0)
 		li a3 , 6
 		la a0 mosquito
 		call LoadImage
