@@ -266,7 +266,6 @@ GAME_LOOP:
 		Fim_Mosca1:
 		#INIMIGO--->
 		bltu s0, s7, Fim_Inimigo1
-		addi s7, s0, 2000
 		
 		la t0, old_indio_pos
 		lh a1 , 0(t0)
@@ -274,6 +273,9 @@ GAME_LOOP:
 		li a3 , 4
 		la a0 inimigo
 		call UnloadImage
+		
+		addi t0,s7,2000
+		bltu s0, t0, Fim_Inimigo1
 		
 		li a7, 41
 		ecall
@@ -292,7 +294,8 @@ GAME_LOOP:
 		li a3 , 4
 		la a0 , inimigo
 		call LoadImage
-		
+			
+		addi s7, s0, 2000
 		Fim_Inimigo1:
 	PularGameMoment1:
 	#FIMGAMEMOMENT == 1
