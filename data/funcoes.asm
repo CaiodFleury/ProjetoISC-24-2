@@ -470,7 +470,19 @@ WaterGarden:
 		la t0,bananatotal
 		lb t1,0(t0)
 		addi t1,t1,1
-		sb t1,0(t0)
+		sb t1,0(t0) # t1 quantidade de bananas
+
+		# incrementar o numero de bananas no placar
+		li t0, 88
+		mul t2, t1, t0 # pegando o indice do sprite do numero
+
+		la t3, n0
+		add a0, t3, t2 # pegando o sprite do numero
+
+		li a1, 32
+		li a2, 18
+		li a3, 6
+		call LoadImage
 		
 		j GAME_LOOP
 		#---
@@ -583,7 +595,7 @@ GrowGarden:
 EstaColidindo:					# a0= endereco imagem		
 	la t0,array_layers			# a1 = x da imagem
 	li t1,76800				# a2 = y da imagem
-	add t0,t1,t0				# retorna a3, 1 para está colidindo e 0 se nao esta
+	add t0,t1,t0				# retorna a3, 1 para estï¿½ colidindo e 0 se nao esta
 	li t1,320
 	mul t1,a2,t1
 	add t0,t1,t0

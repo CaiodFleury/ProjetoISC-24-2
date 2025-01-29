@@ -54,16 +54,34 @@ LoadGame:
 	
 	li a1 , 20
 	li a2 , 0
-	li a3 , 6
+	li a3 , 5 # TIVE QUE ABAIXAR A CAMADA PARA OS NUMEROS APARECEREM
 	la a0 placaHUD
 	call LoadImage 
 	
-	li a1 , 20
-	li a2 , 0
-	li a3 , 6
-	la a0 placaHUD
-	call LoadImage 
+	# quantidade de bananas placa
+	li a1, 32
+	li a2, 18
+	li a3, 6
+	la a0, n0
+	call LoadImage
+
+	li a1, 40
+	li a2, 18
+	li a3, 6
+	la a0, bar
+	call LoadImage
+
+	li a1, 48
+	li a2, 18
+	li a3, 6
+	la a0, n1
+	call LoadImage
 	
+	li a1, 54
+	li a2, 18
+	la a0, n0
+	call LoadImage
+	#######
 	li a1 , 20
 	li a2 , 52
 	li a3 , 6
@@ -124,7 +142,7 @@ GAME_LOOP:
 	call KeyDown
 	PularKeyDown:
 	
-	addi t0, s10, 500		#Reseta a animação do personagem para a inicial
+	addi t0, s10, 500		#Reseta a animaï¿½ï¿½o do personagem para a inicial
 	blt s0, t0, NaoResetar
 	li t1, 3
 	la t2, sprite_macaco
@@ -336,7 +354,10 @@ KeyDown:				#Recebe:
 	# t6 recebe o valor do pixel na tela desejado q Ã© o ponto esquerdo inferior
 	
 	li t0, 'e'
-	beq t2,t0, SpaceInteraction	
+	li t1, 'E'
+
+	beq t2,t0, SpaceInteraction
+	beq t2,t1, SpaceInteraction
 	
 	#Se delay esta acontecendo ele nao pode se mover
 	bltu s0,s10, FIM

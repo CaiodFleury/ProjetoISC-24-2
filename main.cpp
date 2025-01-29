@@ -39,10 +39,10 @@ void PressKey(WORD virtualKey) {
     SendInput(1, &input, sizeof(INPUT));
 }
 
-void CaptureInput() {
-    if (!g_pJoystick) {
-        std::cerr << "Joystick não inicializado." << std::endl;
-        system("start \"fpgrars-x86_64-pc-windows-msvc--unb.exe\" \"main.asm\"");
+void CaptureInput(bool success) {
+    if (!g_pJoystick && !success) {
+        std::cerr << "joystick nao inicializado." << std::endl;
+        system("start fpgrars-x86_64-pc-windows-msvc--unb.exe main.asm");
 
         exit(0);
     }
@@ -135,7 +135,7 @@ int main() {
         g_pJoystick->SetCooperativeLevel(nullptr, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
         g_pJoystick->Acquire();
     } else {
-        std::cerr << "nenhum joystick encontrado" << std::endl;
+        std::cerr << "nenhum joystick encontrado, encerrando adaptador" << std::endl;
     }
 
     STARTUPINFO si = {};
@@ -144,8 +144,9 @@ int main() {
     PROCESS_INFORMATION pi;
 
     const char* arg = "\"fpgrars-x86_64-pc-windows-msvc--unb.exe\" \"main.asm\"";
+    bool success = CreateProcess(nullptr, LPSTR(arg), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi);
 
-    if (!CreateProcess(nullptr, LPSTR(arg), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi)) {
+    if (!success) {
         std::cerr << "falha ao iniciar o fpgrars\nCODIGO ERRO: " << GetLastError();
         return 1;
     }
@@ -153,7 +154,7 @@ int main() {
     std::thread monitorThread(MonitorFpgrars, pi.hProcess);
 
     while (running) {
-        CaptureInput();
+        CaptureInput(success);
         Sleep(100); // evita sobrecarregar o processador
     }
 
