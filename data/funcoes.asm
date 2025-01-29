@@ -480,7 +480,7 @@ WaterGarden:
 		li t1,4
 		mul t1,a0,t1
 		add t0,t1,t0
-		addi a2,s0,4000
+		addi a2,s0,10000
 		sw a2,0(t0)
 		
 		la a0,TerraMolhada
@@ -682,14 +682,14 @@ AnimationScreen:
 	la t0, old_indio_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 5
+	li a3 , 4
 	la a0 inimigo
 	call UnloadImage
 	
 	la t0, indio_pos
 	lh a1 , 0(t0)
 	lh a2 , 2(t0)
-	li a3 , 5
+	li a3 , 4
 	la a0 ,inimigo
 	call LoadImage
 	#
@@ -756,19 +756,94 @@ Dir:	beq a1, t3, Reset
 	addi a1, a1, 4
 	sh a1, 0(t0)
 	sh t6, 4(t0)
-	j Back1
+	#j Back1
 	
 Esq:	beq a1, t4, Reset
 	addi a1, a1, -4
 	sh a1, 0(t0)
 	sh t6, 4(t0)
-	j Back1
+	#j Back1
 	
 Reset:
 	mul t6, t6, t5
 	sh t6, 4(t0)
-	j Back1
-	
+	#j Back1
+
+ResetarVariaveis:
+#Inicializacao de variaveis
+	li a1 , 0
+	li a2 , 0
+	li a3 , 2
+	la a0 colisao1
+	call UnloadImage
+	li a1 , 0
+	li a2 , 0
+	li a3 , 4
+	la a0 colisao1
+	call UnloadImage
+	li a1 , 0
+	li a2 , 0
+	li a3 , 5
+	la a0 colisao1
+	call UnloadImage
+	li a1 , 0
+	li a2 , 0
+	li a3 , 6
+	la a0 colisao1
+	call UnloadImage
+	li a1 , 0
+	li a2 , 0
+	li a3 , 3
+	la a0 colisao1
+	call UnloadImage
+	la t0,bananatotal
+	sb zero,0(t0)
+	la t0,garden_state
+	li t1,0
+	sw t1,0(t0)
+	sw t1,4(t0)
+	sw t1,8(t0)
+	sw t1,12(t0)
+	la t0,garden_time
+	li t1,-1
+	sw t1,0(t0)
+	sw t1,4(t0)
+	sw t1,8(t0)
+	sw t1,12(t0)
+	sw t1,16(t0)
+	sw t1,20(t0)
+	sw t1,24(t0)
+	sw t1,28(t0)
+	sw t1,32(t0)
+	sw t1,36(t0)
+	sw t1,40(t0)
+	sw t1,44(t0)
+	sw t1,48(t0)
+	sw t1,52(t0)
+	sw t1,56(t0)
+	li t0,0
+	la t1,var
+	sw t0,0(t1)
+	la t0, char_pos
+	li t1,100
+	sh t1,0(t0)
+	li t1,120
+	sh t1,2(t0)	
+	la t0, indio_pos
+	li t1,300
+	sh t1,0(t0)
+	li t1,48
+	sh t1,2(t0)
+	sw zero,4(t0)
+	la t0, mosq1_pos
+	li t1,-20
+	sh t1,0(t0)
+	sh zero,4(t0)
+	li t1,-4
+	sw t1,6(t0)
+	la t0, game_moment
+	sb zero,0(t0)
+	j FimInicializacaodevariveis
 
 FimPrograma:			#Nao recebe nada
 	li a7,10      		#Chama o procedimento de finalizar o programa

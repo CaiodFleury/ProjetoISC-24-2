@@ -25,73 +25,8 @@ LoadGame:
 	li a7,30		# coloca o horario atual em s11
 	ecall
 	add s11 , zero , a0
-	#Inicializacao de variaveis
-	li a1 , 0
-	li a2 , 0
-	li a3 , 2
-	la a0 colisao1
-	call UnloadImage
-	li a1 , 0
-	li a2 , 0
-	li a3 , 4
-	la a0 colisao1
-	call UnloadImage
-	li a1 , 0
-	li a2 , 0
-	li a3 , 5
-	la a0 colisao1
-	call UnloadImage
-	li a1 , 0
-	li a2 , 0
-	li a3 , 6
-	la a0 colisao1
-	call UnloadImage
-	li a1 , 0
-	li a2 , 0
-	li a3 , 3
-	la a0 colisao1
-	call UnloadImage
-	la t0,bananatotal
-	sb zero,0(t0)
-	la t0,garden_state
-	li t1,0
-	sw t1,0(t0)
-	sw t1,4(t0)
-	sw t1,8(t0)
-	sw t1,12(t0)
-	la t0,garden_time
-	li t1,-1
-	sw t1,0(t0)
-	sw t1,4(t0)
-	sw t1,8(t0)
-	sw t1,12(t0)
-	sw t1,16(t0)
-	sw t1,20(t0)
-	sw t1,24(t0)
-	sw t1,28(t0)
-	sw t1,32(t0)
-	sw t1,36(t0)
-	sw t1,40(t0)
-	sw t1,44(t0)
-	sw t1,48(t0)
-	sw t1,52(t0)
-	sw t1,56(t0)
-	li t0,0
-	la t1,var
-	sw t0,0(t1)
-	la t0, char_pos
-	li t1,100
-	sh t1,0(t0)
-	li t1,120
-	sh t1,2(t0)	
-	la t0, indio_pos
-	li t1,300
-	sh t1,0(t0)
-	li t1,48
-	sh t1,2(t0)
-	sw zero,4(t0)
-	la t0, game_moment
-	sb zero,0(t0)
+	call ResetarVariaveis
+	FimInicializacaodevariveis:
 	#Primeira parte do nivel
 	li a1 , 0
 	li a2 , 0
@@ -121,12 +56,6 @@ LoadGame:
 	li a2 , 0
 	li a3 , 6
 	la a0 placaHUD
-	call LoadImage 
-	
-	li a1 , 270
-	li a2 , 13
-	li a3 , 6
-	la a0 placaHUD2
 	call LoadImage 
 	
 	li a1 , 20
@@ -177,6 +106,7 @@ LoadGame:
 #Modificacoes chamarao a renderizacao	
 #Variaveis S vao ser utilizadas para colocar os tempos das coisas
 #S0  - Tempo atual
+#s7  - Indio
 #S8  - Mosquito
 #S9  - Delay vida
 #S10 - Player
@@ -267,10 +197,13 @@ GAME_LOOP:
 	beq t0, zero, PularGameMoment1
 		#Mosca 1 adiministrador
 		bltu s0, s8, Fim_Mosca1
-		addi s8, s0, 20
+		addi s8, s0, 60
+		
 		la t0, mosq1_pos
 		lh a1 , 0(t0)
 		lh a2 , 2(t0)
+		lh t5 , 4(t0)
+		add a2,a2,t5
 		li a3 , 1
 		la a0 mosquito
 		call UnloadImage
@@ -278,28 +211,46 @@ GAME_LOOP:
 		la t0, mosq1_pos
 		lh a1 , 0(t0)
 		lh a2 , 2(t0)
+		lh t5 , 4(t0)
+		add a2,a2,t5
 		li a3 , 6
-		la a0 mosquito
 		li t2,340
 		beq a1,t2,PuLLLLAraaa
 		addi t1,a1,4
 		sh t1,0(t0)
+		lh t6,6(t0)
+		add t5,t5,t6
+		sh t5,4(t0)
+		li t1,16
+		li t2,-4
+		bne t5, t1, PularSobeDesce
+		sh t2,6(t0)
+		PularSobeDesce:
+		li t1,-16
+		li t2,4
+		bne t5, t1, PularSobeDesce2
+		sh t2,6(t0)
+		PularSobeDesce2:
 		j PULLAR
 		PuLLLLAraaa:
-		sh zero,0(t0)
-		li a7, 40
-		mv a1, s0
+		li t1,-20
+		sh t1,0(t0)
+		li a7, 41
 		ecall
-		li t1,60
+		li t1,30
 		rem a0,a0,t1
-		addi a0,a0,100
+		addi a0,a0,130
 		sh a0,2(t0)
+		addi s8, s0, 10000
 		PULLAR:
+		la a0 mosquito
 		call UnloadImage
 		
 		la t0, mosq1_pos
 		lh a1 , 0(t0)
 		lh a2 , 2(t0)
+		lh t5 , 4(t0)
+		add a2,a2,t5
 		li a3 , 1
 		la a0 mosquito
 		call LoadImage
@@ -307,10 +258,42 @@ GAME_LOOP:
 		la t0, mosq1_pos
 		lh a1 , 0(t0)
 		lh a2 , 2(t0)
+		lh t5 , 4(t0)
+		add a2,a2,t5
 		li a3 , 6
 		la a0 mosquito
 		call LoadImage
 		Fim_Mosca1:
+		#INIMIGO--->
+		bltu s0, s7, Fim_Inimigo1
+		addi s7, s0, 2000
+		
+		la t0, old_indio_pos
+		lh a1 , 0(t0)
+		lh a2 , 2(t0)
+		li a3 , 4
+		la a0 inimigo
+		call UnloadImage
+		
+		li a7, 41
+		ecall
+		li t1, 3
+		remu a0,a0,t1
+		add a0,a0,a0
+		add a0,a0,a0
+		
+		la t0, indio_pos2
+		add t0,a0,t0
+		lh a1 , 0(t0)
+		lh a2 , 2(t0)
+		la t2, old_indio_pos
+		sh a1 , 0(t2)
+		sh a2 , 2(t2)
+		li a3 , 4
+		la a0 , inimigo
+		call LoadImage
+		
+		Fim_Inimigo1:
 	PularGameMoment1:
 	#FIMGAMEMOMENT == 1
 	
@@ -635,52 +618,3 @@ KeyDown:				#Recebe:
 		
 		ret
 .include "data/funcoes.asm"
-	
-	la t0, indio_pos
-	lh t1, 4(t0)
-	beq t1, zero, Back2
-	
-	la t0, indio_pos
-	lh t1, 6(t0)
-	li t2, 20
-	addi t1, t1, 1
-	sh t1, 6(t0)
-	bne t1, t2, Back1
-	
-	call Inimigo
-	
-Back1:	#
-	
-	la t0, old_indio_pos
-	lh a1 , 0(t0)
-	lh a2 , 2(t0)
-	li a3 , 4
-	la a0 inimigo
-	call UnloadImage
-	
-	la t0, indio_pos
-	lh a1 , 0(t0)
-	lh a2 , 2(t0)
-	li a3 , 4
-	la a0 , inimigo
-	call LoadImage
-	
-	#
-Back2:
-	la t0, indio_pos
-	lh t1, 4(t0)
-	bne t1, zero, Skip
-	la t0, indio_pos
-	lh a1 , 0(t0)
-	lh a2 , 2(t0)
-	li a3 , 4
-	la a0 , inimigo
-	call LoadImage
-	#
-	
-Skip:
-	
-	la t0,bananatotal
-	lb t0,0(t0)
-	li t1,10
-	beq t1,t0,TerceiraParte
