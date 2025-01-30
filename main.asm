@@ -275,11 +275,45 @@ GAME_LOOP:
 		la t0,Obj2
 		sw t1,4(t0)
 		sw t2,8(t0)
-		la t1,inimigo
-		sw t1,0(t0)
+		la t3,inimigo
+		sw t3,0(t0)
+		
+		li t3, 7
+		mul a0,a0,t3
+		la t3,Obj4
+		add t3,t3,a0
+		
+		la t4,flecha
+		sw t4,0(t3)
+		li t5, 6
+		sw t1,4(t3)
+		sw t2,8(t3)
+		sw t1,12(t3)
+		sw t2,16(t3)
+		sw t5,20(t3)
 		
 		addi s7, s0, 2000
 		Fim_Inimigo1:
+		#Fim Inimigo
+		#Atualizar flechas
+		li t0,0
+		For_Flechas:
+		li t1,3
+		beq t1,t0,Fim_Flechas
+		li t2,28
+		mul t2,t2,t0
+		la t3, Obj4
+		add t3,t3,t2
+		lw t2, 0(t3)
+		addi t0,t0,1
+		beq zero, t2, For_Flechas
+		lw t2, 8(t3)
+		li t4,280
+		bge t2, t4, For_Flechas
+		addi t2,t2,1
+		sw t2, 8(t3)
+		j For_Flechas
+		Fim_Flechas:
 	PularGameMoment1:
 	#FIMGAMEMOMENT == 1
 	

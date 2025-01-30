@@ -810,6 +810,19 @@ IniciarObjetos:
 	sw t1,12(t0)
 	sw t2,16(t0)
 	sw t3,20(t0)
+	
+	la t0,Obj4
+	la t1,flecha
+	sw t1,24(t0)
+	
+	la t0,Obj5
+	la t1,flecha
+	sw t1,24(t0)
+	
+	la t0,Obj6
+	la t1,flecha
+	sw t1,24(t0)
+
 	ret
 SuperRenderv1:	
 	mv a4,ra
@@ -824,6 +837,10 @@ SuperRenderv1:
 		lw t2, 0(a5)
 		addi a6,a6,1
 		beq zero, t2, For_SRv
+		
+		mv a0,a6
+		li a7,1
+		ecall
 		
 		lw a0 , 0(a5)
 		lw a1 , 12(a5)
