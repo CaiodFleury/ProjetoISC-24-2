@@ -27,6 +27,7 @@ LoadGame:
 	add s11 , zero , a0
 	call ResetarVariaveis
 	FimInicializacaodevariveis:
+	call IniciarObjetos
 	#Primeira parte do nivel
 	li a1 , 0
 	li a2 , 0
@@ -45,7 +46,6 @@ LoadGame:
 	SegundaParte:
 	call AnimationScreen
 	FimAnimacaoUm:
-	
 	li a1 , 0
 	li a2 , 0
 	li a3 , 0
@@ -154,35 +154,25 @@ GAME_LOOP:
 	NaoResetar:
 	
 	#INICIO RENDERIZACAO MACACO
-	la t0, old_char_pos
-	lh a1 , 0(t0)
-	lh a2 , 2(t0)
-	li a3 , 5
-	la a0 macaco
-	call UnloadImage
-
-	la t0, char_pos
-	lh a1 , 0(t0)
-	lh a2 , 2(t0)
-	li a3 , 5
 	la t0,sprite_macaco
 	lb t0,0(t0)
 	li t1,548
 	mul t0,t1,t0
 	la a0 , macaco1
 	add a0,t0,a0
-	call LoadImage
+	la t2, Obj1
+	sw a0,0(t2)
 	#FIM RENDERIZACAO MACACO
 	#INICIO TESTE COLISAO
-	la t0, char_pos
-	lh a1 , 0(t0)
-	lh a2 , 2(t0)
-	la a0,macaco1
+	la t0, Obj1
+	lw a1 , 4(t0)
+	lw a2 , 8(t0)
+	la a0,macaco
 	call EstaColidindo
 	
 	beq a3,zero, Pular_DecrescimoDeVida
 	bltu s0, s9, Pular_DecrescimoDeVida
-	addi s9, s0, 500
+	addi s9, s0, 1400
 	la t0, vidas
 	lb t1, 0(t0)
 	addi t1,t1,-1
@@ -217,80 +207,56 @@ GAME_LOOP:
 		bltu s0, s8, Fim_Mosca1
 		addi s8, s0, 60
 		
-		la t0, mosq1_pos
-		lh a1 , 0(t0)
-		lh a2 , 2(t0)
-		lh t5 , 4(t0)
-		add a2,a2,t5
-		li a3 , 1
-		la a0 mosquito
-		call UnloadImage
+		la t0, Obj3
+		la t1, mosq1_posy
+		lh t2 , 4(t0)
+		li t3,340
+		beq t3,t2,ResetMosca1
 		
-		la t0, mosq1_pos
-		lh a1 , 0(t0)
-		lh a2 , 2(t0)
-		lh t5 , 4(t0)
-		add a2,a2,t5
-		li a3 , 6
-		li t2,340
-		beq a1,t2,PuLLLLAraaa
-		addi t1,a1,4
-		sh t1,0(t0)
-		lh t6,6(t0)
-		add t5,t5,t6
-		sh t5,4(t0)
-		li t1,16
-		li t2,-4
-		bne t5, t1, PularSobeDesce
-		sh t2,6(t0)
+		addi t2,t2,4
+		sw t2,4(t0)
+		
+		lw t2,8(t0)
+		lh t3,0(t1)
+		add t2,t2,t3
+		sw t2,8(t0)
+		
+		lh t3,2(t1)
+		addi t3,t3,16
+		li t4,-4
+		bne t2, t3, PularSobeDesce
+		sh t4,0(t1)
 		PularSobeDesce:
-		li t1,-16
-		li t2,4
-		bne t5, t1, PularSobeDesce2
-		sh t2,6(t0)
+		lh t3,2(t1)
+		addi t3,t3,-16
+		li t4,4
+		bne t2, t3, PularSobeDesce2
+		sh t4,0(t1)
 		PularSobeDesce2:
-		j PULLAR
-		PuLLLLAraaa:
-		li t1,-20
-		sh t1,0(t0)
+		j Fim_Mosca1
+		ResetMosca1:
+		li t2,-20
+		sw t2,4(t0)
 		li a7, 41
 		ecall
-		li t1,30
-		rem a0,a0,t1
-		addi a0,a0,130
-		sh a0,2(t0)
+		li t2,30
+		rem a0,a0,t2
+		addi a0,a0,120
+		sw a0,2(t1)
+		sw a0,8(t0)
 		addi s8, s0, 10000
-		PULLAR:
-		la a0 mosquito
-		call UnloadImage
-		
-		la t0, mosq1_pos
-		lh a1 , 0(t0)
-		lh a2 , 2(t0)
-		lh t5 , 4(t0)
-		add a2,a2,t5
-		li a3 , 1
-		la a0 mosquito
-		call LoadImage
-		
-		la t0, mosq1_pos
-		lh a1 , 0(t0)
-		lh a2 , 2(t0)
-		lh t5 , 4(t0)
-		add a2,a2,t5
-		li a3 , 6
-		la a0 mosquito
-		call LoadImage
 		Fim_Mosca1:
+		
 		#INIMIGO--->
 		bltu s0, s7, Fim_Inimigo1
 		
-		la t0, old_indio_pos
-		lh a1 , 0(t0)
-		lh a2 , 2(t0)
-		li a3 , 4
-		la a0 inimigo
+		la t0,Obj2
+		lw a0 , 0(t0)
+		lw a1 , 12(t0)
+		lw a2 , 16(t0)
+		lw a3 , 20(t0)
 		call UnloadImage
+		sw zero,0(t0)
 		
 		addi t0,s7,2000
 		bltu s0, t0, Fim_Inimigo1
@@ -302,17 +268,16 @@ GAME_LOOP:
 		add a0,a0,a0
 		add a0,a0,a0
 		
-		la t0, indio_pos2
-		add t0,a0,t0
-		lh a1 , 0(t0)
-		lh a2 , 2(t0)
-		la t2, old_indio_pos
-		sh a1 , 0(t2)
-		sh a2 , 2(t2)
-		li a3 , 4
-		la a0 , inimigo
-		call LoadImage
-			
+		la t2, indio_pos2
+		add t2,a0,t2
+		lh t1, 0(t2)
+		lh t2, 2(t2)
+		la t0,Obj2
+		sw t1,4(t0)
+		sw t2,8(t0)
+		la t1,inimigo
+		sw t1,0(t0)
+		
 		addi s7, s0, 2000
 		Fim_Inimigo1:
 	PularGameMoment1:
@@ -328,7 +293,10 @@ GAME_LOOP:
 	call Renderizador
 	
 	call GrowGarden
-							
+	FimGrowGarden:
+	
+	call SuperRenderv1				
+						
 	j GAME_LOOP
 	
 #######################################
@@ -341,9 +309,9 @@ KeyDown:				#Recebe:
 		
 	#Variaveis para atingir o ponto atual
 	la t6,array_layers
-	la t5, char_pos
-	lh t3, 0(t5)
-	lh t4, 2(t5)
+	la t5, Obj1
+	lw t3, 4(t5)
+	lw t4, 8(t5)
 	#operações para chegar no ponto certo
 	add t6,t6,t3
 	li t3,320
@@ -363,10 +331,8 @@ KeyDown:				#Recebe:
 	bltu s0,s10, FIM
 	addi s10,s0,40
 	#Troca a posição antiga com a atual e carrega t5 com char_pos
-	la t5, char_pos
-	la t4, old_char_pos
-	lw t3, 0(t5)
-	sw t3, 0(t4)
+	la t5, Obj1
+	addi t5,t5,4
 	
 	li t0, 'd'
 	li t1, 'D'
@@ -428,9 +394,9 @@ KeyDown:				#Recebe:
 		li t3,63
 		beq t2,t3,SegundaParte # se for amarelo ele vai para a segunda parte do mapa
 		
-		lh t2, 0(t5)
+		lw t2, 0(t5)
 		addi t2, t2,4
-		sh t2, 0(t5)
+		sw t2, 0(t5)
 		
 		la t0, sprite_macaco
 		lb t1,0(t0)
@@ -448,9 +414,9 @@ KeyDown:				#Recebe:
 		li t6,-110
 		beq t2,t6,FIM
 		
-		lh t1,0(t5)
+		lw t1,0(t5)
 		addi t1, t1, -4
-		sh t1, 0(t5)
+		sw t1, 0(t5)
 		
 		la t0, sprite_macaco
 		lb t1,0(t0)
@@ -474,9 +440,9 @@ KeyDown:				#Recebe:
 		li t6,-110
 		beq t4,t6,FIM
 
-		lh t1, 2(t5)
+		lw t1, 4(t5)
 		addi t1, t1, -4 
-		sh t1, 2(t5)
+		sw t1, 4(t5)
 		
 		la t0, sprite_macaco
 		lb t1,0(t0)
@@ -501,9 +467,9 @@ KeyDown:				#Recebe:
 		li t6,-110
 		beq t4,t6,FIM
 
-		lh t1, 2(t5)
+		lw t1, 4(t5)
 		addi t1, t1, 4 
-		sh t1, 2(t5)
+		sw t1, 4(t5)
 		
 		la t0, sprite_macaco
 		lb t1,0(t0)
@@ -532,12 +498,12 @@ KeyDown:				#Recebe:
 		
 		addi s10,s10,20
 		
-		lh t2, 0(t5)
+		lw t2, 0(t5)
 		addi t2, t2,4
-		sh t2, 0(t5)
-		lh t2, 2(t5)
+		sw t2, 0(t5)
+		lw t2, 4(t5)
 		addi t2, t2,4
-		sh t2, 2(t5)
+		sw t2, 4(t5)
 		
 		la t0, sprite_macaco
 		lb t1,0(t0)
@@ -561,12 +527,12 @@ KeyDown:				#Recebe:
 		
 		addi s10,s10,20
 		
-		lh t2, 0(t5)
+		lw t2, 0(t5)
 		addi t2, t2,4
-		sh t2, 0(t5)
-		lh t2, 2(t5)
+		sw t2, 0(t5)
+		lw t2, 4(t5)
 		addi t2, t2,-4
-		sh t2, 2(t5)
+		sw t2, 4(t5)
 		
 		la t0, sprite_macaco
 		lb t1,0(t0)
@@ -587,12 +553,12 @@ KeyDown:				#Recebe:
 
 		addi s10,s10,20
 		
-		lh t1, 2(t5)
+		lw t1, 4(t5)
 		addi t1, t1, -4 
-		sh t1, 2(t5)
-		lh t1, 0(t5)
+		sw t1, 4(t5)
+		lw t1, 0(t5)
 		addi t1, t1, -4 
-		sh t1, 0(t5)
+		sw t1, 0(t5)
 		
 		la t0, sprite_macaco
 		lb t1,0(t0)
@@ -619,12 +585,12 @@ KeyDown:				#Recebe:
 			
 		addi s10,s10,20
 
-		lh t1, 2(t5)
+		lw t1, 4(t5)
 		addi t1, t1, 4 
-		sh t1, 2(t5)
-		lh t1, 0(t5)
+		sw t1, 4(t5)
+		lw t1, 0(t5)
 		addi t1, t1, -4 
-		sh t1, 0(t5)
+		sw t1, 0(t5)
 		
 		la t0, sprite_macaco
 		lb t1,0(t0)

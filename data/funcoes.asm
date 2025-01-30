@@ -508,7 +508,7 @@ GrowGarden:
 		li t1,0
 		li t2,4
 		For_GG:
-		beq t1,t0,GAME_LOOP
+		beq t1,t0,FimGrowGarden
 		mul t3,t2,t1
 		la t4, garden_time
 		add t4,t4,t3
@@ -520,8 +520,7 @@ GrowGarden:
 		li t0,-1
 		sw t0,0(t4)
 		mv a0,t1
-		#li a7,1
-		#ecall
+
 		# essa parte vai salvar o estado do jardim atual
 		la t0, garden_state
 		add t1, t0, a0 			# move o ponteiro para o indice correto
@@ -675,36 +674,6 @@ AnimationScreen:
 	Loop_AS:
 	
 	call TocarMusica
-	
-	la t0, old_char_pos
-	lh a1 , 0(t0)
-	lh a2 , 2(t0)
-	li a3 , 5
-	la a0 macaco
-	call UnloadImage
-	
-	la t0, char_pos
-	lh a1 , 0(t0)
-	lh a2 , 2(t0)
-	li a3 , 5
-	la a0 ,macaco
-	call LoadImage
-
-	#
-	la t0, old_indio_pos
-	lh a1 , 0(t0)
-	lh a2 , 2(t0)
-	li a3 , 4
-	la a0 inimigo
-	call UnloadImage
-	
-	la t0, indio_pos
-	lh a1 , 0(t0)
-	lh a2 , 2(t0)
-	li a3 , 4
-	la a0 ,inimigo
-	call LoadImage
-	#
 
 	la t0, var
 	la a0 fazendav2
@@ -723,63 +692,23 @@ AnimationScreen:
 	addi t2,t2,4
 	sw t2,0(t0)
 	
-	la t0, char_pos
-	la t1, old_char_pos
-	lh t2 , 0(t0)
-	sh t2 , 0(t1)
+	la t0, Obj1
+	lw t2 , 4(t0)
 	addi t2,t2,-4
-	sh t2 , 0(t0)
+	sw t2 , 4(t0)
 
-	#
-	la t0, indio_pos
-	la t1, old_indio_pos
-	li t3, 1
-	sh t3, 4(t0)
-	lh t2, 0(t0)
-	sh t2, 0(t1)
+	la t0, Obj2
+	lw t2, 4(t0)
 	addi t2, t2, -4
-	sh t2, 0(t0)
+	sw t2, 4(t0)
 		
 	li a7, 32
 	li a0, 20
 	ecall
 	
+	call SuperRenderv1
+	
 	j Loop_AS
-
-Inimigo:
-	
-	#li a0, 200
-	#li a7, 32
-	#ecall
-
-	la t0, indio_pos
-	la t1, old_indio_pos
-	lh a1, 0(t0)
-	sh a1, 0(t1)
-	sh zero, 6(t0)
-	li t3, 232
-	li t4, 88
-	li t5, -1
-	lh t6, 4(t0)
-	
-	beq t6, t5, Esq
-	
-Dir:	beq a1, t3, Reset
-	addi a1, a1, 4
-	sh a1, 0(t0)
-	sh t6, 4(t0)
-	#j Back1
-	
-Esq:	beq a1, t4, Reset
-	addi a1, a1, -4
-	sh a1, 0(t0)
-	sh t6, 4(t0)
-	#j Back1
-	
-Reset:
-	mul t6, t6, t5
-	sh t6, 4(t0)
-	#j Back1
 
 ResetarVariaveis:
 #Inicializacao de variaveis
@@ -835,27 +764,104 @@ ResetarVariaveis:
 	sw t1,56(t0)
 	li t0,0
 	la t1,var
-	sw t0,0(t1)
-	la t0, char_pos
-	li t1,100
+	sw t0,0(t1)	
+	la t0, mosq1_posy
+	li t1,4
 	sh t1,0(t0)
-	li t1,120
-	sh t1,2(t0)	
-	la t0, indio_pos
-	li t1,300
-	sh t1,0(t0)
-	li t1,48
-	sh t1,2(t0)
-	sw zero,4(t0)
-	la t0, mosq1_pos
-	li t1,-20
-	sh t1,0(t0)
-	sh zero,4(t0)
-	li t1,-4
-	sw t1,6(t0)
 	la t0, game_moment
 	sb zero,0(t0)
 	j FimInicializacaodevariveis
+	
+IniciarObjetos:
+
+	la t0,Obj1
+	la t1,macaco
+	sw t1,0(t0)
+	li t1, 100
+	li t2, 120
+	li t3, 5
+	sw t1,4(t0)
+	sw t2,8(t0)
+	sw t1,12(t0)
+	sw t2,16(t0)
+	sw t3,20(t0)
+	
+	la t0,Obj2
+	la t1,inimigo
+	sw t1,0(t0)
+	li t1, 300
+	li t2, 48
+	li t3, 4
+	sw t1,4(t0)
+	sw t2,8(t0)
+	sw t1,12(t0)
+	sw t2,16(t0)
+	sw t3,20(t0)
+	
+	la t0,Obj3
+	la t1,mosquito
+	sw t1,0(t0)
+	sw t1,24(t0)
+	li t1, -20
+	li t2, 140
+	li t3, 6
+	sw t1,4(t0)
+	sw t2,8(t0)
+	sw t1,12(t0)
+	sw t2,16(t0)
+	sw t3,20(t0)
+	ret
+SuperRenderv1:	
+	mv a4,ra
+	li a6,0
+	For_SRv:
+		li t0,15
+		beq a6,t0,Fim_SuperRenderv1
+		li t2,28
+		mul t2,t2,a6
+		la a5, RenderObjFirst
+		add a5,a5,t2
+		lw t2, 0(a5)
+		addi a6,a6,1
+		beq zero, t2, For_SRv
+		
+		lw a0 , 0(a5)
+		lw a1 , 12(a5)
+		lw a2 , 16(a5)
+		lw a3 , 20(a5)
+		call UnloadImage
+	
+		lw a0 , 0(a5)
+		lw a1 , 4(a5)
+		lw a2 , 8(a5)
+		lw a3 , 20(a5)
+		call LoadImage
+		
+		lw t0, 24(a5)
+		beq t0,zero,Fim_loadHitBox
+		
+		lw a0 , 24(a5)
+		lw a1 , 12(a5)
+		lw a2 , 16(a5)
+		li a3 , 1
+		call UnloadImage
+	
+		lw a0 , 24(a5)
+		lw a1 , 4(a5)
+		lw a2 , 8(a5)
+		li a3 , 1
+		call LoadImage
+		Fim_loadHitBox:
+		
+		lw t0 , 4(a5)
+		lw t1 , 8(a5)
+		sw t0 , 12(a5)
+		sw t1 , 16(a5)
+		
+		j For_SRv
+	Fim_SuperRenderv1:
+	mv ra,a4
+	ret
 
 FimPrograma:			#Nao recebe nada
 	li a7,10      		#Chama o procedimento de finalizar o programa

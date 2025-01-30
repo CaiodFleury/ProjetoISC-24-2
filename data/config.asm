@@ -15,11 +15,20 @@ vidas: .byte 3
 #variaveis inicializaveis
 bananatotal: 	.byte 0
 var:        	.word 0
-char_pos:	.half 100, 120
-old_char_pos:	.half 200, 0
-indio_pos:	.half 300, 48, 0, 0	#posição x, posição y, contador de esq dir, controlador de velocidade
-old_indio_pos:	.half 300,48
-indio_pos2: 	.half 160,48,100,59,252,53
-mosq1_pos:	.half -20,100,0,-4
+indio_pos2: 	.half 168,48,100,59,252,53
+mosq1_posy:	.half -4,140
 garden_state:   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 garden_time:    .word -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+
+#SuperRenderv1
+RenderObjFirst:
+Obj1:		.word 0,0,0,0,0,0,0
+Obj2:		.word 0,0,0,0,0,0,0
+Obj3:		.word 0,0,0,0,0,0,0
+Obj4:		.word 0,0,0,0,0,0,0
+Obj5:		.word 0,0,0,0,0,0,0
+Obj6:		.word 0,0,0,0,0,0,0
+Obj7:		.word 0,0,0,0,0,0,0
+Obj8:		.word 0,0,0,0,0,0,0
+Obj9:		.word 0,0,0,0,0,0,0
+Obj10:		.word 0,0,0,0,0,0,0
