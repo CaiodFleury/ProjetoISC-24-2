@@ -755,7 +755,7 @@ ResetarVariaveis:
 	sw t0,0(t1)	
 	la t0, mosq1_posy
 	li t1,4
-	sw t1,0(t0)
+	sh t1,0(t0)
 	la t0, game_moment
 	sb zero,0(t0)
 	j FimInicializacaodevariveis

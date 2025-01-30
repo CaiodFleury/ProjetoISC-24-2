@@ -113,12 +113,6 @@ LoadGame:
 #S11 - Musica
 GAME_LOOP: 	
 	
-	li a1 , 0
-	li a2 , 0
-	li a3 , 2
-	la a0 colisao1
-	call UnloadImage
-	
 	li a7,30			# coloca o horario atual em s11
 	ecall
 	mv s0, a0
@@ -209,26 +203,29 @@ GAME_LOOP:
 		add t2,t2,t3
 		sw t2,8(t0)
 		
-		li t3,160
+		lh t3,2(t1)
+		addi t3,t3,16
 		li t4,-4
 		bne t2, t3, PularSobeDesce
 		sh t4,0(t1)
 		PularSobeDesce:
-		li t3,120
+		lh t3,2(t1)
+		addi t3,t3,-16
 		li t4,4
 		bne t2, t3, PularSobeDesce2
 		sh t4,0(t1)
 		PularSobeDesce2:
 		j Fim_Mosca1
 		ResetMosca1:
-		li t1,-20
-		sw t1,4(t0)
-		#li a7, 41
-		#ecall
-		#li t1,30
-		#rem a0,a0,t1
-		#addi a0,a0,130
-		#sw a0,2(t0)
+		li t2,-20
+		sw t2,4(t0)
+		li a7, 41
+		ecall
+		li t2,30
+		rem a0,a0,t2
+		addi a0,a0,120
+		sw a0,2(t1)
+		sw a0,8(t0)
 		addi s8, s0, 10000
 		Fim_Mosca1:
 		
@@ -236,6 +233,11 @@ GAME_LOOP:
 		bltu s0, s7, Fim_Inimigo1
 		
 		la t0,Obj2
+		lw a0 , 0(t0)
+		lw a1 , 12(t0)
+		lw a2 , 16(t0)
+		lw a3 , 20(t0)
+		call UnloadImage
 		sw zero,0(t0)
 		
 		addi t0,s7,2000

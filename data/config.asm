@@ -16,7 +16,7 @@ vidas: .byte 3
 bananatotal: 	.byte 0
 var:        	.word 0
 indio_pos2: 	.half 168,48,100,59,252,53
-mosq1_posy:	.half -4
+mosq1_posy:	.half -4,140
 garden_state:   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 garden_time:    .word -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
 
@@ -32,8 +32,3 @@ Obj7:		.word 0,0,0,0,0,0,0
 Obj8:		.word 0,0,0,0,0,0,0
 Obj9:		.word 0,0,0,0,0,0,0
 Obj10:		.word 0,0,0,0,0,0,0
-Obj11:		.word 0,0,0,0,0,0,0
-Obj12:		.word 0,0,0,0,0,0,0
-Obj13:		.word 0,0,0,0,0,0,0
-Obj14:		.word 0,0,0,0,0,0,0
-Obj15:		.word 0,0,0,0,0,0,0
