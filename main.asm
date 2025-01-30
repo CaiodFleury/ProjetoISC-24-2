@@ -242,7 +242,7 @@ GAME_LOOP:
 		li t2,30
 		rem a0,a0,t2
 		addi a0,a0,120
-		sw a0,2(t1)
+		sh a0,2(t1)
 		sw a0,8(t0)
 		addi s8, s0, 10000
 		Fim_Mosca1:
