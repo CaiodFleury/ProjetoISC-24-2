@@ -39,7 +39,7 @@
 .include "sprites/Relogio2.data"
 .include "sprites/Relogio3.data"
 .include "sprites/Relogio4.data"
-
+.include "sprites/Relogio5.data"
 # numeros
 .include "sprites/n0.data"
 .include "sprites/n1.data"

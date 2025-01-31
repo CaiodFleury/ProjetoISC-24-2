@@ -472,10 +472,29 @@ WaterGarden:
 		addi t1,t1,1
 		sb t1,0(t0) # t1 quantidade de bananas
 
-		# incrementar o numero de bananas no placar
+		li t2,10
+		div t1,t1,t2
+		beq t1,zero PularDezenas
+		
 		li t0, 138
 		mul t2, t1, t0 # pegando o indice do sprite do numero
+		la t3, n0
+		add a0, t3, t2 # pegando o sprite do numero
+		
+		li a1, 22
+		li a2, 18
+		li a3, 6
+		call LoadImage
 
+		PularDezenas:
+		# incrementar o numero de bananas no placar
+		la t0,bananatotal
+		lb t1,0(t0)
+		
+		li t0, 138
+		li t3,10
+		rem t2,t1,t3
+		mul t2, t2, t0 # pegando o indice do sprite do numero
 		la t3, n0
 		add a0, t3, t2 # pegando o sprite do numero
 
@@ -483,7 +502,7 @@ WaterGarden:
 		li a2, 18
 		li a3, 6
 		call LoadImage
-		
+
 		j GAME_LOOP
 		#---
 		NaoResetarWP:
@@ -492,7 +511,7 @@ WaterGarden:
 		li t1,4
 		mul t1,a0,t1
 		add t0,t1,t0
-		addi a2,s0,10000
+		addi a2,s0,8000
 		sw a2,0(t0)
 		
 		la a0,TerraMolhada
@@ -769,6 +788,8 @@ ResetarVariaveis:
 	li t1,4
 	sh t1,0(t0)
 	la t0, game_moment
+	sb zero,0(t0)
+	la t0, relogio_pos
 	sb zero,0(t0)
 	j FimInicializacaodevariveis
 	

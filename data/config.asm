@@ -10,7 +10,9 @@ sprite_macaco: .byte 3
 game_moment: .byte 0
 level: .byte 0
 
-vidas: .byte 3
+vidas: .byte 100
+
+relogio_pos: .byte -1
 
 #variaveis inicializaveis
 bananatotal: 	.byte 0

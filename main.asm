@@ -130,6 +130,7 @@ LoadGame:
 #Modificacoes chamarao a renderizacao	
 #Variaveis S vao ser utilizadas para colocar os tempos das coisas
 #S0  - Tempo atual
+#s6  - Tempo Jogo
 #s7  - Indio
 #S8  - Mosquito
 #S9  - Delay vida
@@ -320,13 +321,34 @@ GAME_LOOP:
 		sw t2, 8(t3)
 		j For_Flechas
 		Fim_Flechas:
+		#Inicio Relogio -->
+		bltu s0, s6, AtualizarRelogio
+		la t0, relogio_pos
+		lb t2,0(t0)
+		li t1,4
+		bne t2,t1,PularFim_Relogio
+		la t6, bananatotal
+		lb t6,0(t6)
+		li t5, 10
+		blt t6,t5,Fim_GameTime
+		j TerceiraParte
+		Fim_GameTime:
+		j FimGame
+		PularFim_Relogio:
+		addi t2,t2,1
+		sb t2,0(t0)
+		la a0 Relogio1
+		li t3, 1736
+		mul t3,t3,t2
+		add a0,a0,t3
+		li a1 , 270
+		li a2 , 0
+		li a3 , 6
+		call LoadImage 
+		addi s6, s0, 20000
+		AtualizarRelogio:
 	PularGameMoment1:
 	#FIMGAMEMOMENT == 1
-	
-	la t0,bananatotal
-	lb t0,0(t0)
-	li t1,10
-	beq t1,t0,TerceiraParte	
 	
 	call TocarMusica
 	
