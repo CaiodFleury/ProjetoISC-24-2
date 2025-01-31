@@ -110,6 +110,8 @@ LoadGame:
 	li t1,1
 	sb t1,0(t0)
 	
+	addi s8, s0, 10000
+	
 	call GAME_LOOP
 	#terceira parte do nivel
 	TerceiraParte:
@@ -382,6 +384,12 @@ KeyDown:				#Recebe:
 	li t4,8640
 	add t6,t6,t4
 	# t6 recebe o valor do pixel na tela desejado q é o ponto esquerdo inferior
+	
+	li t0, 'p'
+	li t1, 'P'
+	
+	beq t2,t0, PauseScreen
+	beq t2,t1, PauseScreen
 	
 	li t0, 'e'
 	li t1, 'E'

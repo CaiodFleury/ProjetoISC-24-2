@@ -3,6 +3,7 @@
 .include "levels/fazendav1.data"
 .include "levels/fazendav2.data"
 .include "levels/Loading.data"
+.include "levels/PauseText.data"
 .include "levels/startscreen.data"
 .include "levels/colisao1.data"
 .include "levels/macacofundofinal.data"

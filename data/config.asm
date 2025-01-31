@@ -10,7 +10,7 @@ sprite_macaco: .byte 3
 game_moment: .byte 0
 level: .byte 0
 
-vidas: .byte 100
+vidas: .byte 3
 
 relogio_pos: .byte -1
 

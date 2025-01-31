@@ -40,6 +40,56 @@ EndDayScreen:
 	
 	j FimEndDayScreen
 
+#tela de pause
+PauseScreen:
+	li a1 , 60
+	li a2 , 100
+	la a0 , PauseText
+	li a3 , 9
+	call LoadImage
+	call Renderizador
+	Esperar_Leitura_PS:
+	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
+	lw t0,0(a0)			# Le bit de Controle Teclado
+	andi t0,t0,0x0001		# mascara o bit menos significativo
+   	beq t0,zero,Esperar_Leitura_PS  # Se nao ha tecla pressionada entao vai para FIM			
+	
+	li a1 , 60
+	li a2 , 100
+	la a0 , PauseText
+	li a3 , 9
+	call UnloadImage
+	
+	li a7,30			# coloca o horario atual em s11
+	ecall
+	sub t0,a0,s0
+	add s6,s6,t0
+	add s7,s7,t0
+	add s8,s8,t0
+	add s9,s9,t0
+	add s10,s10,t0
+	add s11,s11,t0
+	
+	li t1,15
+	li t2,0
+	li t3,4
+	For_PauseS:
+	beq t2,t1,FimChangeTimePauseScreen
+	mul t4,t3,t2
+	addi t2,t2,1
+	la t5, garden_time
+	add t5,t5,t4
+	lw t6, 0(t5)
+	li t4,-1
+	beq t6,t4,For_PauseS 
+	add t6,t6,t0
+	sw t6, 0(t5)
+	j For_PauseS
+	FimChangeTimePauseScreen:
+	add s0,a0,zero
+	
+	j GAME_LOOP
+
 TocarMusica:						#s11 eh o contador de tempo
 	li a7,30					#coloca o horario atual em a0
 	ecall						#função não recebe entrada
@@ -330,7 +380,7 @@ Renderizador:
 		beq t1, t4, EndWhile_R
 		While_R1:
 			beq t2, t3, EndWhile_R1
-			li t5,460800
+			li t5,768000
 			add a7, t6, t5
 			While_R2:
 				lb t5,0(a7)
