@@ -484,6 +484,13 @@ KeyDown:				#Recebe:
 		sb t1,0(t0)
 		blt t1, t2, FIM
 		sb zero,0(t0)
+
+		li a0,38
+		li a1,700
+		li a2, 125
+		li a3 , 80
+		li a7,31
+		ecall			
 		ret
 		
 	MoveLeft:
@@ -509,6 +516,12 @@ KeyDown:				#Recebe:
 		li t3,7
 		blt t1,t3, FIM
 		sb t2,0(t0)
+		li a0,38
+		li a1,700
+		li a2, 125
+		li a3 , 80
+		li a7,31
+		ecall	
 		ret
 		
 		
@@ -535,7 +548,12 @@ KeyDown:				#Recebe:
 		li t3,11
 		blt t1,t3, FIM
 		sb t2,0(t0)
-		
+		li a0,38
+		li a1,700
+		li a2, 125
+		li a3 , 80
+		li a7,31
+		ecall	
 		ret
 		
 	MoveDown:
@@ -562,7 +580,12 @@ KeyDown:				#Recebe:
 		li t3,14
 		blt t1,t3, FIM
 		sb t2,0(t0)
-		
+		li a0,38
+		li a1,700
+		li a2, 125
+		li a3 , 80
+		li a7,31
+		ecall	
 		ret
 		
 	MoveDownRight:
@@ -591,7 +614,12 @@ KeyDown:				#Recebe:
 		sb t1,0(t0)
 		blt t1, t2, FIM
 		sb zero,0(t0)
-		
+		li a0,38
+		li a1,700
+		li a2, 125
+		li a3 , 80
+		li a7,31
+		ecall	
 		ret
 		
 	MoveUpRight:
@@ -620,7 +648,12 @@ KeyDown:				#Recebe:
 		sb t1,0(t0)
 		blt t1, t2, FIM
 		sb zero,0(t0)
-		
+		li a0,38
+		li a1,700
+		li a2, 125
+		li a3 , 80
+		li a7,31
+		ecall	
 		ret
 	
 	MoveUpLeft:
@@ -651,8 +684,12 @@ KeyDown:				#Recebe:
 		li t3,7
 		blt t1,t3, FIM
 		sb t2,0(t0)
-		ret
-		
+		li a0,38
+		li a1,700
+		li a2, 125
+		li a3 , 80
+		li a7,31
+		ecall	
 		ret
 	
 	MoveDownLeft:
@@ -683,7 +720,11 @@ KeyDown:				#Recebe:
 		li t3,7
 		blt t1,t3, FIM
 		sb t2,0(t0)
-		ret
-		
+		li a0,38
+		li a1,700
+		li a2, 125
+		li a3 , 80
+		li a7,31
+		ecall	
 		ret
 .include "data/funcoes.asm"
