@@ -116,6 +116,15 @@ LoadGame:
 	#terceira parte do nivel
 	TerceiraParte:
 	
+	call BlackScreen
+	FimBlackScreen:
+	
+	li a1 , 0
+	li a2 , 0
+	li a3 , 10
+	la a0 colisao1
+	call UnloadImage
+	
 	call EndDayScreen
 	FimEndDayScreen:
 	

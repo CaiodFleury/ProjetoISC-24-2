@@ -90,6 +90,24 @@ PauseScreen:
 	
 	j GAME_LOOP
 
+BlackScreen:
+	li a4, 0
+	For_BS:
+	li t0, 320
+	beq a4,t0,FimBlackScreen
+	la a0,TelaPreta
+	mv a1,a4
+	li a2,0
+	li a3,10
+	addi a4,a4,4
+	call LoadImage
+	call Renderizador
+	
+	li a7,32
+	li a0,10
+	ecall
+	j For_BS
+
 TocarMusica:						#s11 eh o contador de tempo
 	li a7,30					#coloca o horario atual em a0
 	ecall						#função não recebe entrada
@@ -840,7 +858,8 @@ ResetarVariaveis:
 	la t0, game_moment
 	sb zero,0(t0)
 	la t0, relogio_pos
-	sb zero,0(t0)
+	li t1,-1
+	sb t1,0(t0)
 	j FimInicializacaodevariveis
 	
 IniciarObjetos:
