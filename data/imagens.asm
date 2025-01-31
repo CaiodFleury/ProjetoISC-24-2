@@ -35,6 +35,10 @@
 .include "sprites/placaHUD2.data"
 .include "sprites/gorilavida.data"
 .include "sprites/macacohitbox.data"
+.include "sprites/Relogio1.data"
+.include "sprites/Relogio2.data"
+.include "sprites/Relogio3.data"
+.include "sprites/Relogio4.data"
 
 # numeros
 .include "sprites/n0.data"

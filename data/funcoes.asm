@@ -473,13 +473,13 @@ WaterGarden:
 		sb t1,0(t0) # t1 quantidade de bananas
 
 		# incrementar o numero de bananas no placar
-		li t0, 88
+		li t0, 138
 		mul t2, t1, t0 # pegando o indice do sprite do numero
 
 		la t3, n0
 		add a0, t3, t2 # pegando o sprite do numero
 
-		li a1, 32
+		li a1, 30
 		li a2, 18
 		li a3, 6
 		call LoadImage
@@ -837,10 +837,6 @@ SuperRenderv1:
 		lw t2, 0(a5)
 		addi a6,a6,1
 		beq zero, t2, For_SRv
-		
-		mv a0,a6
-		li a7,1
-		ecall
 		
 		lw a0 , 0(a5)
 		lw a1 , 12(a5)

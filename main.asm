@@ -59,7 +59,7 @@ LoadGame:
 	call LoadImage 
 	
 	# quantidade de bananas placa
-	li a1, 32
+	li a1, 30
 	li a2, 18
 	li a3, 6
 	la a0, n0
@@ -77,11 +77,17 @@ LoadGame:
 	la a0, n1
 	call LoadImage
 	
-	li a1, 54
+	li a1, 56
 	li a2, 18
 	la a0, n0
 	call LoadImage
 	#######
+	li a1 , 270
+	li a2 , 0
+	li a3 , 6
+	la a0 Relogio1
+	call LoadImage 
+	
 	li a1 , 20
 	li a2 , 52
 	li a3 , 6
