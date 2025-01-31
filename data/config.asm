@@ -1,5 +1,5 @@
 #Configurações:
-Music_config: 	.word 130,0,28,30  #notas total, nota atual, instrumento, volume	
+Music_config: 	.word 24,0,1,100  #notas total, nota atual, instrumento, volume	
 garden_matriz_x:.half 88, 124, 160, 196, 232
 garden_matriz_y:.half 148,120, 92
 selectframeads:	.word 0xFF200604

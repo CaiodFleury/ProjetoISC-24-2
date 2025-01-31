@@ -135,7 +135,7 @@ TocarMusica:						#s11 eh o contador de tempo
 		li a7,30		# coloca o horario atual em a0
 		ecall
 		
-		mv a0,s11
+		mv s11,a0
 		lw t4, 4(t4)
 		add s11,s11,t4
 
