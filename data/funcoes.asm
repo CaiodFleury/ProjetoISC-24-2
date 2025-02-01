@@ -964,6 +964,71 @@ SuperRenderv1:
 	mv ra,a4
 	ret
 
+# a0 = numero
+# a1 = x
+# a2 = y
+
+# 138 = tamanho do sprite
+PrintNumber:
+	li s0, 5 # numero de digitos do placar
+	li s1, 10 # base
+	li s2, 0 # contador
+	mv s3, a0 # salvando o numero
+
+	PN_Loop:
+		bge s2, s0, PN_End
+		#beq s3, zero, PN_Zero
+
+		rem t0, s3, s1 # pega o ultimo digito
+		div s3, s3, s1 # remove o ultimo digito
+
+		#beq s3, zero, PN_Zero # acabou o digito, vai printar o restante 0
+
+		li t4, 138
+		mul t0, t0, t4 # pega o indice do sprite
+		la t1, n0 # endereco do sprite
+		add a0, t1, t0 # pega o sprite
+
+		# os numeros têm 8 bytes de distancia um do outro
+		# a1 - (8 * s2) = x (de tras para frente)
+
+		li t0, 8
+		mul t0, t0, s2
+		sub a1, a1, t0
+
+		li a3, 6 # camada padrao
+
+		call LoadImage
+
+		addi s2, s2, 1
+
+		j PN_Loop
+
+	#PN_Zero:
+	#	PN_Zero_Loop:
+	#		bge s2, s0, PN_End
+	#		la a0, n0
+#
+	#		li a7, 1 ##
+	#		mv a0, s3 ##
+	#		ecall ##
+	#		li a7 11 ##
+	#		li a0, 35
+	#		ecall
+#
+	#		li t0, 8
+	#		mul t0, t0, s2
+	#		sub a1, a1, t0
+#
+	#		li a3, 6
+	#		call LoadImage
+#
+	#		addi s2, s2, 1
+	#		j PN_Zero_Loop
+#
+	PN_End:
+		ret
+
 FimPrograma:			#Nao recebe nada
 	li a7,10      		#Chama o procedimento de finalizar o programa
 	ecall			#Nao retorna nada
