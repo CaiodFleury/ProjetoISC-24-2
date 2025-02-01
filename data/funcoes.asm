@@ -528,10 +528,9 @@ WaterGarden:
 		sb zero, 0(t1)
 		
 		addi t6,t6,-17
-		
 		la a0, planta1
-		mv a1, t5 # x da imagem
-		mv a2, t6 # y da imagem
+		add a1, t5,zero # x da imagem
+		add a2, t6,zero # y da imagem
 		li a3, 4 # layer 4
 		call UnloadImage
 		
@@ -539,7 +538,6 @@ WaterGarden:
 		lb t1,0(t0)
 		addi t1,t1,1
 		sb t1,0(t0) # t1 quantidade de bananas
-
 		li t2,10
 		div t1,t1,t2
 		beq t1,zero PularDezenas
