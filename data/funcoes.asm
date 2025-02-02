@@ -20,23 +20,106 @@ StartScreen:
 
 #tela de endday
 EndDayScreen:
+
 	li a1 , 0
 	li a2 , 0
+	li a3 , 9
 	la a0 ,macacofundofinal
-	call LoadScreen
+	call LoadImage
+
+	li a1 , 50
+	li a2 , 20
+	li a3 , 10
+	la a0 ,ContagemDpontos
+	call LoadImage
 	
-	li a0, 2
-	call TrocarTela	
+	la a0, level
+	lb a0,0(a0)
+	li a1, 164
+	li a2, 25
+	call PrintNumber
 	
+	li a0, 0
+	li a1, 205
+	li a2, 51
+	call PrintNumber
+	
+	li a0, 0
+	li a1, 170
+	li a2, 74
+	call PrintNumber
+	
+	li a0, 0
+	li a1, 165
+	li a2, 134
+	call PrintNumber
+	
+	call Renderizador
+	li s10, 0 # <- contador
+	la s11, bananatotal
+	lb s11,0(s11)
+	addi s11,s11,1
+	ForEndScreen1:
+		beq s11,s10,Fim_ForEndScreen1
+		li t0,20
+		mul a0, t0,s10
+		li a1, 205
+		li a2, 51
+		call PrintNumber
+		addi s10,s10,1
+		li a0,40
+		li a7, 32
+		ecall
+		call Renderizador
+		j ForEndScreen1
+	Fim_ForEndScreen1:
+	la t0, pontostotais
+	la t2, bananatotal
+	lw t1,0(t0)
+	lb t3,0(t2)
+	add t1,t1,t3
+	sw t1,0(t0)
+	
+	li a0,200
 	li a7, 32
-	li a0, 5000
 	ecall
 	
+	li s10, 0 # <- contador
+	mv s11, t1
+	addi s11,s11,1
+	ForEndScreen2:
+		beq s11,s10,Fim_ForEndScreen2
+		li t0,20
+		mul a0, t0,s10
+		li a1, 165
+		li a2, 134
+		call PrintNumber
+		addi s10,s10,1
+		li a0,40
+		li a7, 32
+		ecall
+		call Renderizador
+		j ForEndScreen2
+	Fim_ForEndScreen2:
+	
+	call Renderizador
 	Esperar_Leitura_EDS:
 	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
 	lw t0,0(a0)			# Le bit de Controle Teclado
 	andi t0,t0,0x0001		# mascara o bit menos significativo
    	beq t0,zero,Esperar_Leitura_EDS # Se nao ha tecla pressionada entao vai para FIM			
+	
+	li a1 , 0
+	li a2 , 0
+	li a3 , 9
+	la a0 ,macacofundofinal
+	call UnloadImage
+	
+	li a1 , 0
+	li a2 , 0
+	li a3 , 10
+	la a0 ,macacofundofinal
+	call UnloadImage
 	
 	j FimEndDayScreen
 
@@ -967,22 +1050,23 @@ SuperRenderv1:
 # a0 = numero
 # a1 = x
 # a2 = y
-
 # 138 = tamanho do sprite
 PrintNumber:
-	li s0, 5 # numero de digitos do placar
-	li s1, 10 # base
-	li s2, 0 # contador
-	mv s3, a0 # salvando o numero
-
+	mv s1, ra
+	mv s2, a0 # salvando o numero
+	mv a4, a1 # x
+	mv a5, a2 # y
+	li a6, 0 # contador
 	PN_Loop:
-		bge s2, s0, PN_End
+		li t0,5
+		beq a6, t0, PN_End
 		#beq s3, zero, PN_Zero
 
-		rem t0, s3, s1 # pega o ultimo digito
-		div s3, s3, s1 # remove o ultimo digito
+		li t1,10
+		rem t0, s2, t1 # pega o ultimo digito
+		div s2, s2, t1 # remove o ultimo digito
 
-		#beq s3, zero, PN_Zero # acabou o digito, vai printar o restante 0
+		#beq s0, zero, PN_Zero # acabou o digito, vai printar o restante 0
 
 		li t4, 138
 		mul t0, t0, t4 # pega o indice do sprite
@@ -990,17 +1074,18 @@ PrintNumber:
 		add a0, t1, t0 # pega o sprite
 
 		# os numeros têm 8 bytes de distancia um do outro
-		# a1 - (8 * s2) = x (de tras para frente)
-
-		li t0, 8
-		mul t0, t0, s2
+		# a1 - (9 * s2) = x (de tras para frente)
+		mv a1,a4
+		mv a2,a5
+		li t0, 9
+		mul t0, t0, a6
 		sub a1, a1, t0
 
-		li a3, 6 # camada padrao
-
+		li a3, 10 # camada padrao
+		
 		call LoadImage
 
-		addi s2, s2, 1
+		addi a6, a6, 1
 
 		j PN_Loop
 
@@ -1027,7 +1112,8 @@ PrintNumber:
 	#		j PN_Zero_Loop
 #
 	PN_End:
-		ret
+	mv ra, s1
+	ret
 
 FimPrograma:			#Nao recebe nada
 	li a7,10      		#Chama o procedimento de finalizar o programa

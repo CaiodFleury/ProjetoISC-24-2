@@ -8,7 +8,6 @@
 #Padrao funcoes FazerAlgo
 #UNICA VARIAVEL GLOBAL Eh S11 q eh o tempo atual
 main:	
-	
 	call StartScreen
 	FimStartScreen:
 	
@@ -21,7 +20,6 @@ main:
 	
 #Administrador maximo do jogo
 LoadGame:
-
 	li a7,30		# coloca o horario atual em s11
 	ecall
 	add s11 , zero , a0
@@ -141,14 +139,14 @@ LoadGame:
 #Modificacoes chamarao a renderizacao	
 #Variaveis S vao ser utilizadas para colocar os tempos das coisas
 #S0  - Tempo atual
+#S1  - Save Return Adress
 #s6  - Tempo Jogo
 #s7  - Indio
 #S8  - Mosquito
 #S9  - Delay vida
 #S10 - Player
 #S11 - Musica
-GAME_LOOP: 	
-	
+GAME_LOOP: 		
 	li a7,30			# coloca o horario atual em s11
 	ecall
 	mv s0, a0
