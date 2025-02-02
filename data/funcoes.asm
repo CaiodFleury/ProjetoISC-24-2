@@ -892,6 +892,11 @@ ResetarVariaveis:
 	call UnloadImage
 	li a1 , 0
 	li a2 , 0
+	li a3 , 7
+	la a0 colisao1
+	call UnloadImage
+	li a1 , 0
+	li a2 , 0
 	li a3 , 5
 	la a0 colisao1
 	call UnloadImage

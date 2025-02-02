@@ -140,6 +140,7 @@ LoadGame:
 #Variaveis S vao ser utilizadas para colocar os tempos das coisas
 #S0  - Tempo atual
 #S1  - Save Return Adress
+#s5  - Tempo Flecha
 #s6  - Tempo Jogo
 #s7  - Indio
 #S8  - Mosquito
@@ -312,6 +313,8 @@ GAME_LOOP:
 		Fim_Inimigo1:
 		#Fim Inimigo
 		#Atualizar flechas
+		bltu s0, s5, Fim_Flechas
+		addi s5, s0, 30
 		li t0,0
 		For_Flechas:
 		li t1,3
@@ -326,10 +329,11 @@ GAME_LOOP:
 		lw t2, 8(t3)
 		li t4,280
 		bge t2, t4, For_Flechas
-		addi t2,t2,1
+		addi t2,t2,4
 		sw t2, 8(t3)
 		j For_Flechas
 		Fim_Flechas:
+
 		#Inicio Relogio -->
 		bltu s0, s6, AtualizarRelogio
 		la t0, relogio_pos

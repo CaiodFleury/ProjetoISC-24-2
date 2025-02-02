@@ -15,7 +15,7 @@ pontostotais: 	.word 0
 relogio_pos: .byte -1
 
 #variaveis inicializaveis
-bananatotal: 	.byte 10
+bananatotal: 	.byte 0
 var:        	.word 0
 indio_pos2: 	.half 168,48,100,59,252,53
 mosq1_posy:	.half -4,140
