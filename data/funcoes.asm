@@ -103,6 +103,14 @@ EndDayScreen:
 	Fim_ForEndScreen2:
 	
 	call Renderizador
+	li a0,4000
+	li a7, 32
+	ecall
+
+	li a0,0xFF200000
+	sw zero,0(a0)
+	
+
 	Esperar_Leitura_EDS:
 	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
 	lw t0,0(a0)			# Le bit de Controle Teclado
