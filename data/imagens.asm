@@ -43,6 +43,8 @@
 .include "sprites/Relogio4.data"
 .include "sprites/Relogio5.data"
 .include "sprites/ContagemDpontos.data"
+.include "sprites/teste_garden_1.data"
+.include "sprites/teste_garden_2.data"
 
 # numeros
 .include "sprites/n0.data"

@@ -102,7 +102,9 @@ LoadGame:
 	li a2 , 52
 	li a3 , 6
 	la a0 gorilavida
-	call LoadImage 
+	call LoadImage
+
+	call GenerateFence
 	
 	la t0, game_moment
 	li t1,1

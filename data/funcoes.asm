@@ -1102,31 +1102,63 @@ PrintNumber:
 
 		j PN_Loop
 
-	#PN_Zero:
-	#	PN_Zero_Loop:
-	#		bge s2, s0, PN_End
-	#		la a0, n0
-#
-	#		li a7, 1 ##
-	#		mv a0, s3 ##
-	#		ecall ##
-	#		li a7 11 ##
-	#		li a0, 35
-	#		ecall
-#
-	#		li t0, 8
-	#		mul t0, t0, s2
-	#		sub a1, a1, t0
-#
-	#		li a3, 6
-	#		call LoadImage
-#
-	#		addi s2, s2, 1
-	#		j PN_Zero_Loop
-#
 	PN_End:
 	mv ra, s1
 	ret
+
+# a0 = sprite
+GetGardenType:
+	li t0, 792 # tamanho do sprite
+	li a7, 41 # randint
+	ecall
+
+	# a0 = numero aleatorio
+
+	li t1, 2
+	rem a7, a0, t1 # 0 ou 1: tipo da planta
+
+	mul t0, t0, a7 # pega o indice do sprite
+	la t1, teste_garden_1 # endereco do sprite
+	add a0, t1, t0 # pega o sprite
+	ret
+
+GenerateFence:
+	mv s1, ra
+	li a5, 0 # contador y
+
+	FOR_GF:
+		li t0, 5
+		bge a5, t0, END_GF
+		li a4, 0 # contador x
+
+		FOR_GF_2:
+			li t0, 9
+			bge a4, t0, END_GF_2
+
+			la t0, garden_matriz_x
+			la t1, garden_matriz_y
+
+			add t0, t0, a4 # ponteiro x
+			add t1, t1, a5 # ponteiro y
+
+			lh a1, 0(t0)
+			lh a2, 0(t1)
+
+			call GetGardenType # a0 sprite
+
+			li a3, 4
+			call LoadImage
+
+			addi a4, a4, 1
+			j FOR_GF_2
+
+		END_GF_2:
+			addi a5, a5, 1
+			j FOR_GF
+
+	END_GF:
+		mv ra, s1
+		ret
 
 FimPrograma:			#Nao recebe nada
 	li a7,10      		#Chama o procedimento de finalizar o programa
