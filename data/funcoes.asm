@@ -1,7 +1,84 @@
 #FUNCOES--->
 
+#HISTORIA
+
+Historia:
+		li a7, 30
+		ecall
+		mv s0, a0
+		
+		addi s4, s0, 5000
+
+	ContHist1:
+		li a7, 30
+		ecall
+		mv s0, a0
+		
+		li a1 , 0
+		li a2 , 0
+		la a0 ,festamacacos
+		call LoadScreen
+		
+		li a0, 2
+		call TrocarTela	
+	
+		bltu s0, s4, Fim_ContHist1
+		addi s4, s0, 5000
+		
+		
+	ContHist2:
+		li a7, 30
+		ecall
+		mv s0, a0
+		
+		li a1 , 0
+		li a2 , 0
+		la a0 ,fezendeiroexpulsando
+		call LoadScreen
+		
+		li a0, 2
+		call TrocarTela	
+		
+		bltu s0, s4, Fim_ContHist2
+		addi s4, s0, 5000
+		
+		
+	ContHist3:
+		li a7, 30
+		ecall
+		mv s0, a0
+		
+		li a1 , 0
+		li a2 , 0
+		la a0 ,criandofazenda
+		call LoadScreen
+		
+		li a0, 2
+		call TrocarTela	
+		
+		bltu s0, s4, Fim_ContHist3
+		addi s4, s0, 5000
+		
+		
+		j Start
+		
+		
+	Fim_ContHist1:
+		j ContHist1
+	
+	Fim_ContHist2:
+		j ContHist2
+	
+	Fim_ContHist3:
+		j ContHist3
+
+
 #tela de inicio
 StartScreen:
+
+	call Historia
+
+Start:
 	li a1 , 0
 	li a2 , 0
 	la a0 ,startscreen

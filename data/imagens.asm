@@ -43,6 +43,9 @@
 .include "sprites/Relogio4.data"
 .include "sprites/Relogio5.data"
 .include "sprites/ContagemDpontos.data"
+.include "sprites/festamacacos.data"
+.include "sprites/fezendeiroexpulsando.data"
+.include "sprites/criandofazenda.data"
 
 # numeros
 .include "sprites/n0.data"
