@@ -10,6 +10,19 @@ std::atomic<bool> running(true);
 
 int count = 3;
 
+// TECLAS
+#define CIMA 0x57 // W
+#define BAIXO 0x53 // S
+#define ESQUERDA 0x41 // A
+#define DIREITA 0x44 // D
+#define DIAGONAL_SE 0x4A // J
+#define DIAGONAL_SD 0x4B // K
+#define DIAGONAL_IE 0x4E // N
+#define DIAGONAL_ID 0x4D // M
+
+#define ACTION 0x45 // E 
+#define PAUSE 0x50 // P
+
 LPDIRECTINPUT8 g_pDI = nullptr;
 LPDIRECTINPUTDEVICE8 g_pJoystick = nullptr;
 
@@ -60,37 +73,32 @@ void CaptureInput(bool success) {
     }
 
     if (js.lX < 16384 && js.lY < 16384) {
-        //std::cout << "Diagonal superior esquerda. Pressionando Q." << std::endl;
-        PressKey(0x4A); // J
+        PressKey(DIAGONAL_SE); // J
     } else if (js.lX > 49152 && js.lY < 16384) {
-        //std::cout << "Diagonal superior direita. Pressionando E." << std::endl;
-        PressKey(0x4B); // K
+        PressKey(DIAGONAL_SD); // K
     } else if (js.lX < 16384 && js.lY > 49152) {
-        //std::cout << "Diagonal inferior esquerda. Pressionando Z." << std::endl;
-        PressKey(0x4E); // N 
+        PressKey(DIAGONAL_IE); // N 
     } else if (js.lX > 49152 && js.lY > 49152) {
-        //std::cout << "Diagonal inferior direita. Pressionando C." << std::endl;
-        PressKey(0x4D); // M
+        PressKey(DIAGONAL_ID); // M
     } else if (js.lY < 16384) {
-        //std::cout << "Para cima. Pressionando W." << std::endl;
-        PressKey(0x57); // W
+        PressKey(CIMA); // W
     } else if (js.lY > 49152) {
-        //std::cout << "Para baixo. Pressionando S." << std::endl;
-        PressKey(0x53); // S
+        PressKey(BAIXO); // S
     } else if (js.lX < 16384) {
-        //std::cout << "Para esquerda. Pressionando A." << std::endl;
-        PressKey(0x41); // A
+        PressKey(ESQUERDA); // A
     } else if (js.lX > 49152) {
-        //std::cout << "Para direita. Pressionando D." << std::endl;
-        PressKey(0x44); // D
+        PressKey(DIREITA); // D
     }
 
     if (count == 3) { // timer para evitar segurar o E
         for (int i = 0; i < 32; i++) {
             if (js.rgbButtons[i] & 0x80) {
                 if (i == 0) {
-                    PressKey(0x45); // E
-                    //std::cout << "tecla E pressionada\n";
+                    PressKey(ACTION); // E
+                    count = 0;
+                }
+                else if (i == 7) {
+                    PressKey(PAUSE); // P
                     count = 0;
                 }
             }
