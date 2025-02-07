@@ -33,6 +33,27 @@ LoadGame:
 	la a0 fazendav1
 	call LoadImage
 	
+	#
+	li a1, 0
+	li a2, 0
+	li a3, 3
+	la a0, wasd
+	call LoadImage
+	
+	li a1, 174
+	li a2, 76
+	li a3, 3
+	la a0, Seta
+	call LoadImage
+	
+	#li a1, 160
+	#li a2, 120
+	#li a3, 3
+	#la a0, powerup
+	#call LoadImage
+	
+	#
+	
 	li a1 , 0
 	li a2 , 0
 	li a3 , 0
@@ -102,13 +123,20 @@ LoadGame:
 	li a2 , 52
 	li a3 , 6
 	la a0 gorilavida
-	call LoadImage 
+	call LoadImage
+	
+	li a1, 94
+	li a2, 144
+	li a3, 3
+	la a0, E
+	call LoadImage
 	
 	la t0, game_moment
 	li t1,1
 	sb t1,0(t0)
 	
 	addi s8, s0, 10000
+	addi s4, s0, 30000
 	
 	call GAME_LOOP
 	#terceira parte do nivel
@@ -140,6 +168,7 @@ LoadGame:
 #Variaveis S vao ser utilizadas para colocar os tempos das coisas
 #S0  - Tempo atual
 #S1  - Save Return Adress
+#s4  - Tempo PowerUp
 #s5  - Tempo Flecha
 #s6  - Tempo Jogo
 #s7  - Indio
@@ -187,6 +216,13 @@ GAME_LOOP:
 	la a0,macaco
 	call EstaColidindo
 	
+	#
+	
+	#j Pular_DecrescimoDeVida
+	#
+	
+	li t0, 2
+	beq a3, t0, PowerDespawn
 	beq a3,zero, Pular_DecrescimoDeVida
 	bltu s0, s9, Pular_DecrescimoDeVida
 	addi s9, s0, 1400
@@ -215,11 +251,14 @@ GAME_LOOP:
 		call UnloadImage 
 	Pular_DecrescimoDeVida:
 	#FIM TESTE COLISAO
-	
 	#GAMEMOMENT == 1
 	la t0, game_moment
 	lb t0,0(t0)	
 	beq t0, zero, PularGameMoment1
+	#
+	call PowerUp
+SkipPower:
+	#
 		#Mosca 1 adiministrador
 		bltu s0, s8, Fim_Mosca1
 		addi s8, s0, 60
@@ -263,6 +302,7 @@ GAME_LOOP:
 		sw a0,8(t0)
 		addi s8, s0, 10000
 		Fim_Mosca1:
+		
 		
 		#INIMIGO--->
 		bltu s0, s7, Fim_Inimigo1

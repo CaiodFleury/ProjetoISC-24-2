@@ -46,6 +46,11 @@
 .include "sprites/festamacacos.data"
 .include "sprites/fezendeiroexpulsando.data"
 .include "sprites/criandofazenda.data"
+.include "sprites/wasd.data"
+.include "sprites/E.data"
+.include "sprites/Seta.data"
+.include "sprites/powerup.data"
+.include "sprites/colisaopowerup.data"
 
 # numeros
 .include "sprites/n0.data"

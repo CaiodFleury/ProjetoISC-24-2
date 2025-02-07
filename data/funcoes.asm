@@ -76,9 +76,6 @@ Historia:
 #tela de inicio
 StartScreen:
 
-	call Historia
-
-Start:
 	li a1 , 0
 	li a2 , 0
 	la a0 ,startscreen
@@ -91,8 +88,11 @@ Start:
 	li a0,0xFF200000		# carrega o endereco de controle do KDMMIO
 	lw t0,0(a0)			# Le bit de Controle Teclado
 	andi t0,t0,0x0001		# mascara o bit menos significativo
-   	beq t0,zero,Esperar_Leitura_SS  # Se nao ha tecla pressionada entao vai para FIM			
-	
+   	beq t0,zero,Esperar_Leitura_SS  # Se nao ha tecla pressionada entao vai para FIM
+   	
+   	#call Historia
+   	
+Start:		
 	j FimStartScreen
 
 #tela de endday
@@ -842,8 +842,83 @@ GrowGarden:
 			call UnloadImage
 
 		j GAME_LOOP
+		
+	#
+PowerUp:
+	la t0, power_control
+	lh t1, 0(t0)
+	li t2, 1
+	
+	beq t1, t2, PowerDespawn2
+	bltu s0, s4, SkipPower
+	
+	addi s4, s0, 30000	#tempo que ele fica na tela
+	li t1, 1
+	sh t1, 0(t0)
+	
+	la t0, Obj7
+	la t1, powerup
+	sw t1, 0(t0)
+	
+	li a7, 41
+	ecall
+	
+	li t1, 5
+	remu t1, a0, t1
+	li t2, 88
+	li t3, 36
+	mul t3, t1, t3
+	add t1, t2, t3
+	sw t1, 4(t0)
+	
+	li t1, 3
+	remu t1, a0, t1
+	li t2, 92
+	li t3, 28
+	mul t3, t1, t3
+	add t1, t2, t3
+	sw t1, 8(t0)
+	
+	j SkipPower
+	
+	PowerDespawn:
+		
+		addi s4, s0, 140000	#tempo pra ele aparecer
+		la t0, power_control
+		li t1, 0
+		sh t1, 0(t0)
+		addi s9, s0, 10000	#tempo que o poder fica ativo
+		
+		la t0, Obj7
+		li t1, 0
+		sw t1, 0(t0)
+		la a0, powerup
+		lw a1, 4(t0)
+		lw a2, 8(t0)
+		lw a3, 20(t0)
+		call UnloadImage
+		j SkipPower
+			
+	PowerDespawn2:
+		bltu s0, s4, SkipPower
+		addi s4, s0, 140000	#tempo pra ele aparecer
+		la t0, power_control
+		li t1, 0
+		sh t1, 0(t0)
+		
+		la t0, Obj7
+		li t1, 0
+		sw t1, 0(t0)
+		la a0, powerup
+		lw a1, 4(t0)
+		lw a2, 8(t0)
+		lw a3, 20(t0)
+		call UnloadImage
+		j SkipPower
+	
 
 
+	#
 EstaColidindo:					# a0= endereco imagem		
 	la t0,array_layers			# a1 = x da imagem
 	li t1,76800				# a2 = y da imagem
@@ -855,19 +930,24 @@ EstaColidindo:					# a0= endereco imagem
 	lw t2, 4(a0)
 	li t3, 0
 	li t4, 0
-	li t6, 0xC7C7C7C7
+	li t6, -57
+	li a7, -36
 	While_EC:	
 		beq t2, t4, EndWhile_EC
 		add t0, t0,a1
 		While_EC1:
 			beq t1, t3, EndWhile_EC1
-			lw t5, 0(t0)
-			beq t5,t6, Pular_EC
+			lb t5, 0(t0)
+			beq t5,t6, Pular_EC2
+			beq t5, a7, Pular_EC
 			li a3, 1
 			ret
 			Pular_EC:
-			addi t3,t3,4
-			addi t0,t0,4
+			li a3, 2
+			ret
+			Pular_EC2:
+			addi t3,t3,1
+			addi t0,t0,1
 			j While_EC1
 		EndWhile_EC1:
 		li t5, 320
@@ -954,6 +1034,18 @@ AnimationScreen:
 	lw t2, 4(t0)
 	addi t2, t2, -4
 	sw t2, 4(t0)
+	
+	li a1, 0
+	li a2, 0
+	li a3, 3
+	la a0, wasd
+	call UnloadImage
+	
+	li a1, 174
+	li a2, 76
+	li a3, 3
+	la a0, wasd
+	call UnloadImage
 		
 	li a7, 32
 	li a0, 20
@@ -1083,6 +1175,18 @@ IniciarObjetos:
 	la t0,Obj6
 	la t1,flecha
 	sw t1,24(t0)
+	
+	#BANANA#
+	la t0, Obj7
+	li t1, 160
+	li t2, 120
+	li t3, 6
+	sw t1, 4(t0)
+	sw t2, 8(t0)
+	sw t3, 20(t0)
+	la t1, colisaopowerup
+	sw t1, 24(t0)
+	#BANANA#
 
 	ret
 SuperRenderv1:	
