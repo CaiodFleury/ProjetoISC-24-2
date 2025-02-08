@@ -43,8 +43,12 @@
 .include "sprites/Relogio4.data"
 .include "sprites/Relogio5.data"
 .include "sprites/ContagemDpontos.data"
-.include "sprites/teste_garden_1.data"
-.include "sprites/teste_garden_2.data"
+.include "sprites/cerca_1.data"
+.include "sprites/cerca_2.data"
+#.include "sprites/teste_garden_a1_colisao.data"
+#.include "sprites/teste_garden_a2_colisao.data"
+.include "sprites/cerca_1_colisao.data"
+.include "sprites/cerca_2_colisao.data"
 
 # numeros
 .include "sprites/n0.data"

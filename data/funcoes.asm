@@ -443,13 +443,15 @@ LoadImage:
 			beq t2, t5, EndWhile_LI1
 			li a7, 320
 			bge t1,a7 Pular_LI
-			lh t6, 0(a0)
-			sh t6, 0(t0)
+			lb t6, 0(a0)
+			addi a7, t6, 57
+			beq a7, zero, Pular_LI
+			sb t6, 0(t0)
 			Pular_LI:
-			addi t0,t0,2
-			addi t1,t1,2
-			addi t5,t5,2
-			addi a0,a0,2
+			addi t0,t0,1
+			addi t1,t1,1
+			addi t5,t5,1
+			addi a0,a0,1
 			j While_LI1
 		EndWhile_LI1:
 		li t5, 320
@@ -857,7 +859,7 @@ AnimationScreen:
 	li a2 , 0
 	li a3 , 2
 	lw a4,0(t0)
-	call LoadAnimation
+	#call LoadAnimation
 	
 	call Renderizador
 	
@@ -964,6 +966,7 @@ IniciarObjetos:
 	li t1, 100
 	li t2, 120
 	li t3, 5
+	#li t3, 0
 	sw t1,4(t0)
 	sw t2,8(t0)
 	sw t1,12(t0)
@@ -1106,21 +1109,48 @@ PrintNumber:
 	mv ra, s1
 	ret
 
-# a0 = sprite
+# retorna:
+#	a0 = sprite
 GetGardenType:
-	li t0, 792 # tamanho do sprite
+	li t0, 1032 # tamanho do sprite
 	li a7, 41 # randint
 	ecall
-
+	la t2, temp # salvara as informacoes para a colisao
 	# a0 = numero aleatorio
 
-	li t1, 2
-	rem a7, a0, t1 # 0 ou 1: tipo da planta
+	#
+	# 0 a 5: sem plantacao
+	# 5 a 7: plantacao 1
+	# 7 a 9: plantacao 2
+	# 10: ambos
+	#
+	
+	li t1, 11
+	rem a7, a0, t1 # 0 a 10: tipo da planta
 
-	mul t0, t0, a7 # pega o indice do sprite
-	la t1, teste_garden_1 # endereco do sprite
-	add a0, t1, t0 # pega o sprite
-	ret
+	li t1, 5
+	ble a7, t1, NP
+	li t1, 7
+	ble a7, t1, P1
+	li t1, 9
+	ble a7, t1, P2
+	# la a0, planta3
+
+	P1:
+		la a0, cerca_1
+		li a7, 0
+		sw a7, 0(t2) # salva o tipo da planta
+		ret
+	
+	P2:
+		la a0, cerca_2
+		li a7, 1
+		sw a7, 0(t2)
+		ret
+
+	NP:
+		li a0, -1
+		ret
 
 GenerateFence:
 	mv s1, ra
@@ -1144,11 +1174,31 @@ GenerateFence:
 			lh a1, 0(t0)
 			lh a2, 0(t1)
 
-			call GetGardenType # a0 sprite
+			call GetGardenType # a0 sprite real
+			li t0, -1
+			beq a0, t0, PULAR #nao vai ter cerca
 
-			li a3, 4
+			la t0, temp # salvara informacoes para colisao
+			sw a1, 4(t0)
+			sw a2, 8(t0)
+			li a3, 3
 			call LoadImage
 
+			la t0, temp
+			lw a0, 0(t0) # indice
+			lw a1, 4(t0) # x
+			lw a2, 8(t0) # y
+
+			li t0, 1
+			beq a0, t0, Segundo
+			la a0, cerca_1_colisao
+			j Continue
+			Segundo:
+				la a0, cerca_2_colisao
+			Continue:
+			li a3, 0
+			call LoadImage
+			PULAR: 
 			addi a4, a4, 1
 			j FOR_GF_2
 

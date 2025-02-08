@@ -31,7 +31,7 @@ LoadGame:
 	li a2 , 0
 	li a3 , 2
 	la a0 fazendav1
-	call LoadImage
+	#call LoadImage
 	
 	li a1 , 0
 	li a2 , 0
@@ -396,6 +396,7 @@ KeyDown:				#Recebe:
 	add t6,t4,t6
 	li t4,8640
 	add t6,t6,t4
+	addi t6, t6, 10
 	# t6 recebe o valor do pixel na tela desejado q é o ponto esquerdo inferior
 	
 	li t0, 'p'

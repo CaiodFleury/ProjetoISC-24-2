@@ -1,7 +1,7 @@
 #Configurações:
 Music_config: 	.word 37,0,1,60  #notas total, nota atual, instrumento, volume	
-garden_matriz_x:.half 88, 124, 160, 196, 232
-garden_matriz_y:.half 148,120, 92
+garden_matriz_x:.half 80, 118, 154, 192, 228
+garden_matriz_y:.half 140, 118, 88
 selectframeads:	.word 0xFF200604
 
 arrow_pos:	.half 4
@@ -21,6 +21,7 @@ indio_pos2: 	.half 168,48,100,59,252,53
 mosq1_posy:	.half -4,140
 garden_state:   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 garden_time:    .word -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+temp:           .word 0, 0, 0
 
 #SuperRenderv1
 RenderObjFirst:
