@@ -45,8 +45,6 @@
 .include "sprites/ContagemDpontos.data"
 .include "sprites/cerca_1.data"
 .include "sprites/cerca_2.data"
-#.include "sprites/teste_garden_a1_colisao.data"
-#.include "sprites/teste_garden_a2_colisao.data"
 .include "sprites/cerca_1_colisao.data"
 .include "sprites/cerca_2_colisao.data"
 

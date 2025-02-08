@@ -859,7 +859,7 @@ AnimationScreen:
 	li a2 , 0
 	li a3 , 2
 	lw a4,0(t0)
-	#call LoadAnimation
+	call LoadAnimation
 	
 	call Renderizador
 	

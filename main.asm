@@ -31,7 +31,7 @@ LoadGame:
 	li a2 , 0
 	li a3 , 2
 	la a0 fazendav1
-	#call LoadImage
+	call LoadImage
 	
 	li a1 , 0
 	li a2 , 0
