@@ -142,6 +142,7 @@ LoadGame:
 #Variaveis S vao ser utilizadas para colocar os tempos das coisas
 #S0  - Tempo atual
 #S1  - Save Return Adress
+#S4  - Delay tecla
 #s5  - Tempo Flecha
 #s6  - Tempo Jogo
 #s7  - Indio
@@ -382,8 +383,13 @@ GAME_LOOP:
 
 KeyDown:				#Recebe:
 					# a0 - o endereco de controle do KDMMIO
-  	lw t2,4(a0)  			# a1 - recebe ponto na tela que deve ser analizadp
-		
+  	
+	bgeu s0, s4, INPUT_J
+	ret
+	INPUT_J:
+	addi s4, s0, 50
+	lw t2,4(a0)  			# a1 - recebe ponto na tela que deve ser analizadp
+	
 	#Variaveis para atingir o ponto atual
 	la t6,array_layers
 	la t5, Obj1
@@ -594,6 +600,7 @@ KeyDown:				#Recebe:
 		ret
 		
 	MoveDownRight:
+		addi s4, s4, 40
 		addi t6,t6,1284
 		lb t2,0(t6)
 		li t3,-110
@@ -628,6 +635,7 @@ KeyDown:				#Recebe:
 		ret
 		
 	MoveUpRight:
+		addi s4, s4, 40
 		addi t6,t6,-1276
 		lb t2,0(t6)
 		li t3,-110
@@ -662,6 +670,7 @@ KeyDown:				#Recebe:
 		ret
 	
 	MoveUpLeft:
+		addi s4, s4, 40
 		addi t6,t6,-1284
 		
 		lb t4,0(t6)
@@ -698,6 +707,7 @@ KeyDown:				#Recebe:
 		ret
 	
 	MoveDownLeft:
+		addi s4, s4, 40
 		addi t6,t6,1276
 		
 		lb t4,0(t6)

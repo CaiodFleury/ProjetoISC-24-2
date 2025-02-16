@@ -12,8 +12,8 @@ with open(filename, "r") as f:
     lines = f.readlines()
 
 for linha in range(0, len(lines)):
-    lines[linha] = lines[linha].replace("7", "146")
     lines[linha] = lines[linha].replace("255", "199")
+    lines[linha] = lines[linha].replace("7", "146")
 
 with open(filename, "w") as f:
     f.writelines(lines)

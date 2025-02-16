@@ -204,7 +204,7 @@ int main() {
     else {
         while (running) {
             CaptureKeyboardInput();
-            Sleep(40); // evita sobrecarregar o processador (e controla a velocidade do personagem)
+            Sleep(1); // evita sobrecarregar o processador (e controla a velocidade do personagem)
         }
     }
 

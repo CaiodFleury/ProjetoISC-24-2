@@ -159,6 +159,8 @@ PauseScreen:
 	add s8,s8,t0
 	add s9,s9,t0
 	add s10,s10,t0
+	add s4, s4, t0
+	add s5, s5, t0
 	add s11,s11,t0
 	
 	li t1,15
@@ -1127,7 +1129,6 @@ GetGardenType:
 	
 	li t1, 11
 	rem a7, a0, t1 # 0 a 10: tipo da planta
-
 	li t1, 5
 	ble a7, t1, NP
 	li t1, 7
@@ -1143,7 +1144,8 @@ GetGardenType:
 		ret
 	
 	P2:
-		la a0, cerca_2
+		#la a0, cerca_2
+		la a0, cerca_2_teste
 		li a7, 1
 		sw a7, 0(t2)
 		ret
@@ -1181,7 +1183,7 @@ GenerateFence:
 			la t0, temp # salvara informacoes para colisao
 			sw a1, 4(t0)
 			sw a2, 8(t0)
-			li a3, 3
+			li a3, 4
 			call LoadImage
 
 			la t0, temp
