@@ -47,6 +47,16 @@
 .include "sprites/cerca_2.data"
 .include "sprites/cerca_1_colisao.data"
 .include "sprites/cerca_2_colisao.data"
+.include "sprites/festamacacos.data"
+.include "sprites/fazendeiroexpulsando.data"
+.include "sprites/criandofazenda.data"
+.include "sprites/indigenasnervosos.data"
+.include "sprites/wasd.data"
+.include "sprites/E.data"
+.include "sprites/Seta.data"
+.include "sprites/powerup.data"
+.include "sprites/colisaopowerup.data"
+.include "sprites/telagameover.data"
 
 # numeros
 .include "sprites/n0.data"

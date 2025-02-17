@@ -16,7 +16,27 @@ main:
 	call LoadGame
 	FimGame:
 	
-	call FimPrograma
+	li a1, 0
+	li a2, 0
+	li a0, telagameover
+	call LoadScreen
+	
+	li a0, 2
+	call TrocarTela
+	
+	li a7, 30
+	ecall
+	mv s0, a0
+	mv s4, s0
+	addi s4, s4, 2000
+	FimAux:
+	li a7, 30
+	ecall
+	mv s0, a0
+	bltu s0, s4, FimAux
+	
+	call main
+	#call FimPrograma
 	
 #Administrador maximo do jogo
 LoadGame:
@@ -32,6 +52,27 @@ LoadGame:
 	li a3 , 2
 	la a0 fazendav1
 	call LoadImage
+	
+	#
+	li a1, 0
+	li a2, 0
+	li a3, 3
+	la a0, wasd
+	call LoadImage
+	
+	li a1, 174
+	li a2, 76
+	li a3, 3
+	la a0, Seta
+	call LoadImage
+	
+	#li a1, 160
+	#li a2, 120
+	#li a3, 3
+	#la a0, colisaopowerup
+	#call LoadImage
+	
+	#
 	
 	li a1 , 0
 	li a2 , 0
@@ -103,14 +144,21 @@ LoadGame:
 	li a3 , 6
 	la a0 gorilavida
 	call LoadImage
-
-	call GenerateFence
 	
+	li a1, 94
+	li a2, 144
+	li a3, 3
+	la a0, E
+	call LoadImage
+	
+	call GenerateFence
+
 	la t0, game_moment
 	li t1,1
 	sb t1,0(t0)
 	
 	addi s8, s0, 10000
+	addi s4, s0, 30000	#tempo que o powerup vai aparecer
 	
 	call GAME_LOOP
 	#terceira parte do nivel
@@ -142,6 +190,7 @@ LoadGame:
 #Variaveis S vao ser utilizadas para colocar os tempos das coisas
 #S0  - Tempo atual
 #S1  - Save Return Adress
+#s4  - Tempo PowerUp
 #S4  - Delay tecla
 #s5  - Tempo Flecha
 #s6  - Tempo Jogo
@@ -190,9 +239,12 @@ GAME_LOOP:
 	la a0,macaco
 	call EstaColidindo
 	
+	li t0, 2
+	beq a3, t0, PowerDespawn
 	beq a3,zero, Pular_DecrescimoDeVida
 	bltu s0, s9, Pular_DecrescimoDeVida
 	addi s9, s0, 1400
+CheatVida:
 	la t0, vidas
 	lb t1, 0(t0)
 	addi t1,t1,-1
@@ -218,11 +270,14 @@ GAME_LOOP:
 		call UnloadImage 
 	Pular_DecrescimoDeVida:
 	#FIM TESTE COLISAO
-	
 	#GAMEMOMENT == 1
 	la t0, game_moment
 	lb t0,0(t0)	
 	beq t0, zero, PularGameMoment1
+	#
+	call PowerUp
+SkipPower:
+	#
 		#Mosca 1 adiministrador
 		bltu s0, s8, Fim_Mosca1
 		addi s8, s0, 60
@@ -266,6 +321,7 @@ GAME_LOOP:
 		sw a0,8(t0)
 		addi s8, s0, 10000
 		Fim_Mosca1:
+		
 		
 		#INIMIGO--->
 		bltu s0, s7, Fim_Inimigo1
@@ -436,6 +492,15 @@ KeyDown:				#Recebe:
 	
 	beq t2,t0, PauseScreen
 	beq t2,t1, PauseScreen
+	
+	###CHEATS###
+	li t0, '('
+	beq t2,t0, CheatVida
+	
+	li t0, ')'
+	beq t2, t0, CheatPowerUp
+	###CHEATS###
+	
 	
 	li t0, 'e'
 	li t1, 'E'

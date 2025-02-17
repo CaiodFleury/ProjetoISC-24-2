@@ -13,6 +13,7 @@ level: .byte 1
 vidas: .byte 3
 pontostotais: 	.word 0
 relogio_pos: .byte -1
+power_control: .word 0
 
 #variaveis inicializaveis
 bananatotal: 	.byte 0
@@ -23,6 +24,7 @@ garden_state:   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 garden_time:    .word -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
 temp:           .word 0, 0, 0
 tempo_sobrando: .word 0
+
 
 #SuperRenderv1
 RenderObjFirst:
