@@ -101,6 +101,40 @@ void CaptureInput(bool success) {
     }
 }
 
+void CaptureKeyboardInput() {
+    bool cima = GetAsyncKeyState(CIMA) & 0x8000;
+    bool baixo = GetAsyncKeyState(BAIXO) & 0x8000;
+    bool esquerda = GetAsyncKeyState(ESQUERDA) & 0x8000;
+    bool direita = GetAsyncKeyState(DIREITA) & 0x8000;
+
+    // Combinações para diagonais
+    if (cima && esquerda) {
+        PressKey(DIAGONAL_SE); // N
+    }
+    else if (cima && direita) {
+        PressKey(DIAGONAL_SD); // M
+    }
+    else if (baixo && esquerda) {
+        PressKey(DIAGONAL_IE); // J
+    }
+    else if (baixo && direita) {
+        PressKey(DIAGONAL_ID); // K
+    }
+/*     else if (cima) {
+        PressKey(CIMA); // W
+    }
+    else if (baixo) {
+        PressKey(BAIXO); // S
+    }
+    else if (esquerda) {
+        PressKey(ESQUERDA); // A
+    }
+    else if (direita) {
+        PressKey(DIREITA); // D
+    } */
+}
+
+
 void MonitorFpgrars(HANDLE hProcess) {
     WaitForSingleObject(hProcess, INFINITE); //aguarda o término do processo `fpgrars`
     std::cout << "fpgrars encerrado\n";
@@ -135,7 +169,7 @@ int main() {
         g_pJoystick->SetCooperativeLevel(nullptr, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
         g_pJoystick->Acquire();
     } else {
-        std::cerr << "nenhum joystick encontrado, encerrando adaptador" << std::endl;
+        std::cerr << "nenhum joystick encontrado, iniciando mapeamento do teclado" << std::endl;
     }
 
     STARTUPINFO si = {};
@@ -153,9 +187,17 @@ int main() {
 
     std::thread monitorThread(MonitorFpgrars, pi.hProcess);
 
-    while (running) {
-        CaptureInput(success);
-        Sleep(100); // evita sobrecarregar o processador
+    if (g_pJoystick) {
+        while (running) {
+            CaptureInput(success);
+            Sleep(80); // evita sobrecarregar o processador (e controla a velocidade do personagem)
+        }
+    }
+    else {
+        while (running) {
+            CaptureKeyboardInput();
+            Sleep(1); // evita sobrecarregar o processador (e controla a velocidade do personagem)
+        }
     }
 
     TerminateProcess(pi.hProcess, 0); // garante que o fpgrars será encerrado

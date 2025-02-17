@@ -151,6 +151,8 @@ LoadGame:
 	la a0, E
 	call LoadImage
 	
+	call GenerateFence
+
 	la t0, game_moment
 	li t1,1
 	sb t1,0(t0)
@@ -189,6 +191,7 @@ LoadGame:
 #S0  - Tempo atual
 #S1  - Save Return Adress
 #s4  - Tempo PowerUp
+#s3  - Delay tecla
 #s5  - Tempo Flecha
 #s6  - Tempo Jogo
 #s7  - Indio
@@ -415,7 +418,33 @@ SkipPower:
 		li a3 , 6
 		call LoadImage 
 		addi s6, s0, 20000
+		#addi s6, s0, 500
 		AtualizarRelogio:
+
+		la t0, bananatotal
+		lb t0, 0(t0)
+		li t1, 10
+		blt t0, t1, PularSalvarTempoAtual1
+		la t2, tempo_sobrando
+		lw t0, 0(t2)
+		bne zero, t0, PularSalvarTempoAtual1
+
+		la t0, relogio_pos
+		lb t0, 0(t0)
+		li t1, 20000
+		mul t0, t0, t1
+		sub t3, s6, s0
+		sub t3, t1, t3
+		add t0, t0, t3
+		li t1, 80000
+		sub t0, t1, t0
+		li t1, 1000
+		div t0, t0, t1
+		sw t0, 0(t2)
+
+		PularSalvarTempoAtual1:
+
+			
 	PularGameMoment1:
 	#FIMGAMEMOMENT == 1
 	
@@ -436,8 +465,13 @@ SkipPower:
 
 KeyDown:				#Recebe:
 					# a0 - o endereco de controle do KDMMIO
-  	lw t2,4(a0)  			# a1 - recebe ponto na tela que deve ser analizadp
-		
+  	
+	bgeu s0, s3, INPUT_J
+	ret
+	INPUT_J:
+	addi s3, s0, 50
+	lw t2,4(a0)  			# a1 - recebe ponto na tela que deve ser analizadp
+	
 	#Variaveis para atingir o ponto atual
 	la t6,array_layers
 	la t5, Obj1
@@ -450,6 +484,7 @@ KeyDown:				#Recebe:
 	add t6,t4,t6
 	li t4,8640
 	add t6,t6,t4
+	addi t6, t6, 10
 	# t6 recebe o valor do pixel na tela desejado q é o ponto esquerdo inferior
 	
 	li t0, 'p'
@@ -656,6 +691,7 @@ KeyDown:				#Recebe:
 		ret
 		
 	MoveDownRight:
+		addi s3, s3, 40
 		addi t6,t6,1284
 		lb t2,0(t6)
 		li t3,-110
@@ -690,6 +726,7 @@ KeyDown:				#Recebe:
 		ret
 		
 	MoveUpRight:
+		addi s3, s3, 40
 		addi t6,t6,-1276
 		lb t2,0(t6)
 		li t3,-110
@@ -724,6 +761,7 @@ KeyDown:				#Recebe:
 		ret
 	
 	MoveUpLeft:
+		addi s3, s3, 40
 		addi t6,t6,-1284
 		
 		lb t4,0(t6)
@@ -760,6 +798,7 @@ KeyDown:				#Recebe:
 		ret
 	
 	MoveDownLeft:
+		addi s3, s3, 40
 		addi t6,t6,1276
 		
 		lb t4,0(t6)

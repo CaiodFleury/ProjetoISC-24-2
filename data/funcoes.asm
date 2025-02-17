@@ -158,6 +158,7 @@ EndDayScreen:
 	addi s11,s11,1
 	ForEndScreen1:
 		beq s11,s10,Fim_ForEndScreen1
+
 		li t0,20
 		mul a0, t0,s10
 		li a1, 205
@@ -170,11 +171,38 @@ EndDayScreen:
 		call Renderizador
 		j ForEndScreen1
 	Fim_ForEndScreen1:
+
+	li s10, 0 # <- contador
+	la s11, tempo_sobrando
+	lw s11, 0(s11)
+	addi s11, s11, 1
+	ForEndScreen2:
+		beq s11,s10,Fim_ForEndScreen2
+
+		li t0,20
+		mul a0, t0,s10
+		li a1, 170
+		li a2, 74
+		call PrintNumber
+		addi s10,s10,1
+		li a0,40
+		li a7, 32
+		ecall
+		call Renderizador
+		j ForEndScreen2
+
+	Fim_ForEndScreen2:
+
 	la t0, pontostotais
 	la t2, bananatotal
+	la t4, tempo_sobrando
+
 	lw t1,0(t0)
 	lb t3,0(t2)
-	add t1,t1,t3
+	add t1,t1,t3	
+	lw t4,0(t4)
+	add t1, t1, t4
+
 	sw t1,0(t0)
 	
 	li a0,200
@@ -184,8 +212,8 @@ EndDayScreen:
 	li s10, 0 # <- contador
 	mv s11, t1
 	addi s11,s11,1
-	ForEndScreen2:
-		beq s11,s10,Fim_ForEndScreen2
+	ForEndScreen3:
+		beq s11,s10,Fim_ForEndScreen3
 		li t0,20
 		mul a0, t0,s10
 		li a1, 165
@@ -196,8 +224,8 @@ EndDayScreen:
 		li a7, 32
 		ecall
 		call Renderizador
-		j ForEndScreen2
-	Fim_ForEndScreen2:
+		j ForEndScreen3
+	Fim_ForEndScreen3:
 	
 	call Renderizador
 	li a0,4000
@@ -256,6 +284,8 @@ PauseScreen:
 	add s8,s8,t0
 	add s9,s9,t0
 	add s10,s10,t0
+	add s4, s4, t0
+	add s5, s5, t0
 	add s11,s11,t0
 	
 	li t1,15
@@ -540,13 +570,15 @@ LoadImage:
 			beq t2, t5, EndWhile_LI1
 			li a7, 320
 			bge t1,a7 Pular_LI
-			lh t6, 0(a0)
-			sh t6, 0(t0)
+			lb t6, 0(a0)
+			addi a7, t6, 57
+			beq a7, zero, Pular_LI
+			sb t6, 0(t0)
 			Pular_LI:
-			addi t0,t0,2
-			addi t1,t1,2
-			addi t5,t5,2
-			addi a0,a0,2
+			addi t0,t0,1
+			addi t1,t1,1
+			addi t5,t5,1
+			addi a0,a0,1
 			j While_LI1
 		EndWhile_LI1:
 		li t5, 320
@@ -680,7 +712,7 @@ Renderizador2:
 	Fim_2R:ret
 
 WaterGarden:
-		# t2 era minha posiÃ§Ã£o
+		# t2 era minha posicao
 		mv a0,t2
 		# essa parte vai salvar o estado do jardim atual
 		la t0, garden_state
@@ -714,7 +746,7 @@ WaterGarden:
 		la t0, garden_state
 		add t1, t0, a0 			# move o ponteiro para o indice correto
 		sb zero, 0(t1)
-		
+
 		addi t6,t6,-17
 		la a0, planta1
 		add a1, t5,zero # x da imagem
@@ -742,6 +774,12 @@ WaterGarden:
 
 		PularDezenas:
 		# incrementar o numero de bananas no placar
+		la a0, n0
+		li a1, 30
+		li a2, 18
+		li a3, 6
+		call UnloadImage
+
 		la t0,bananatotal
 		lb t1,0(t0)
 		
@@ -756,7 +794,7 @@ WaterGarden:
 		li a2, 18
 		li a3, 6
 		call LoadImage
-
+	
 		j GAME_LOOP
 		#---
 		NaoResetarWP:
@@ -1109,6 +1147,8 @@ ResetarVariaveis:
 	call UnloadImage
 	la t0,bananatotal
 	sb zero,0(t0)
+	la t0, tempo_sobrando
+	sw zero, 0(t0)
 	la t0,garden_state
 	li t1,0
 	sw t1,0(t0)
@@ -1156,6 +1196,7 @@ IniciarObjetos:
 	li t1, 100
 	li t2, 120
 	li t3, 5
+	#li t3, 0
 	sw t1,4(t0)
 	sw t2,8(t0)
 	sw t1,12(t0)
@@ -1279,6 +1320,17 @@ PrintNumber:
 		beq a6, t0, PN_End
 		#beq s3, zero, PN_Zero
 
+		mv a1, a4
+		mv a2, a5
+
+		li t0, 9
+		mul t0, t0, a6
+		sub a1, a1, t0
+
+		la a0, n0
+		li a3, 10 # camada padrao
+		call UnloadImage
+
 		li t1,10
 		rem t0, s2, t1 # pega o ultimo digito
 		div s2, s2, t1 # remove o ultimo digito
@@ -1306,31 +1358,110 @@ PrintNumber:
 
 		j PN_Loop
 
-	#PN_Zero:
-	#	PN_Zero_Loop:
-	#		bge s2, s0, PN_End
-	#		la a0, n0
-#
-	#		li a7, 1 ##
-	#		mv a0, s3 ##
-	#		ecall ##
-	#		li a7 11 ##
-	#		li a0, 35
-	#		ecall
-#
-	#		li t0, 8
-	#		mul t0, t0, s2
-	#		sub a1, a1, t0
-#
-	#		li a3, 6
-	#		call LoadImage
-#
-	#		addi s2, s2, 1
-	#		j PN_Zero_Loop
-#
 	PN_End:
 	mv ra, s1
 	ret
+
+# retorna:
+#	a0 = sprite
+GetGardenType:
+	li a7, 41 # randint
+	ecall
+	la t2, temp # salvara as informacoes para a colisao
+	# a0 = numero aleatorio
+
+	#
+	# 0 a 5: sem plantacao
+	# 5 a 7: plantacao 1
+	# 7 a 9: plantacao 2
+	# 10: ambos
+	#
+	
+	li t1, 11
+	rem a7, a0, t1 # 0 a 10: tipo da planta
+
+	la t1, level
+	lb t1, 0(t1)
+	li t0, 11
+	sub t1, t0, t1
+
+	ble a7, t1, NP
+	li t1, 10
+	ble a7, t1, P1
+
+	P1:
+		la a0, cerca_1
+		li a7, 0
+		sw a7, 0(t2) # salva o tipo da planta
+		ret
+	
+	P2:
+		la a0, cerca_2
+		li a7, 1
+		sw a7, 0(t2)
+		ret
+
+	NP:
+		li a0, -1
+		ret
+
+GenerateFence:
+	mv s1, ra
+	li a5, 0 # contador y
+
+	FOR_GF:
+		li t0, 5
+		bge a5, t0, END_GF
+		li a4, 0 # contador x
+
+		FOR_GF_2:
+			li t0, 9
+			bge a4, t0, END_GF_2
+
+			la t0, garden_matriz_x
+			la t1, garden_matriz_y
+
+			add t0, t0, a4 # ponteiro x
+			add t1, t1, a5 # ponteiro y
+
+			lh a1, 0(t0)
+			lh a2, 0(t1)
+
+			call GetGardenType # a0 sprite real
+			li t0, -1
+			beq a0, t0, PULAR #nao vai ter cerca
+
+			la t0, temp # salvara informacoes para colisao
+			sw a1, 4(t0)
+			sw a2, 8(t0)
+			li a3, 4
+			call LoadImage
+
+			la t0, temp
+			lw a0, 0(t0) # indice
+			lw a1, 4(t0) # x
+			lw a2, 8(t0) # y
+
+			li t0, 1
+			beq a0, t0, Segundo
+			la a0, cerca_1_colisao
+			j Continue
+			Segundo:
+				la a0, cerca_2_colisao
+			Continue:
+			li a3, 0
+			call LoadImage
+			PULAR: 
+			addi a4, a4, 1
+			j FOR_GF_2
+
+		END_GF_2:
+			addi a5, a5, 1
+			j FOR_GF
+
+	END_GF:
+		mv ra, s1
+		ret
 
 FimPrograma:			#Nao recebe nada
 	li a7,10      		#Chama o procedimento de finalizar o programa
