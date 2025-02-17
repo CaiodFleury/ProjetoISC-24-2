@@ -362,7 +362,33 @@ GAME_LOOP:
 		li a3 , 6
 		call LoadImage 
 		addi s6, s0, 20000
+		#addi s6, s0, 500
 		AtualizarRelogio:
+
+		la t0, bananatotal
+		lb t0, 0(t0)
+		li t1, 10
+		blt t0, t1, PularSalvarTempoAtual1
+		la t2, tempo_sobrando
+		lw t0, 0(t2)
+		bne zero, t0, PularSalvarTempoAtual1
+
+		la t0, relogio_pos
+		lb t0, 0(t0)
+		li t1, 20000
+		mul t0, t0, t1
+		sub t3, s6, s0
+		sub t3, t1, t3
+		add t0, t0, t3
+		li t1, 80000
+		sub t0, t1, t0
+		li t1, 1000
+		div t0, t0, t1
+		sw t0, 0(t2)
+
+		PularSalvarTempoAtual1:
+
+			
 	PularGameMoment1:
 	#FIMGAMEMOMENT == 1
 	

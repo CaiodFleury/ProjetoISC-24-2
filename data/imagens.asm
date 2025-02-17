@@ -47,7 +47,6 @@
 .include "sprites/cerca_2.data"
 .include "sprites/cerca_1_colisao.data"
 .include "sprites/cerca_2_colisao.data"
-.include "sprites/cerca_2_teste.s"
 
 # numeros
 .include "sprites/n0.data"

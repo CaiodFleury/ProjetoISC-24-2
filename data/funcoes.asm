@@ -61,6 +61,7 @@ EndDayScreen:
 	addi s11,s11,1
 	ForEndScreen1:
 		beq s11,s10,Fim_ForEndScreen1
+
 		li t0,20
 		mul a0, t0,s10
 		li a1, 205
@@ -73,11 +74,38 @@ EndDayScreen:
 		call Renderizador
 		j ForEndScreen1
 	Fim_ForEndScreen1:
+
+	li s10, 0 # <- contador
+	la s11, tempo_sobrando
+	lw s11, 0(s11)
+	addi s11, s11, 1
+	ForEndScreen2:
+		beq s11,s10,Fim_ForEndScreen2
+
+		li t0,20
+		mul a0, t0,s10
+		li a1, 170
+		li a2, 74
+		call PrintNumber
+		addi s10,s10,1
+		li a0,40
+		li a7, 32
+		ecall
+		call Renderizador
+		j ForEndScreen2
+
+	Fim_ForEndScreen2:
+
 	la t0, pontostotais
 	la t2, bananatotal
+	la t4, tempo_sobrando
+
 	lw t1,0(t0)
 	lb t3,0(t2)
-	add t1,t1,t3
+	add t1,t1,t3	
+	lw t4,0(t4)
+	add t1, t1, t4
+
 	sw t1,0(t0)
 	
 	li a0,200
@@ -87,8 +115,8 @@ EndDayScreen:
 	li s10, 0 # <- contador
 	mv s11, t1
 	addi s11,s11,1
-	ForEndScreen2:
-		beq s11,s10,Fim_ForEndScreen2
+	ForEndScreen3:
+		beq s11,s10,Fim_ForEndScreen3
 		li t0,20
 		mul a0, t0,s10
 		li a1, 165
@@ -99,8 +127,8 @@ EndDayScreen:
 		li a7, 32
 		ecall
 		call Renderizador
-		j ForEndScreen2
-	Fim_ForEndScreen2:
+		j ForEndScreen3
+	Fim_ForEndScreen3:
 	
 	call Renderizador
 	li a0,4000
@@ -587,7 +615,7 @@ Renderizador2:
 	Fim_2R:ret
 
 WaterGarden:
-		# t2 era minha posiÃ§Ã£o
+		# t2 era minha posicao
 		mv a0,t2
 		# essa parte vai salvar o estado do jardim atual
 		la t0, garden_state
@@ -621,7 +649,7 @@ WaterGarden:
 		la t0, garden_state
 		add t1, t0, a0 			# move o ponteiro para o indice correto
 		sb zero, 0(t1)
-		
+
 		addi t6,t6,-17
 		la a0, planta1
 		add a1, t5,zero # x da imagem
@@ -649,6 +677,12 @@ WaterGarden:
 
 		PularDezenas:
 		# incrementar o numero de bananas no placar
+		la a0, n0
+		li a1, 30
+		li a2, 18
+		li a3, 6
+		call UnloadImage
+
 		la t0,bananatotal
 		lb t1,0(t0)
 		
@@ -663,7 +697,7 @@ WaterGarden:
 		li a2, 18
 		li a3, 6
 		call LoadImage
-
+	
 		j GAME_LOOP
 		#---
 		NaoResetarWP:
@@ -924,6 +958,8 @@ ResetarVariaveis:
 	call UnloadImage
 	la t0,bananatotal
 	sb zero,0(t0)
+	la t0, tempo_sobrando
+	sw zero, 0(t0)
 	la t0,garden_state
 	li t1,0
 	sw t1,0(t0)
@@ -1080,6 +1116,17 @@ PrintNumber:
 		beq a6, t0, PN_End
 		#beq s3, zero, PN_Zero
 
+		mv a1, a4
+		mv a2, a5
+
+		li t0, 9
+		mul t0, t0, a6
+		sub a1, a1, t0
+
+		la a0, n0
+		li a3, 10 # camada padrao
+		call UnloadImage
+
 		li t1,10
 		rem t0, s2, t1 # pega o ultimo digito
 		div s2, s2, t1 # remove o ultimo digito
@@ -1114,7 +1161,6 @@ PrintNumber:
 # retorna:
 #	a0 = sprite
 GetGardenType:
-	li t0, 1032 # tamanho do sprite
 	li a7, 41 # randint
 	ecall
 	la t2, temp # salvara as informacoes para a colisao
@@ -1129,13 +1175,15 @@ GetGardenType:
 	
 	li t1, 11
 	rem a7, a0, t1 # 0 a 10: tipo da planta
-	li t1, 5
+
+	la t1, level
+	lb t1, 0(t1)
+	li t0, 11
+	sub t1, t0, t1
+
 	ble a7, t1, NP
-	li t1, 7
+	li t1, 10
 	ble a7, t1, P1
-	li t1, 9
-	ble a7, t1, P2
-	# la a0, planta3
 
 	P1:
 		la a0, cerca_1
@@ -1144,8 +1192,7 @@ GetGardenType:
 		ret
 	
 	P2:
-		#la a0, cerca_2
-		la a0, cerca_2_teste
+		la a0, cerca_2
 		li a7, 1
 		sw a7, 0(t2)
 		ret

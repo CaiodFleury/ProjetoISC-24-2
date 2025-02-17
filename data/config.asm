@@ -22,6 +22,7 @@ mosq1_posy:	.half -4,140
 garden_state:   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 garden_time:    .word -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
 temp:           .word 0, 0, 0
+tempo_sobrando: .word 0
 
 #SuperRenderv1
 RenderObjFirst:
