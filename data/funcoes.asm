@@ -33,7 +33,7 @@ Historia:
 		
 		li a1 , 0
 		li a2 , 0
-		la a0 ,fezendeiroexpulsando
+		la a0 ,fazendeiroexpulsando
 		call LoadScreen
 		
 		li a0, 2
@@ -60,6 +60,23 @@ Historia:
 		addi s4, s0, 5000
 		
 		
+	ContHist4:
+		li a7, 30
+		ecall
+		mv s0, a0
+		
+		li a1 , 0
+		li a2 , 0
+		la a0 ,indigenasnervosos
+		call LoadScreen
+		
+		li a0, 2
+		call TrocarTela	
+		
+		bltu s0, s4, Fim_ContHist4
+		addi s4, s0, 5000
+		
+		
 		j Start
 		
 		
@@ -71,6 +88,9 @@ Historia:
 	
 	Fim_ContHist3:
 		j ContHist3
+	
+	Fim_ContHist4:
+		j ContHist4
 
 
 #tela de inicio
@@ -90,7 +110,7 @@ StartScreen:
 	andi t0,t0,0x0001		# mascara o bit menos significativo
    	beq t0,zero,Esperar_Leitura_SS  # Se nao ha tecla pressionada entao vai para FIM
    	
-   	#call Historia
+   	call Historia
    	
 Start:		
 	j FimStartScreen
@@ -851,7 +871,7 @@ PowerUp:
 	
 	beq t1, t2, PowerDespawn2
 	bltu s0, s4, SkipPower
-	
+CheatPowerUp:
 	addi s4, s0, 30000	#tempo que ele fica na tela
 	li t1, 1
 	sh t1, 0(t0)
@@ -1123,6 +1143,9 @@ ResetarVariaveis:
 	la t0, relogio_pos
 	li t1,-1
 	sb t1,0(t0)
+	la t0, vidas
+	li t1, 3
+	sb t1, 0(t0)
 	j FimInicializacaodevariveis
 	
 IniciarObjetos:

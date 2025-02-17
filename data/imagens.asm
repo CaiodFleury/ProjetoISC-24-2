@@ -44,13 +44,15 @@
 .include "sprites/Relogio5.data"
 .include "sprites/ContagemDpontos.data"
 .include "sprites/festamacacos.data"
-.include "sprites/fezendeiroexpulsando.data"
+.include "sprites/fazendeiroexpulsando.data"
 .include "sprites/criandofazenda.data"
+.include "sprites/indigenasnervosos.data"
 .include "sprites/wasd.data"
 .include "sprites/E.data"
 .include "sprites/Seta.data"
 .include "sprites/powerup.data"
 .include "sprites/colisaopowerup.data"
+.include "sprites/telagameover.data"
 
 # numeros
 .include "sprites/n0.data"
