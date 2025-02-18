@@ -35,7 +35,7 @@ main:
 	mv s0, a0
 	bltu s0, s4, FimAux
 	
-	call main
+	call LoadGame
 	#call FimPrograma
 	
 #Administrador maximo do jogo
@@ -66,13 +66,13 @@ LoadGame:
 	la a0, Seta
 	call LoadImage
 	
+	#####
 	#li a1, 160
 	#li a2, 120
 	#li a3, 3
-	#la a0, colisaopowerup
+	#la a0, macacobombado
 	#call LoadImage
-	
-	#
+	#####
 	
 	li a1 , 0
 	li a2 , 0
@@ -95,6 +95,12 @@ LoadGame:
 	li a2 , 0
 	li a3 , 5 # TIVE QUE ABAIXAR A CAMADA PARA OS NUMEROS APARECEREM
 	la a0 placaHUD
+	call LoadImage
+	
+	li a1 , 78
+	li a2 , 12
+	li a3 , 5 # TIVE QUE ABAIXAR A CAMADA PARA OS NUMEROS APARECEREM
+	la a0 HUDpowerup
 	call LoadImage 
 	
 	# quantidade de bananas placa
@@ -245,6 +251,11 @@ GAME_LOOP:
 	bltu s0, s9, Pular_DecrescimoDeVida
 	addi s9, s0, 1400
 CheatVida:
+	#
+	la t0, Obj1
+	la t1, macacodano
+	sw t1, 0(t0)
+	#
 	la t0, vidas
 	lb t1, 0(t0)
 	addi t1,t1,-1
@@ -280,8 +291,8 @@ SkipPower:
 	#
 		#Mosca 1 adiministrador
 		bltu s0, s8, Fim_Mosca1
-		addi s8, s0, 60
-		
+CheatMosca:	addi s8, s0, 60
+	
 		la t0, Obj3
 		la t1, mosq1_posy
 		lh t2 , 4(t0)
@@ -499,6 +510,12 @@ KeyDown:				#Recebe:
 	
 	li t0, ')'
 	beq t2, t0, CheatPowerUp
+	
+	li t0, '*'
+	beq t2, t0, BlackScreen
+	
+	li t0, '&'
+	beq t2, t0, CheatMosca
 	###CHEATS###
 	
 	

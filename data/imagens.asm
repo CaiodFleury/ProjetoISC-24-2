@@ -57,6 +57,10 @@
 .include "sprites/powerup.data"
 .include "sprites/colisaopowerup.data"
 .include "sprites/telagameover.data"
+.include "sprites/macacobombado.data"
+.include "sprites/macacobombado2.data"
+.include "sprites/HUDpowerup.data"
+.include "sprites/macacodano.data"
 
 # numeros
 .include "sprites/n0.data"

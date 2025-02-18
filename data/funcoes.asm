@@ -906,77 +906,163 @@ PowerUp:
 	la t0, power_control
 	lh t1, 0(t0)
 	li t2, 1
+	li t3, 2
+	li t4, 3
 	
+	beq t1, t4, PowerHUD
+	beq t1, t3, PowerTimer
 	beq t1, t2, PowerDespawn2
 	bltu s0, s4, SkipPower
 CheatPowerUp:
-	addi s4, s0, 30000	#tempo que ele fica na tela
-	li t1, 1
-	sh t1, 0(t0)
-	
-	la t0, Obj7
-	la t1, powerup
-	sw t1, 0(t0)
-	
-	li a7, 41
-	ecall
-	
-	li t1, 5
-	remu t1, a0, t1
-	li t2, 88
-	li t3, 36
-	mul t3, t1, t3
-	add t1, t2, t3
-	sw t1, 4(t0)
-	
-	li t1, 3
-	remu t1, a0, t1
-	li t2, 92
-	li t3, 28
-	mul t3, t1, t3
-	add t1, t2, t3
-	sw t1, 8(t0)
-	
-	j SkipPower
-	
-	PowerDespawn:
-		
-		addi s4, s0, 140000	#tempo pra ele aparecer
-		la t0, power_control
-		li t1, 0
+		addi s4, s0, 30000	#tempo que ele fica na tela
+		li t1, 1
 		sh t1, 0(t0)
+		
+		la t0, Obj7
+		la t1, powerup
+		sw t1, 0(t0)
+		la t1, colisaopowerup
+		sw t1, 24(t0)
+		li t1, 6
+		sw t1, 20(t0)
+		
+		li a7, 41
+		ecall
+		
+		li t1, 5
+		remu t1, a0, t1
+		li t2, 88
+		li t3, 36
+		mul t3, t1, t3
+		add t1, t2, t3
+		sw t1, 4(t0)
+		
+		li t1, 3
+		remu t1, a0, t1
+		li t2, 92
+		li t3, 28
+		mul t3, t1, t3
+		add t1, t2, t3
+		sw t1, 8(t0)
+		
+		j SkipPower
+	
+	PowerDespawn:		
+		addi s4, s0, 300000	#tempo pra ele aparece
+		
+		la t0, power_control
+		sh zero, 0(t0)
 		addi s9, s0, 10000	#tempo que o poder fica ativo
 		
 		la t0, Obj7
-		li t1, 0
-		sw t1, 0(t0)
-		la a0, powerup
+		lw a0, 0(t0)
 		lw a1, 4(t0)
 		lw a2, 8(t0)
-		lw a3, 20(t0)
+		li a3, 6
 		call UnloadImage
+		
+		la t0, Obj7
+		li t1, 6
+		li t2, 87
+		li t3, 21
+		sw t2, 4(t0)
+		sw t3, 8(t0)
+		sw t1, 20(t0)
+	
+		#lw a0, 0(t0)
+		#lw a1, 4(t0)
+		#lw a2, 8(t0)
+		#li a3, 6
+		#call UnloadImage
+		
+		j PowerUpAnimation
+		
 		j SkipPower
 			
 	PowerDespawn2:
 		bltu s0, s4, SkipPower
-		addi s4, s0, 140000	#tempo pra ele aparecer
+		addi s4, s0, 300000	#tempo pra ele aparecer
 		la t0, power_control
-		li t1, 0
-		sh t1, 0(t0)
+		sh zero, 0(t0)
 		
 		la t0, Obj7
-		li t1, 0
-		sw t1, 0(t0)
-		la a0, powerup
+		lw a0, 0(t0)
 		lw a1, 4(t0)
 		lw a2, 8(t0)
-		lw a3, 20(t0)
+		li a3, 6
 		call UnloadImage
-		j SkipPower
+		
+		la t0, Obj7
+		li t1, 1
+		sw zero, 4(t0)
+		sw zero, 8(t0)
+		sw t1, 20(t0)
 	
+		lw a0, 0(t0)
+		lw a1, 4(t0)
+		lw a2, 8(t0)
+		li a3, 6
+		call UnloadImage
+		
+		j SkipPower
+		
+	PowerUpAnimation:
+		
+			li a7, 30
+			ecall
+			addi a0, a0, 2000
+			la t0, power_control
+			sw a0, 4(t0)
+			li t1, 2
+			sw t1, 0(t0)
+	PowerTimer:
+			la t0, Obj1
+			la t1, macacobombado2
+			sw t1, 0(t0)
+		
+			la t0, power_control
+			lw t1, 4(t0)
+			li a7, 30
+			ecall
+			bltu a0, t1, SkipPower
+			
+			la t0, Obj1
+			la t1, macaco
+			sw t1, 0(t0)
+			
+			la t0, Obj1
+			la a0, macacobombado2
+			lw a1, 12(t0)
+			lw a2, 16(t0)
+			lw a3, 20(t0)
+			call UnloadImage
+			
+			la t0, power_control
+			li t1, 3
+			sh t1, 0(t0)
+			j SkipPower
+			
+	PowerHUD:
+		bltu s0, s9, SkipPower
+		
+		la t0, Obj7
+		li t1, 1
+		sw t1, 20(t0)
 
+		la t0, Obj7
+		lw a0, 0(t0)
+		lw a1, 4(t0)
+		lw a2, 8(t0)
+		li a3, 6
+		call UnloadImage
 
-	#
+		la t0, power_control
+		sw zero, 0(t0)
+
+		j SkipPower
+	################################
+
+	
 EstaColidindo:					# a0= endereco imagem		
 	la t0,array_layers			# a1 = x da imagem
 	li t1,76800				# a2 = y da imagem
@@ -1186,6 +1272,10 @@ ResetarVariaveis:
 	la t0, vidas
 	li t1, 3
 	sb t1, 0(t0)
+	la t0, power_control
+	sw zero, 0(t0)
+	sw zero, 4(t0)
+	li s4, 0
 	j FimInicializacaodevariveis
 	
 IniciarObjetos:
@@ -1239,18 +1329,6 @@ IniciarObjetos:
 	la t0,Obj6
 	la t1,flecha
 	sw t1,24(t0)
-	
-	#BANANA#
-	la t0, Obj7
-	li t1, 160
-	li t2, 120
-	li t3, 6
-	sw t1, 4(t0)
-	sw t2, 8(t0)
-	sw t3, 20(t0)
-	la t1, colisaopowerup
-	sw t1, 24(t0)
-	#BANANA#
 
 	ret
 SuperRenderv1:	

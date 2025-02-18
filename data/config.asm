@@ -13,7 +13,7 @@ level: .byte 1
 vidas: .byte 3
 pontostotais: 	.word 0
 relogio_pos: .byte -1
-power_control: .word 0
+power_control: .word 0, 0
 
 #variaveis inicializaveis
 bananatotal: 	.byte 0
