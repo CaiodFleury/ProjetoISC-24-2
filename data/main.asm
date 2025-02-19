@@ -53,15 +53,8 @@ LoadGame:
 	la a0 fazendav1
 	call LoadImage
 	
-	#
-	li a1, 0
-	li a2, 0
-	li a3, 3
-	la a0, wasd
-	call LoadImage
-	
-	li a1, 174
-	li a2, 76
+	li a1, 138
+	li a2, 52
 	li a3, 3
 	la a0, Seta
 	call LoadImage

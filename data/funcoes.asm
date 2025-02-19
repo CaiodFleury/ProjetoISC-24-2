@@ -7,7 +7,7 @@ Historia:
 		ecall
 		mv s0, a0
 		
-		addi s4, s0, 5000
+		addi s4, s0, 2000
 
 	ContHist1:
 		li a7, 30
@@ -23,7 +23,7 @@ Historia:
 		call TrocarTela	
 	
 		bltu s0, s4, Fim_ContHist1
-		addi s4, s0, 5000
+		addi s4, s0, 2000
 		
 		
 	ContHist2:
@@ -40,7 +40,7 @@ Historia:
 		call TrocarTela	
 		
 		bltu s0, s4, Fim_ContHist2
-		addi s4, s0, 5000
+		addi s4, s0, 2000
 		
 		
 	ContHist3:
@@ -57,7 +57,7 @@ Historia:
 		call TrocarTela	
 		
 		bltu s0, s4, Fim_ContHist3
-		addi s4, s0, 5000
+		addi s4, s0, 2000
 		
 		
 	ContHist4:
@@ -74,7 +74,7 @@ Historia:
 		call TrocarTela	
 		
 		bltu s0, s4, Fim_ContHist4
-		addi s4, s0, 5000
+		addi s4, s0, 2000
 		
 		
 		j Start
@@ -1179,16 +1179,10 @@ AnimationScreen:
 	addi t2, t2, -4
 	sw t2, 4(t0)
 	
-	li a1, 0
-	li a2, 0
+	li a1, 138
+	li a2, 52
 	li a3, 3
-	la a0, wasd
-	call UnloadImage
-	
-	li a1, 174
-	li a2, 76
-	li a3, 3
-	la a0, wasd
+	la a0, Seta
 	call UnloadImage
 		
 	li a7, 32
