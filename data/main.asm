@@ -1,6 +1,6 @@
 .data
-.include "data/imagens.asm"
-.include "data/config.asm"
+.include "imagens.asm"
+.include "config.asm"
 .text
 #Codigo vai comecar na main.
 #Funcoes no final
@@ -850,4 +850,4 @@ KeyDown:				#Recebe:
 		li a7,31
 		ecall	
 		ret
-.include "data/funcoes.asm"
+.include "funcoes.asm"
