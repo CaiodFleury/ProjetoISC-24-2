@@ -5,7 +5,7 @@
 Esse projeto implementa uma releitura do jogo Fix it Felix usando a linguagem de programação Assembly para a arquitetura RISC-V.
 O objetivo é demostrar a capacidade de desenvolvimento de softwares em linguagem de baixo nível.
 
-![tela_principal](data\screenshot\tela_principal.png)
+![tela_principal](data/screenshot/tela_principal.png)
 
 ## Funcionalidades
 
@@ -37,9 +37,9 @@ Para rodar o jogo, abra o executável `ProjetoISC.exe` ou rode diretamente pelo 
 
 ## Imagens do Jogo
 
-![tela do jogo principal](data\screenshot\tela_jogo.png)
-![tela do fim do jogo](data\screenshot\tela_final.png)
-![tela da morte](data\screenshot\tela_morte.png)
+![tela do jogo principal](data/screenshot/tela_jogo.png)
+![tela do fim do jogo](data/screenshot/tela_final.png)
+![tela da morte](data/screenshot/tela_morte.png)
 
 ## Licença
 
