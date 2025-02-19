@@ -30,7 +30,7 @@ Esse projeto é licenciado por [MIT License](https://opensource.org/licenses/MIT
 
 ## Autores
 - Caio Dias Fleury ([@CaioDFleury](https://github.com/CaioDFleury))
-- Enzo Cardono Martins ([@Kysrim](https://github.com/Kysrim))
+- Enzo Cardono Martins ([@Kysrym](https://github.com/Kisrym))
 - Kaio Santos Araujo ([@CorsaRebaixado](https://github.com/CorsaRebaixado))
 
 ---
