@@ -7,7 +7,7 @@ Historia:
 		ecall
 		mv s0, a0
 		
-		addi s4, s0, 2000
+		addi s4, s0, 1850
 		
 		call IntroMusica
 
@@ -25,7 +25,7 @@ Historia:
 		call TrocarTela	
 	
 		bltu s0, s4, Fim_ContHist1
-		addi s4, s0, 2000
+		addi s4, s0, 2100
 		
 		
 	ContHist2:
@@ -58,7 +58,7 @@ Historia:
 		call TrocarTela	
 		
 		bltu s0, s4, Fim_ContHist3
-		addi s4, s0, 2000
+		addi s4, s0, 1900
 		
 		
 	ContHist4:
@@ -75,7 +75,7 @@ Historia:
 		call TrocarTela	
 		
 		bltu s0, s4, Fim_ContHist4
-		addi s4, s0, 2000
+		addi s4, s0, 2200
 		
 		
 		
@@ -93,7 +93,7 @@ Historia:
 		call TrocarTela	
 		
 		bltu s0, s4, Fim_ContHist5
-		addi s4, s0, 2000
+		addi s4, s0, 4000
 		
 		
 	ContHist6:
@@ -110,8 +110,29 @@ Historia:
 		call TrocarTela	
 		
 		bltu s0, s4, Fim_ContHist6
-		addi s4, s0, 2000
+		addi s4, s0, 3800
 		
+
+	ContHist7:
+		li a7, 30
+		ecall
+		mv s0, a0
+		
+		la t2,Intro_config
+		sub t1,s4,s0
+		li t3, 100
+		div t1,t1,t3
+		sw t1,12(t2)
+		
+		li a1 , 0
+		li a2 , 0
+		la a0 ,indigenasnervosos
+		call LoadScreen
+		
+		li a0, 2
+		call TrocarTela	
+		
+		bltu s0, s4, Fim_ContHist7
 		
 		j Start
 		
@@ -138,8 +159,10 @@ Historia:
 		
 	Fim_ContHist6:
 		call IntroMusica
-		j ContHist6
-
+		j ContHist6	
+	Fim_ContHist7:
+		call IntroMusica
+		j ContHist7
 
 #tela de inicio
 StartScreen:
@@ -208,7 +231,7 @@ EndDayScreen:
 		beq s11,s10,Fim_ForEndScreen1
 
 		li a0,80		# define a nota
-		li a1,700		# define a duração da nota em ms
+		li a1,200		# define a duração da nota em ms
 		li a2,120		# define o instrumento
 		li a3,127		# define o volume
 		li a7,31		# define o syscall
@@ -235,7 +258,7 @@ EndDayScreen:
 		beq s11,s10,Fim_ForEndScreen2
 
 		li a0,80		# define a nota
-		li a1,700		# define a duração da nota em ms
+		li a1,200		# define a duração da nota em ms
 		li a2,120		# define o instrumento
 		li a3,127		# define o volume
 		li a7,31		# define o syscall
@@ -278,7 +301,7 @@ EndDayScreen:
 		beq s11,s10,Fim_ForEndScreen3
 		
 		li a0,80		# define a nota
-		li a1,700		# define a duração da nota em ms
+		li a1,200		# define a duração da nota em ms
 		li a2,120		# define o instrumento
 		li a3,127		# define o volume
 		li a7,31		# define o syscall
