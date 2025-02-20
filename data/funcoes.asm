@@ -23,8 +23,10 @@ Historia:
 		
 		li a0, 2
 		call TrocarTela	
+		
+		call IntroMusica
 	
-		bltu s0, s4, Fim_ContHist1
+		bltu s0, s4, ContHist1
 		addi s4, s0, 2100
 		
 		
@@ -41,7 +43,9 @@ Historia:
 		li a0, 2
 		call TrocarTela	
 		
-		bltu s0, s4, Fim_ContHist2
+		call IntroMusica
+		
+		bltu s0, s4, ContHist2
 		addi s4, s0, 2000
 		
 	ContHist3:
@@ -57,7 +61,9 @@ Historia:
 		li a0, 2
 		call TrocarTela	
 		
-		bltu s0, s4, Fim_ContHist3
+		call IntroMusica
+		
+		bltu s0, s4, ContHist3
 		addi s4, s0, 1900
 		
 		
@@ -74,7 +80,9 @@ Historia:
 		li a0, 2
 		call TrocarTela	
 		
-		bltu s0, s4, Fim_ContHist4
+		call IntroMusica
+		
+		bltu s0, s4, ContHist4
 		addi s4, s0, 2200
 		
 		
@@ -92,7 +100,9 @@ Historia:
 		li a0, 2
 		call TrocarTela	
 		
-		bltu s0, s4, Fim_ContHist5
+		call IntroMusica
+		
+		bltu s0, s4, ContHist5
 		addi s4, s0, 4000
 		
 		
@@ -109,7 +119,9 @@ Historia:
 		li a0, 2
 		call TrocarTela	
 		
-		bltu s0, s4, Fim_ContHist6
+		call IntroMusica
+		
+		bltu s0, s4, ContHist6
 		addi s4, s0, 3800
 		
 
@@ -132,37 +144,12 @@ Historia:
 		li a0, 2
 		call TrocarTela	
 		
-		bltu s0, s4, Fim_ContHist7
+		call IntroMusica
+		
+		bltu s0, s4, ContHist7
 		
 		j Start
-		
-		
-	Fim_ContHist1:
-		call IntroMusica
-		j ContHist1
 	
-	Fim_ContHist2:
-		call IntroMusica
-		j ContHist2
-	
-	Fim_ContHist3:
-		call IntroMusica
-		j ContHist3
-	
-	Fim_ContHist4:
-		call IntroMusica
-		j ContHist4
-		
-	Fim_ContHist5:
-		call IntroMusica
-		j ContHist5
-		
-	Fim_ContHist6:
-		call IntroMusica
-		j ContHist6	
-	Fim_ContHist7:
-		call IntroMusica
-		j ContHist7
 
 #tela de inicio
 StartScreen:
@@ -1361,9 +1348,8 @@ ResetarVariaveis:
 	li a3 , 3
 	la a0 colisao1
 	call UnloadImage
-	la t0,bananatotal##################3
-	li t1, 0
-	sb t1,0(t0)
+	la t0,bananatotal##################
+	sb zero,0(t0)
 	la t0, tempo_sobrando
 	sw zero, 0(t0)
 	la t0,garden_state
@@ -1408,6 +1394,21 @@ ResetarVariaveis:
 	sw zero, 4(t0)
 	li s4, 0
 	la t0, Obj7
+	sw zero, 0(t0)
+	sw zero, 24(t0)
+	sw zero, 4(t0)
+	sw zero, 8(t0)
+	la t0, Obj4
+	sw zero, 0(t0)
+	sw zero, 24(t0)
+	sw zero, 4(t0)
+	sw zero, 8(t0)
+	la t0, Obj5
+	sw zero, 0(t0)
+	sw zero, 24(t0)
+	sw zero, 4(t0)
+	sw zero, 8(t0)
+	la t0, Obj6
 	sw zero, 0(t0)
 	sw zero, 24(t0)
 	sw zero, 4(t0)
