@@ -28,7 +28,7 @@ main:
 	ecall
 	mv s0, a0
 	mv s4, s0
-	addi s4, s4, 2000
+	addi s4, s4, 4000
 	FimAux:
 	li a7, 30
 	ecall
@@ -445,9 +445,8 @@ CheatMosca:	addi s8, s0, 60
 		li t1, 20000
 		mul t0, t0, t1
 		sub t3, s6, s0
-		sub t3, t1, t3
 		add t0, t0, t3
-		li t1, 80000
+		li t1, 90000
 		sub t0, t1, t0
 		li t1, 1000
 		div t0, t0, t1
