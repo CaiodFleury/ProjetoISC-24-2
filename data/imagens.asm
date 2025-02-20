@@ -61,6 +61,8 @@
 .include "sprites/macacobombado2.data"
 .include "sprites/HUDpowerup.data"
 .include "sprites/macacodano.data"
+.include "sprites/construindoceleiro.data"
+.include "sprites/macacoputasso.data"
 
 # numeros
 .include "sprites/n0.data"

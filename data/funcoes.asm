@@ -44,7 +44,6 @@ Historia:
 		bltu s0, s4, Fim_ContHist2
 		addi s4, s0, 2000
 		
-		
 	ContHist3:
 		li a7, 30
 		ecall
@@ -52,7 +51,7 @@ Historia:
 		
 		li a1 , 0
 		li a2 , 0
-		la a0 ,criandofazenda
+		la a0 ,macacoputasso
 		call LoadScreen
 		
 		li a0, 2
@@ -69,13 +68,48 @@ Historia:
 		
 		li a1 , 0
 		li a2 , 0
-		la a0 ,indigenasnervosos
+		la a0 ,construindoceleiro
 		call LoadScreen
 		
 		li a0, 2
 		call TrocarTela	
 		
 		bltu s0, s4, Fim_ContHist4
+		addi s4, s0, 2000
+		
+		
+		
+	ContHist5:
+		li a7, 30
+		ecall
+		mv s0, a0
+		
+		li a1 , 0
+		li a2 , 0
+		la a0 ,criandofazenda
+		call LoadScreen
+		
+		li a0, 2
+		call TrocarTela	
+		
+		bltu s0, s4, Fim_ContHist5
+		addi s4, s0, 2000
+		
+		
+	ContHist6:
+		li a7, 30
+		ecall
+		mv s0, a0
+		
+		li a1 , 0
+		li a2 , 0
+		la a0 ,indigenasnervosos
+		call LoadScreen
+		
+		li a0, 2
+		call TrocarTela	
+		
+		bltu s0, s4, Fim_ContHist6
 		addi s4, s0, 2000
 		
 		
@@ -97,6 +131,14 @@ Historia:
 	Fim_ContHist4:
 		call IntroMusica
 		j ContHist4
+		
+	Fim_ContHist5:
+		call IntroMusica
+		j ContHist5
+		
+	Fim_ContHist6:
+		call IntroMusica
+		j ContHist6
 
 
 #tela de inicio
@@ -1291,8 +1333,9 @@ ResetarVariaveis:
 	li a3 , 3
 	la a0 colisao1
 	call UnloadImage
-	la t0,bananatotal
-	sb zero,0(t0)
+	la t0,bananatotal##################3
+	li t1, 20
+	sb t1,0(t0)
 	la t0, tempo_sobrando
 	sw zero, 0(t0)
 	la t0,garden_state
