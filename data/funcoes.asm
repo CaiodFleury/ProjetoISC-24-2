@@ -8,6 +8,8 @@ Historia:
 		mv s0, a0
 		
 		addi s4, s0, 2000
+		
+		call IntroMusica
 
 	ContHist1:
 		li a7, 30
@@ -81,15 +83,19 @@ Historia:
 		
 		
 	Fim_ContHist1:
+		call IntroMusica
 		j ContHist1
 	
 	Fim_ContHist2:
+		call IntroMusica
 		j ContHist2
 	
 	Fim_ContHist3:
+		call IntroMusica
 		j ContHist3
 	
 	Fim_ContHist4:
+		call IntroMusica
 		j ContHist4
 
 
@@ -159,6 +165,13 @@ EndDayScreen:
 	ForEndScreen1:
 		beq s11,s10,Fim_ForEndScreen1
 
+		li a0,80		# define a nota
+		li a1,700		# define a duração da nota em ms
+		li a2,120		# define o instrumento
+		li a3,127		# define o volume
+		li a7,31		# define o syscall
+		ecall
+
 		li t0,20
 		mul a0, t0,s10
 		li a1, 205
@@ -178,6 +191,13 @@ EndDayScreen:
 	addi s11, s11, 1
 	ForEndScreen2:
 		beq s11,s10,Fim_ForEndScreen2
+
+		li a0,80		# define a nota
+		li a1,700		# define a duração da nota em ms
+		li a2,120		# define o instrumento
+		li a3,127		# define o volume
+		li a7,31		# define o syscall
+		ecall
 
 		li t0,20
 		mul a0, t0,s10
@@ -214,6 +234,14 @@ EndDayScreen:
 	addi s11,s11,1
 	ForEndScreen3:
 		beq s11,s10,Fim_ForEndScreen3
+		
+		li a0,80		# define a nota
+		li a1,700		# define a duração da nota em ms
+		li a2,120		# define o instrumento
+		li a3,127		# define o volume
+		li a7,31		# define o syscall
+		ecall
+		
 		li t0,20
 		mul a0, t0,s10
 		li a1, 165
@@ -361,6 +389,44 @@ TocarMusica:						#s11 eh o contador de tempo
 		addi t6,t6,1
 		sw t6,4(t2)		# incrementa o contador de notas
 	Fim_If_TM:
+	ret
+	
+	
+IntroMusica:						#s11 eh o contador de tempo
+	li a7,30					#coloca o horario atual em a0
+	ecall						#funÃ§Ã£o nÃ£o recebe entrada
+ 	If_TMIntro:						#apenas toca a proxima nota de Notas
+ 		bltu a0,s11, IntroFim_If_TM
+		la t2,Intro_config
+ 		lw t0, 0(t2)
+ 		lw t1, 4(t2)
+ 		lw a2, 8(t2)
+ 		lw a3, 12(t2)
+		IntroIf_TM1:
+			bne t0,t1, IntroFim_If_TM1	# contador chegou no final? entÃƒÆ’Ã‚Â£o  vÃƒÆ’Ã‚Â¡ para SET_SONG para zerar o contador e as notas (loop infinito)
+			sw zero, 4(t2)
+			li t1, 0
+		IntroFim_If_TM1:
+		la t4, NotasIntro
+		li t3,8
+		mul t1, t1,t3
+		add t4,t4,t1
+		lw a0,0(t4)		# le o valor da nota
+		lw a1,4(t4)		# le a duracao da nota
+		li a7,31		# define a chamada de syscall
+		ecall			# toca a nota
+		
+		li a7,30		# coloca o horario atual em a0
+		ecall
+		
+		mv s11,a0
+		lw t4, 4(t4)
+		add s11,s11,t4
+
+		lw t6, 4(t2)
+		addi t6,t6,1
+		sw t6,4(t2)		# incrementa o contador de notas
+	IntroFim_If_TM:
 	ret
 
 TrocarTela:					#recebe a0	 
@@ -948,7 +1014,7 @@ CheatPowerUp:
 		j SkipPower
 	
 	PowerDespawn:		
-		addi s4, s0, 300000	#tempo pra ele aparece
+		addi s4, s0, 30000	#tempo pra ele aparece
 		
 		la t0, power_control
 		sh zero, 0(t0)
@@ -1270,6 +1336,14 @@ ResetarVariaveis:
 	sw zero, 0(t0)
 	sw zero, 4(t0)
 	li s4, 0
+	la t0, Obj7
+	sw zero, 0(t0)
+	lw a0, 24(t0)
+	lw a1, 4(t0)
+	lw a2, 8(t0)
+	li a3, 1
+	call UnloadImage
+	sw zero, 24(t0)
 	j FimInicializacaodevariveis
 	
 IniciarObjetos:
