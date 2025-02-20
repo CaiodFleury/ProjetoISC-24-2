@@ -345,8 +345,8 @@ EndDayScreen:
 	li a2 , 0
 	li a3 , 10
 	la a0 ,macacofundofinal
-	call UnloadImage
-	
+	call UnloadImage	
+
 	j FimEndDayScreen
 
 #tela de pause
@@ -1328,6 +1328,11 @@ ResetarVariaveis:
 #Inicializacao de variaveis
 	li a1 , 0
 	li a2 , 0
+	li a3 , 1
+	la a0 colisao1
+	call UnloadImage
+	li a1 , 0
+	li a2 , 0
 	li a3 , 2
 	la a0 colisao1
 	call UnloadImage
@@ -1357,7 +1362,7 @@ ResetarVariaveis:
 	la a0 colisao1
 	call UnloadImage
 	la t0,bananatotal##################3
-	li t1, 20
+	li t1, 0
 	sb t1,0(t0)
 	la t0, tempo_sobrando
 	sw zero, 0(t0)
@@ -1404,12 +1409,9 @@ ResetarVariaveis:
 	li s4, 0
 	la t0, Obj7
 	sw zero, 0(t0)
-	lw a0, 24(t0)
-	lw a1, 4(t0)
-	lw a2, 8(t0)
-	li a3, 1
-	call UnloadImage
 	sw zero, 24(t0)
+	sw zero, 4(t0)
+	sw zero, 8(t0)
 	j FimInicializacaodevariveis
 	
 IniciarObjetos:

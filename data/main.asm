@@ -448,7 +448,15 @@ CheatMosca:	addi s8, s0, 60
 
 		PularSalvarTempoAtual1:
 
-			
+		li t1, 17000
+		sub t0,s6,t1
+		bltu s0, t0, DeixarE
+		li a1, 94
+		li a2, 144
+		li a3, 3
+		la a0, E
+		call UnloadImage
+		DeixarE:	
 	PularGameMoment1:
 	#FIMGAMEMOMENT == 1
 	
