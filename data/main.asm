@@ -144,8 +144,8 @@ LoadGame:
 	la a0 gorilavida
 	call LoadImage
 	
-	li a1, 94
-	li a2, 144
+	li a1, 156
+	li a2, 184
 	li a3, 3
 	la a0, E
 	call LoadImage
@@ -248,6 +248,13 @@ CheatVida:
 	la t0, Obj1
 	la t1, macacodano
 	sw t1, 0(t0)
+	
+	li a0,80		# define a nota
+	li a1,1500		# define a duração da nota em ms
+	li a2,127		# define o instrumento
+	li a3,80		# define o volume
+	li a7,31		# define o syscall
+	ecall
 	#
 	la t0, vidas
 	lb t1, 0(t0)
@@ -451,8 +458,8 @@ CheatMosca:	addi s8, s0, 60
 		li t1, 17000
 		sub t0,s6,t1
 		bltu s0, t0, DeixarE
-		li a1, 94
-		li a2, 144
+		li a1, 156
+		li a2, 184
 		li a3, 3
 		la a0, E
 		call UnloadImage

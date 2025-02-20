@@ -901,6 +901,20 @@ WaterGarden:
 		la t0,bananatotal
 		lb t1,0(t0)
 		
+		li a0,80		# define a nota
+		li a1,200		# define a duração da nota em ms
+		li a2,120		# define o instrumento
+		li a3,127		# define o volume
+		li a7,31		# define o syscall
+		ecall
+		
+		#li a0, 90		# define a nota
+		#li a1,200		# define a duração da nota em ms
+		#li a2,121		# define o instrumento
+		#li a3,127		# define o volume
+		#li a7,31		# define o syscall
+		#ecall
+		
 		li t0, 138
 		li t3,10
 		rem t2,t1,t3
@@ -1071,6 +1085,13 @@ CheatPowerUp:
 		la t0, power_control
 		sh zero, 0(t0)
 		addi s9, s0, 10000	#tempo que o poder fica ativo
+		
+		#li a0, 90		# define a nota
+		#li a1,200		# define a duração da nota em ms
+		#li a2,121		# define o instrumento
+		#li a3,127		# define o volume
+		#li a7,31		# define o syscall
+		#ecall	
 		
 		la t0, Obj7
 		lw a0, 0(t0)
